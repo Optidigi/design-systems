@@ -1,0 +1,14 @@
+node_modules
+**/node_modules
+public/r
+.git
+.gitignore
+.DS_Store
+*.log
+.env*
+.vercel
+.next
+.turbo
+dist
+README.md
+**/README.md

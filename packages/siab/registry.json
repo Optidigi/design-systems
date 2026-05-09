@@ -1,0 +1,209 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "siab",
+  "homepage": "https://siteinabox.nl",
+  "items": [
+    {
+      "name": "theme",
+      "type": "registry:theme",
+      "title": "SIAB Theme",
+      "description": "SIAB design tokens — colors, fonts, radius, shadows. Light + dark.",
+      "cssVars": {
+        "theme": {
+          "font-sans": "Poppins, ui-sans-serif, sans-serif, system-ui",
+          "font-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+          "font-serif": "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif",
+          "radius": "0.625rem",
+          "tracking-normal": "0em",
+          "spacing": "0.25rem",
+          "shadow-2xs": "0 1px 3px 0px hsl(0 0% 0% / 0.05)",
+          "shadow-xs": "0 1px 3px 0px hsl(0 0% 0% / 0.05)",
+          "shadow-sm": "0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)",
+          "shadow": "0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10)",
+          "shadow-md": "0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10)",
+          "shadow-lg": "0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10)",
+          "shadow-xl": "0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10)",
+          "shadow-2xl": "0 1px 3px 0px hsl(0 0% 0% / 0.25)"
+        },
+        "light": {
+          "background": "oklch(1 0 0)",
+          "foreground": "oklch(0.1450 0 0)",
+          "card": "oklch(1 0 0)",
+          "card-foreground": "oklch(0.1450 0 0)",
+          "popover": "oklch(1 0 0)",
+          "popover-foreground": "oklch(0.1450 0 0)",
+          "primary": "oklch(0.2050 0 0)",
+          "primary-foreground": "oklch(0.9850 0 0)",
+          "secondary": "oklch(0.9700 0 0)",
+          "secondary-foreground": "oklch(0.2050 0 0)",
+          "muted": "oklch(0.9700 0 0)",
+          "muted-foreground": "oklch(0.5560 0 0)",
+          "accent": "oklch(0.9700 0 0)",
+          "accent-foreground": "oklch(0.2050 0 0)",
+          "destructive": "oklch(0.5770 0.2450 27.3250)",
+          "destructive-foreground": "oklch(1 0 0)",
+          "border": "oklch(0.9220 0 0)",
+          "input": "oklch(0.9220 0 0)",
+          "ring": "oklch(0.7080 0 0)",
+          "chart-1": "oklch(0.8100 0.1000 252)",
+          "chart-2": "oklch(0.6200 0.1900 260)",
+          "chart-3": "oklch(0.5500 0.2200 263)",
+          "chart-4": "oklch(0.4900 0.2200 264)",
+          "chart-5": "oklch(0.4200 0.1800 266)",
+          "sidebar": "oklch(0.9850 0 0)",
+          "sidebar-foreground": "oklch(0.1450 0 0)",
+          "sidebar-primary": "oklch(0.2050 0 0)",
+          "sidebar-primary-foreground": "oklch(0.9850 0 0)",
+          "sidebar-accent": "oklch(0.9700 0 0)",
+          "sidebar-accent-foreground": "oklch(0.2050 0 0)",
+          "sidebar-border": "oklch(0.9220 0 0)",
+          "sidebar-ring": "oklch(0.7080 0 0)"
+        },
+        "dark": {
+          "background": "oklch(0.1450 0 0)",
+          "foreground": "oklch(0.9850 0 0)",
+          "card": "oklch(0.2050 0 0)",
+          "card-foreground": "oklch(0.9850 0 0)",
+          "popover": "oklch(0.2690 0 0)",
+          "popover-foreground": "oklch(0.9850 0 0)",
+          "primary": "oklch(0.9220 0 0)",
+          "primary-foreground": "oklch(0.2050 0 0)",
+          "secondary": "oklch(0.2690 0 0)",
+          "secondary-foreground": "oklch(0.9850 0 0)",
+          "muted": "oklch(0.2690 0 0)",
+          "muted-foreground": "oklch(0.7080 0 0)",
+          "accent": "oklch(0.3710 0 0)",
+          "accent-foreground": "oklch(0.9850 0 0)",
+          "destructive": "oklch(0.7040 0.1910 22.2160)",
+          "destructive-foreground": "oklch(0.9850 0 0)",
+          "border": "oklch(0.2750 0 0)",
+          "input": "oklch(0.3250 0 0)",
+          "ring": "oklch(0.5560 0 0)",
+          "chart-1": "oklch(0.8100 0.1000 252)",
+          "chart-2": "oklch(0.6200 0.1900 260)",
+          "chart-3": "oklch(0.5500 0.2200 263)",
+          "chart-4": "oklch(0.4900 0.2200 264)",
+          "chart-5": "oklch(0.4200 0.1800 266)",
+          "sidebar": "oklch(0.2050 0 0)",
+          "sidebar-foreground": "oklch(0.9850 0 0)",
+          "sidebar-primary": "oklch(0.4880 0.2430 264.3760)",
+          "sidebar-primary-foreground": "oklch(0.9850 0 0)",
+          "sidebar-accent": "oklch(0.2690 0 0)",
+          "sidebar-accent-foreground": "oklch(0.9850 0 0)",
+          "sidebar-border": "oklch(0.2750 0 0)",
+          "sidebar-ring": "oklch(0.4390 0 0)"
+        }
+      }
+    },
+
+    {
+      "name": "base",
+      "type": "registry:base",
+      "title": "SIAB Base",
+      "description": "Project bootstrap — Tailwind v4 base layer, tw-animate-css, lucide icons, SIAB theme tokens. Consumed by `shadcn init --preset` for new projects.",
+      "registryDependencies": ["@siab/theme", "@siab/utils"],
+      "dependencies": [
+        "tailwindcss",
+        "tw-animate-css",
+        "class-variance-authority",
+        "clsx",
+        "tailwind-merge",
+        "lucide-react"
+      ],
+      "config": {
+        "style": "new-york",
+        "iconLibrary": "lucide",
+        "tailwind": {
+          "baseColor": "neutral"
+        }
+      },
+      "css": {
+        "@import \"tailwindcss\"": {},
+        "@import \"tw-animate-css\"": {},
+        "@custom-variant dark (&:is(.dark *))": {},
+        "@layer base": {
+          "*": {
+            "@apply border-border outline-ring/50": {}
+          },
+          "body": {
+            "@apply bg-background text-foreground": {}
+          }
+        }
+      }
+    },
+
+    {
+      "name": "utils",
+      "type": "registry:lib",
+      "title": "cn() helper",
+      "description": "The standard `cn()` utility — `clsx` + `tailwind-merge`. Used by every component.",
+      "dependencies": ["clsx", "tailwind-merge"],
+      "files": [
+        { "path": "registry/default/utils.ts", "type": "registry:lib", "target": "lib/utils.ts" }
+      ]
+    },
+
+    { "name": "accordion", "type": "registry:ui", "title": "Accordion", "description": "Vertically stacked set of interactive headings.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/accordion.tsx", "type": "registry:ui" }] },
+    { "name": "alert", "type": "registry:ui", "title": "Alert", "description": "Callout for user attention.", "dependencies": [], "files": [{ "path": "registry/default/alert.tsx", "type": "registry:ui" }] },
+    { "name": "alert-dialog", "type": "registry:ui", "title": "Alert Dialog", "description": "Modal dialog interrupting the user with important content.", "dependencies": ["radix-ui"], "registryDependencies": ["@siab/button"], "files": [{ "path": "registry/default/alert-dialog.tsx", "type": "registry:ui" }] },
+    { "name": "aspect-ratio", "type": "registry:ui", "title": "Aspect Ratio", "description": "Maintains content aspect ratio.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/aspect-ratio.tsx", "type": "registry:ui" }] },
+
+    { "name": "avatar", "type": "registry:ui", "title": "Avatar", "description": "SIAB avatar — adds size variants and AvatarBadge / AvatarGroup / AvatarGroupCount subcomponents.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/avatar.tsx", "type": "registry:ui" }] },
+
+    { "name": "badge", "type": "registry:ui", "title": "Badge", "description": "Small status descriptor.", "dependencies": [], "files": [{ "path": "registry/default/badge.tsx", "type": "registry:ui" }] },
+    { "name": "breadcrumb", "type": "registry:ui", "title": "Breadcrumb", "description": "Navigation path.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/breadcrumb.tsx", "type": "registry:ui" }] },
+
+    { "name": "button", "type": "registry:ui", "title": "Button", "description": "SIAB button — extends shadcn with `xs`, `touch`, `icon-xs`, `icon-sm`, `icon-lg` size variants and global cursor-pointer.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/button.tsx", "type": "registry:ui" }] },
+
+    { "name": "calendar", "type": "registry:ui", "title": "Calendar", "description": "Date picker built on react-day-picker.", "dependencies": ["react-day-picker", "date-fns"], "registryDependencies": ["@siab/button"], "files": [{ "path": "registry/default/calendar.tsx", "type": "registry:ui" }] },
+    { "name": "card", "type": "registry:ui", "title": "Card", "description": "Container with header / content / footer slots.", "dependencies": [], "files": [{ "path": "registry/default/card.tsx", "type": "registry:ui" }] },
+    { "name": "carousel", "type": "registry:ui", "title": "Carousel", "description": "Slideshow built on Embla.", "dependencies": ["embla-carousel-react"], "registryDependencies": ["@siab/button"], "files": [{ "path": "registry/default/carousel.tsx", "type": "registry:ui" }] },
+    { "name": "chart", "type": "registry:ui", "title": "Chart", "description": "Recharts wrapper with theme-aware colors.", "dependencies": ["recharts"], "files": [{ "path": "registry/default/chart.tsx", "type": "registry:ui" }] },
+    { "name": "checkbox", "type": "registry:ui", "title": "Checkbox", "description": "Multi-select control.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/checkbox.tsx", "type": "registry:ui" }] },
+    { "name": "collapsible", "type": "registry:ui", "title": "Collapsible", "description": "Expand/collapse container.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/collapsible.tsx", "type": "registry:ui" }] },
+    { "name": "command", "type": "registry:ui", "title": "Command", "description": "Cmd+K command palette.", "dependencies": ["cmdk"], "registryDependencies": ["@siab/dialog"], "files": [{ "path": "registry/default/command.tsx", "type": "registry:ui" }] },
+    { "name": "context-menu", "type": "registry:ui", "title": "Context Menu", "description": "Right-click menu.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/context-menu.tsx", "type": "registry:ui" }] },
+    { "name": "dialog", "type": "registry:ui", "title": "Dialog", "description": "Modal dialog.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/dialog.tsx", "type": "registry:ui" }] },
+    { "name": "drawer", "type": "registry:ui", "title": "Drawer", "description": "Bottom-anchored drawer (Vaul).", "dependencies": ["vaul"], "files": [{ "path": "registry/default/drawer.tsx", "type": "registry:ui" }] },
+    { "name": "dropdown-menu", "type": "registry:ui", "title": "Dropdown Menu", "description": "Action menu.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/dropdown-menu.tsx", "type": "registry:ui" }] },
+
+    { "name": "form", "type": "registry:ui", "title": "Form", "description": "React Hook Form + Zod integration via Radix Slot/Label.", "dependencies": ["radix-ui", "react-hook-form", "@hookform/resolvers", "zod"], "files": [{ "path": "registry/default/form.tsx", "type": "registry:ui" }] },
+    { "name": "hover-card", "type": "registry:ui", "title": "Hover Card", "description": "Preview card on hover.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/hover-card.tsx", "type": "registry:ui" }] },
+
+    { "name": "input", "type": "registry:ui", "title": "Input", "description": "SIAB input — selection-color and dark-mode polish on shadcn baseline.", "dependencies": [], "files": [{ "path": "registry/default/input.tsx", "type": "registry:ui" }] },
+
+    { "name": "input-otp", "type": "registry:ui", "title": "Input OTP", "description": "One-time-code input.", "dependencies": ["input-otp"], "files": [{ "path": "registry/default/input-otp.tsx", "type": "registry:ui" }] },
+    { "name": "label", "type": "registry:ui", "title": "Label", "description": "Form label.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/label.tsx", "type": "registry:ui" }] },
+    { "name": "menubar", "type": "registry:ui", "title": "Menubar", "description": "App-style top menu bar.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/menubar.tsx", "type": "registry:ui" }] },
+    { "name": "navigation-menu", "type": "registry:ui", "title": "Navigation Menu", "description": "Site navigation menu.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/navigation-menu.tsx", "type": "registry:ui" }] },
+    { "name": "pagination", "type": "registry:ui", "title": "Pagination", "description": "Page-number navigation.", "dependencies": [], "registryDependencies": ["@siab/button"], "files": [{ "path": "registry/default/pagination.tsx", "type": "registry:ui" }] },
+    { "name": "popover", "type": "registry:ui", "title": "Popover", "description": "Floating panel anchored to trigger.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/popover.tsx", "type": "registry:ui" }] },
+    { "name": "progress", "type": "registry:ui", "title": "Progress", "description": "Progress bar.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/progress.tsx", "type": "registry:ui" }] },
+    { "name": "radio-group", "type": "registry:ui", "title": "Radio Group", "description": "Single-select radio inputs.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/radio-group.tsx", "type": "registry:ui" }] },
+    { "name": "resizable", "type": "registry:ui", "title": "Resizable", "description": "Resizable split panes.", "dependencies": ["react-resizable-panels"], "files": [{ "path": "registry/default/resizable.tsx", "type": "registry:ui" }] },
+    { "name": "scroll-area", "type": "registry:ui", "title": "Scroll Area", "description": "Custom scrollbar.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/scroll-area.tsx", "type": "registry:ui" }] },
+    { "name": "select", "type": "registry:ui", "title": "Select", "description": "Dropdown select.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/select.tsx", "type": "registry:ui" }] },
+    { "name": "separator", "type": "registry:ui", "title": "Separator", "description": "Visual divider.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/separator.tsx", "type": "registry:ui" }] },
+    { "name": "sheet", "type": "registry:ui", "title": "Sheet", "description": "Side-anchored sheet (built on Dialog).", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/sheet.tsx", "type": "registry:ui" }] },
+    { "name": "sidebar", "type": "registry:ui", "title": "Sidebar", "description": "Composable app sidebar with mobile sheet, keyboard shortcut, cookie persistence.", "dependencies": ["radix-ui"], "registryDependencies": ["@siab/button", "@siab/separator", "@siab/sheet", "@siab/tooltip"], "files": [{ "path": "registry/default/sidebar.tsx", "type": "registry:ui" }] },
+    { "name": "skeleton", "type": "registry:ui", "title": "Skeleton", "description": "Loading placeholder shimmer.", "dependencies": [], "files": [{ "path": "registry/default/skeleton.tsx", "type": "registry:ui" }] },
+    { "name": "slider", "type": "registry:ui", "title": "Slider", "description": "Range / value slider.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/slider.tsx", "type": "registry:ui" }] },
+    { "name": "sonner", "type": "registry:ui", "title": "Sonner", "description": "Toast notifications.", "dependencies": ["sonner", "next-themes"], "files": [{ "path": "registry/default/sonner.tsx", "type": "registry:ui" }] },
+    { "name": "switch", "type": "registry:ui", "title": "Switch", "description": "On/off toggle.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/switch.tsx", "type": "registry:ui" }] },
+    { "name": "table", "type": "registry:ui", "title": "Table", "description": "Semantic table primitives.", "dependencies": [], "files": [{ "path": "registry/default/table.tsx", "type": "registry:ui" }] },
+    { "name": "tabs", "type": "registry:ui", "title": "Tabs", "description": "Tabbed content.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/tabs.tsx", "type": "registry:ui" }] },
+    { "name": "textarea", "type": "registry:ui", "title": "Textarea", "description": "Multiline text input.", "dependencies": [], "files": [{ "path": "registry/default/textarea.tsx", "type": "registry:ui" }] },
+    { "name": "toggle", "type": "registry:ui", "title": "Toggle", "description": "Two-state button.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/toggle.tsx", "type": "registry:ui" }] },
+    { "name": "toggle-group", "type": "registry:ui", "title": "Toggle Group", "description": "Group of toggles.", "dependencies": ["radix-ui"], "registryDependencies": ["@siab/toggle"], "files": [{ "path": "registry/default/toggle-group.tsx", "type": "registry:ui" }] },
+    { "name": "tooltip", "type": "registry:ui", "title": "Tooltip", "description": "Floating hint on hover/focus.", "dependencies": ["radix-ui"], "files": [{ "path": "registry/default/tooltip.tsx", "type": "registry:ui" }] },
+
+    { "name": "empty-state", "type": "registry:component", "title": "Empty State", "description": "Empty-rows render for tables, lists, and content areas.", "registryDependencies": ["@siab/utils"], "files": [{ "path": "registry/default/empty-state.tsx", "type": "registry:component" }] },
+    { "name": "confirm-dialog", "type": "registry:component", "title": "Confirm Dialog", "description": "Plain confirmation dialog for low-stakes destructive actions.", "registryDependencies": ["@siab/dialog", "@siab/button"], "files": [{ "path": "registry/default/confirm-dialog.tsx", "type": "registry:component" }] },
+    { "name": "typed-confirm-dialog", "type": "registry:component", "title": "Typed Confirm Dialog", "description": "High-stakes confirmation requiring user to type the entity name.", "registryDependencies": ["@siab/dialog", "@siab/button", "@siab/input", "@siab/label"], "files": [{ "path": "registry/default/typed-confirm-dialog.tsx", "type": "registry:component" }] },
+    { "name": "sticky-form-footer", "type": "registry:component", "title": "Sticky Form Footer", "description": "Mobile-aware sticky footer for primary form actions.", "registryDependencies": ["@siab/utils"], "files": [{ "path": "registry/default/sticky-form-footer.tsx", "type": "registry:component" }] },
+    { "name": "data-table", "type": "registry:component", "title": "Data Table", "description": "Generic TanStack-Table-backed data table with mobile card view, filter, pagination. Requires Next.js (uses next/link).", "dependencies": ["@tanstack/react-table", "lucide-react"], "registryDependencies": ["@siab/table", "@siab/card", "@siab/input", "@siab/button", "@siab/empty-state"], "files": [{ "path": "registry/default/data-table.tsx", "type": "registry:component" }] },
+    { "name": "page-header", "type": "registry:component", "title": "Page Header", "description": "Per-page header with title, optional subtitle, action slot, and beforeTitle slot for context affordances.", "registryDependencies": ["@siab/utils"], "files": [{ "path": "registry/default/page-header.tsx", "type": "registry:component" }] },
+    { "name": "theme-toggle", "type": "registry:component", "title": "Theme Toggle", "description": "Light/Dark/System theme switcher (button + inline-switcher variants).", "dependencies": ["next-themes", "lucide-react"], "registryDependencies": ["@siab/button", "@siab/dropdown-menu"], "files": [{ "path": "registry/default/theme-toggle.tsx", "type": "registry:component" }] },
+    { "name": "theme-provider", "type": "registry:component", "title": "Theme Provider", "description": "next-themes provider wrapper.", "dependencies": ["next-themes"], "files": [{ "path": "registry/default/theme-provider.tsx", "type": "registry:component" }] }
+  ]
+}

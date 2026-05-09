@@ -1,0 +1,9 @@
+{
+  "name": "@optidigi/siab-registry",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SIAB shadcn registry — primitives, theme, and shared patterns for siab-payload and future SIAB apps.",
+  "scripts": {
+    "registry:build": "shadcn build --output ../../public/r/v1/siab"
+  }
+}

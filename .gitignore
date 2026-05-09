@@ -1,0 +1,11 @@
+node_modules
+**/node_modules
+.DS_Store
+*.log
+.env
+.env.local
+.vercel
+.next
+.turbo
+dist
+public/r

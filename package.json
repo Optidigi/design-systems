@@ -1,0 +1,19 @@
+{
+  "name": "optidigi-design-systems",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Optidigi shadcn registries — one design system per brand. Hosted at registries.optidigi.nl.",
+  "scripts": {
+    "build:all": "rm -rf public/r/v1 && pnpm -r --parallel run registry:build",
+    "build:siab": "pnpm --filter ./packages/siab run registry:build",
+    "format": "prettier --write \"packages/*/registry/**/*.{ts,tsx,css}\""
+  },
+  "devDependencies": {
+    "shadcn": "^4.7.0",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "packageManager": "pnpm@10.28.2"
+}
