@@ -954,6 +954,22 @@
       ]
     },
     {
+      "name": "login-04",
+      "type": "registry:component",
+      "title": "Login 04 (split with media)",
+      "description": "Two-column auth shell: form on left, media (logo / image / branding) on right. Stacks on phone. Content-agnostic \u2014 pass your auth form as children and any media node.",
+      "registryDependencies": [
+        "@siab/card",
+        "@siab/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/default/login-04.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "theme-toggle",
       "type": "registry:component",
       "title": "Theme Toggle",
