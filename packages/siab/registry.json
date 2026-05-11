@@ -47,7 +47,7 @@
           "sidebar": "oklch(0.985 0 0)",
           "sidebar-foreground": "oklch(0.214 0.004 17)",
           "sidebar-primary": "oklch(0.902 0.194 99)",
-          "sidebar-primary-foreground": "oklch(0.963 0.007 80)",
+          "sidebar-primary-foreground": "oklch(0.214 0.004 17)",
           "sidebar-accent": "oklch(0.97 0 0)",
           "sidebar-accent-foreground": "oklch(0.214 0.004 17)",
           "sidebar-border": "oklch(0.922 0 0)",
