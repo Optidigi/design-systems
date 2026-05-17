@@ -38,7 +38,10 @@ export const ModeBar: React.FC<{
     <div
       className={cn(FLOATING_PILL_CLASS, "fixed bottom-4 z-50 -translate-x-1/2")}
       style={{
+        // Keep clear of the phone keyboard / iOS safe-area.
         bottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)",
+        // `left` is offset by half the admin sidebar width so the bar centres
+        // within the editor pane rather than the full viewport.
         left: `calc(50% + ${sidebarOffset} / 2)`,
       }}
     >
