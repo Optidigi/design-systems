@@ -920,6 +920,20 @@
       ]
     },
     {
+      "name": "onboarding-checklist",
+      "type": "registry:component",
+      "title": "Onboarding Checklist",
+      "description": "Multi-step onboarding card list with per-step checkboxes, persisted to localStorage by configurable key. Each step gets title + ReactNode description + optional copy-to-clipboard button. Caller passes the steps array and storageKey — generic enough for any onboarding flow (DNS/proxy setup, tenant provisioning, post-install walkthroughs). Seed entries are non-overridable (true by virtue of upstream state, e.g. a tenant record already existing).",
+      "dependencies": ["lucide-react", "sonner"],
+      "registryDependencies": ["@siab/card", "@siab/button"],
+      "files": [
+        {
+          "path": "registry/default/onboarding-checklist.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "data-table",
       "type": "registry:component",
       "title": "Data Table",
