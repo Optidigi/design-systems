@@ -179,8 +179,8 @@ export const MobileSectionList: React.FC<MobileSectionListProps> = ({
         {...presetsCtx}
         controlledOpen={pickerOpen}
         onOpenChange={setPickerOpen}
-        onAdd={(slug) => {
-          insertBlockAt(blocks.length, slug)
+        onAdd={(slug, _atIndex, seed) => {
+          insertBlockAt(blocks.length, slug, seed)
           setPickerOpen(false)
         }}
       />

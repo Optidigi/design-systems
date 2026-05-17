@@ -11,8 +11,9 @@ import { useBlockPresets } from "@/components/editor/canvas/BlockPresetsContext"
  * block into the blocks array at this gap's position.
  */
 export const CanvasGapButton: React.FC<{
-  /** Insert a freshly-created block of the picked type at this gap. */
-  onInsert: (blockType: string) => void
+  /** Insert a freshly-created block of the picked type at this gap.
+   *  `seed` carries preset field values when inserting from a preset. */
+  onInsert: (blockType: string, seed?: Record<string, unknown>) => void
 }> = ({ onInsert }) => {
   const presetsCtx = useBlockPresets()
   const [open, setOpen] = React.useState(false)
@@ -33,7 +34,7 @@ export const CanvasGapButton: React.FC<{
         controlledOpen={open}
         onOpenChange={setOpen}
         onAdd={(slug, _atIndex, seed) => {
-          onInsert(slug)
+          onInsert(slug, seed)
           setOpen(false)
         }}
       />

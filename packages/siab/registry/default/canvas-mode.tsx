@@ -228,9 +228,9 @@ const CanvasModeDesktop: React.FC<CanvasModeProps> = ({ manifest, tenantCss, vie
     reorderBlocks(from, to)
   }
 
-  const insertBlockAtWithRemap = (i: number, slug: string) => {
+  const insertBlockAtWithRemap = (i: number, slug: string, seed?: Record<string, unknown>) => {
     select((prev) => remapSelectionAfterInsert(prev, i))
-    insertBlockAt(i, slug)
+    insertBlockAt(i, slug, seed)
   }
 
   const duplicateBlockWithRemap = (i: number) => {
@@ -326,7 +326,7 @@ const CanvasModeDesktop: React.FC<CanvasModeProps> = ({ manifest, tenantCss, vie
                 (sidebar/mobile view is select-only: no block insertion from canvas). */}
             {!isReadOnlyView(view) && (
               <CanvasGapButton
-                onInsert={(slug) => insertBlockAtWithRemap(0, slug)}
+                onInsert={(slug, seed) => insertBlockAtWithRemap(0, slug, seed)}
               />
             )}
             {blocks.length === 0 && (
@@ -358,7 +358,7 @@ const CanvasModeDesktop: React.FC<CanvasModeProps> = ({ manifest, tenantCss, vie
                     {/* Trailing gap after each block — canvas view only */}
                     {!isReadOnlyView(view) && (
                       <CanvasGapButton
-                        onInsert={(slug) => insertBlockAtWithRemap(i + 1, slug)}
+                        onInsert={(slug, seed) => insertBlockAtWithRemap(i + 1, slug, seed)}
                       />
                     )}
                   </React.Fragment>

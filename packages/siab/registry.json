@@ -1244,9 +1244,9 @@
       "description": "Canvas editor chrome: desktop CanvasMode (dnd-kit reorder + zoom + selection-scroll) + mobile CanvasMobile (delegates to mobile-inspector screens) + block-gutter (per-block drag/actions) + canvas-gap-button (+-insert opening block-type-picker via useBlockPresets hook). Plus useFitZoom + useScrollToSelection as peer registry:lib hooks (both targeting components/ui/). Application-level coupling on react-hook-form (useCanvasBlocks for block-array mutations), React contexts (useCanvasSelection from CanvasSelectionContext host file), and theme tokens (ThemeTokens, toCssVars). NO backend coupling — block-presets backend integration flows through the consumer's BlockPresetsProvider via the useBlockPresets() hook.",
       "dependencies": ["lucide-react", "@dnd-kit/core", "@dnd-kit/sortable", "@dnd-kit/utilities"],
       "registryDependencies": [
-        "@siab/button",
         "@siab/block-type-picker",
         "@siab/canvas-block-renderer",
+        "@siab/dropdown-menu",
         "@siab/mobile-inspector"
       ],
       "files": [
