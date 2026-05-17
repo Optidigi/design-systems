@@ -1139,6 +1139,30 @@
         { "path": "registry/default/font-chip.tsx", "type": "registry:ui" },
         { "path": "registry/default/use-active-text-style.ts", "type": "registry:lib", "target": "components/ui/use-active-text-style.ts" }
       ]
+    },
+    {
+      "name": "sidebar-inspector",
+      "type": "registry:ui",
+      "title": "SIAB Sidebar Inspector",
+      "description": "Drill-down inspector panel for the canvas sidebar mode: 3-state machine (block list ↔ block form ↔ page settings), per-block form rendering with field-kind dispatch (richtext/text/image/icon/cta/array), and sortable expand-in-place array item cards. Block-list uses dnd-kit drag/drop for reordering. Forms use react-hook-form via useFormContext — caller must provide the form provider. Hidden-contract host imports for LexicalField, InlineImage, IconPicker, blockBySlug, BLOCK_ELEMENTS, CanvasSelectionContext, RtManifest, ThemeTokens, inspectorFontStyle helpers — consumer provides via @/components/editor/*, @/blocks/registry, @/lib/richText/manifest, @/lib/theme/{schema,inspectorFonts} paths.",
+      "dependencies": [
+        "lucide-react",
+        "react-hook-form",
+        "@dnd-kit/core",
+        "@dnd-kit/sortable",
+        "@dnd-kit/utilities"
+      ],
+      "registryDependencies": [
+        "@siab/button",
+        "@siab/confirm-dialog",
+        "@siab/input",
+        "@siab/label"
+      ],
+      "files": [
+        { "path": "registry/default/sidebar-drill-down.tsx", "type": "registry:ui" },
+        { "path": "registry/default/block-form-fields.tsx", "type": "registry:ui" },
+        { "path": "registry/default/array-item-card.tsx", "type": "registry:ui" }
+      ]
     }
   ]
 }
