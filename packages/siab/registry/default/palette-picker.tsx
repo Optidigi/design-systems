@@ -190,9 +190,8 @@ export const PalettePicker: React.FC<{
                 className={cn(
                   swatchClass,
                   row.isActive
-                    // CMS brand-yellow ring (matches the admin focus ring /
-                    // brand token) — far more visible than the previous
-                    // `ring-primary` which resolved to a dark grey.
+                    // Active ring uses --ring (consumer's brand/focus token) for
+                    // stronger contrast than --primary alone.
                     ? "ring-2 ring-ring ring-offset-1 ring-offset-popover"
                     : "ring-1 ring-inset ring-black/10 hover:shadow-md hover:scale-[1.04]",
                 )}

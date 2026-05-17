@@ -1089,7 +1089,7 @@
         "@siab/popover",
         "@siab/switch",
         "@siab/toggle-group",
-        "@siab/segmented-pill",
+        "@siab/mode-ui",
         "@siab/use-rt-canvas-anchor"
       ],
       "files": [
