@@ -1,0 +1,52 @@
+"use client"
+import * as React from "react"
+import { useFormContext } from "react-hook-form"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+export interface MobilePageSettingsProps {
+  // onBack removed — back is handled by the central MobileBackPill in CanvasMobile
+}
+
+export const MobilePageSettings: React.FC<MobilePageSettingsProps> = () => {
+  const { watch, setValue } = useFormContext()
+  const title = watch("title") as string | undefined
+  const slug = watch("slug") as string | undefined
+  const status = watch("status") as "draft" | "published" | undefined
+
+  return (
+    <div data-mobile-page-settings>
+      <header className="sticky top-0 z-30 flex items-center justify-center gap-2 border-b border-border bg-background px-2 pt-14 pb-3">
+        <h2 className="text-sm font-medium truncate">Page settings</h2>
+      </header>
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="mobile-page-title" className="text-sm">Title</Label>
+          <Input id="mobile-page-title" value={title ?? ""} onChange={(e) => setValue("title", e.target.value, { shouldDirty: true })} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="mobile-page-slug" className="text-sm">Slug</Label>
+          <Input
+            id="mobile-page-slug"
+            value={slug ?? ""}
+            onChange={(e) => setValue("slug", e.target.value, { shouldDirty: true, shouldValidate: true })}
+            inputMode="url"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-sm">Status</Label>
+          <Select value={status ?? "draft"} onValueChange={(v) => setValue("status", v, { shouldDirty: true })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="draft">Draft</SelectItem>
+              <SelectItem value="published">Published</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+    </div>
+  )
+}

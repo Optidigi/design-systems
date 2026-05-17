@@ -1163,6 +1163,41 @@
         { "path": "registry/default/block-form-fields.tsx", "type": "registry:ui" },
         { "path": "registry/default/array-item-card.tsx", "type": "registry:ui" }
       ]
+    },
+    {
+      "name": "mobile-inspector",
+      "type": "registry:ui",
+      "title": "SIAB Mobile Inspector",
+      "description": "Mobile-viewport editor surface for the SIAB canvas: top-level block-list section navigation (mobile-section-list with dnd-kit drag-reorder + block-type picker entry), section editor view (mobile-section-edit composing a CanvasBlockRenderer + MobileInspectorBar drawer), Vaul-based bottom-drawer inspector chain (mobile-inspector-bar → mobile-component-editor → MediaSheet / IconSheet / ArrayDrilldown), page-level settings + SEO forms. All forms use react-hook-form via useFormContext — caller must provide the form provider. Mobile-specific context provider (MobileEditorContext) stays at the host's @/components/editor/canvas/mobile/MobileEditorContext path. Block-array reordering uses dnd-kit sortable. Hidden-contract host imports for LexicalField, MediaGrid + MediaUploader, blockBySlug, BLOCK_ELEMENTS, elementPath utilities, useCanvasBlocks, useMobileEditor, RtManifest, ThemeTokens, inspectorFontStyle helpers. Cross-sub-phase temporary host imports: CanvasBlockRenderer + BlockTypePicker + IconPicker / resolveLucideIcon (all sub-phase 7 — will be forward-touched at that time).",
+      "dependencies": [
+        "lucide-react",
+        "react-hook-form",
+        "vaul",
+        "@dnd-kit/core",
+        "@dnd-kit/sortable",
+        "@dnd-kit/utilities"
+      ],
+      "registryDependencies": [
+        "@siab/button",
+        "@siab/confirm-dialog",
+        "@siab/input",
+        "@siab/label",
+        "@siab/select",
+        "@siab/textarea",
+        "@siab/sheet",
+        "@siab/mobile-floating-pill"
+      ],
+      "files": [
+        { "path": "registry/default/mobile-section-list.tsx", "type": "registry:ui" },
+        { "path": "registry/default/mobile-section-edit.tsx", "type": "registry:ui" },
+        { "path": "registry/default/mobile-inspector-bar.tsx", "type": "registry:ui" },
+        { "path": "registry/default/mobile-component-editor.tsx", "type": "registry:ui" },
+        { "path": "registry/default/mobile-array-drilldown.tsx", "type": "registry:ui" },
+        { "path": "registry/default/mobile-media-sheet.tsx", "type": "registry:ui" },
+        { "path": "registry/default/mobile-icon-sheet.tsx", "type": "registry:ui" },
+        { "path": "registry/default/mobile-page-settings.tsx", "type": "registry:ui" },
+        { "path": "registry/default/mobile-seo-settings.tsx", "type": "registry:ui" }
+      ]
     }
   ]
 }
