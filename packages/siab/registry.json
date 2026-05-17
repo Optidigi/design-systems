@@ -1065,6 +1065,39 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "use-rt-canvas-anchor",
+      "type": "registry:lib",
+      "title": "SIAB useAnchorRtCanvas hook",
+      "description": "Resolves the nearest .rt-canvas ancestor for a given DOM ref. Used by anything that needs to anchor a popover or apply CSS variables to the canvas surface (palette picker, color chip). 27 LOC, no runtime deps.",
+      "files": [
+        {
+          "path": "registry/default/use-rt-canvas-anchor.ts",
+          "type": "registry:lib",
+          "target": "components/ui/use-rt-canvas-anchor.ts"
+        }
+      ]
+    },
+    {
+      "name": "theme-bar",
+      "type": "registry:ui",
+      "title": "SIAB Theme Bar",
+      "description": "Floating glass-pill theme control bar with 3 segments (Colours / Fonts / Shape) and their picker panels. PalettePicker shows a row of palette presets with light/dark halves + a custom popover; FontPicker shows N font presets as a vertical preview list; RadiusControl is a 3-state toggle (sharp / soft / round). Preset catalogs are passed as props so per-site overrides can flow through future manifest changes without breaking the registry contract.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "@siab/popover",
+        "@siab/switch",
+        "@siab/toggle-group",
+        "@siab/segmented-pill",
+        "@siab/use-rt-canvas-anchor"
+      ],
+      "files": [
+        { "path": "registry/default/theme-bar.tsx", "type": "registry:ui" },
+        { "path": "registry/default/palette-picker.tsx", "type": "registry:ui" },
+        { "path": "registry/default/font-picker.tsx", "type": "registry:ui" },
+        { "path": "registry/default/radius-control.tsx", "type": "registry:ui" }
+      ]
     }
   ]
 }
