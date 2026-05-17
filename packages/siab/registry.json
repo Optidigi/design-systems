@@ -1007,6 +1007,31 @@
           "type": "registry:component"
         }
       ]
+    },
+    {
+      "name": "mode-ui",
+      "type": "registry:ui",
+      "title": "SIAB Mode UI",
+      "description": "Editor mode-switching UI — generic segmented-pill primitive, Canvas/Sidebar toggle bound to EditorMode, and a bottom-centre floating bar with admin-sidebar-aware positioning. Bundles the FLOATING_PILL_CLASS constant for shared floating-bar visual treatment.",
+      "registryDependencies": [
+        "@siab/button",
+        "@siab/tooltip",
+        "@siab/sidebar"
+      ],
+      "files": [
+        {
+          "path": "registry/default/segmented-pill.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/default/mode-toggle.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/default/mode-bar.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
