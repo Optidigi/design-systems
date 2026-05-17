@@ -1247,6 +1247,7 @@
         "@siab/block-type-picker",
         "@siab/canvas-block-renderer",
         "@siab/dropdown-menu",
+        "@siab/mobile-back-pill",
         "@siab/mobile-inspector"
       ],
       "files": [
@@ -1256,6 +1257,46 @@
         { "path": "registry/default/canvas-gap-button.tsx", "type": "registry:ui" },
         { "path": "registry/default/use-fit-zoom.ts", "type": "registry:lib", "target": "components/ui/use-fit-zoom.ts" },
         { "path": "registry/default/use-scroll-to-selection.ts", "type": "registry:lib", "target": "components/ui/use-scroll-to-selection.ts" }
+      ]
+    },
+    {
+      "name": "unsaved-changes-dialog",
+      "type": "registry:ui",
+      "title": "SIAB Unsaved Changes Dialog",
+      "description": "Generic Dialog primitive for confirming navigation away from a form with unsaved changes. Title + description + Cancel/Discard buttons. Pure UI — caller provides open state + onConfirm/onCancel callbacks. Used by 5+ form surfaces across siab-payload.",
+      "dependencies": [],
+      "registryDependencies": ["@siab/dialog", "@siab/button"],
+      "files": [
+        { "path": "registry/default/unsaved-changes-dialog.tsx", "type": "registry:ui" }
+      ]
+    },
+    {
+      "name": "mobile-back-pill",
+      "type": "registry:ui",
+      "title": "SIAB Mobile Back Pill",
+      "description": "Mobile floating-pill X-icon back-navigation button. Wraps @siab/mobile-floating-pill with the X icon + onBack callback. Tiny 24-LOC composition used by canvas-mobile (mobile editor view's back-to-section-list affordance).",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@siab/mobile-floating-pill"],
+      "files": [
+        { "path": "registry/default/mobile-back-pill.tsx", "type": "registry:ui" }
+      ]
+    },
+    {
+      "name": "page-form-chrome",
+      "type": "registry:ui",
+      "title": "SIAB Page Form Chrome",
+      "description": "PageForm-specific chrome trio: PageMetaInline (RHF title + auto-slug input), PublishControls (RHF publish status + Save button with loading/dirty/error visual states), EditorErrorBoundary (React error boundary with Retry button). All three are PageForm-only consumers — bundled as an umbrella for cohesive install. PageMetaInline uses slugify helper from the host's @/lib/slugify (pure utility, no backend).",
+      "dependencies": ["lucide-react", "react-hook-form"],
+      "registryDependencies": [
+        "@siab/form",
+        "@siab/input",
+        "@siab/select",
+        "@siab/button"
+      ],
+      "files": [
+        { "path": "registry/default/page-meta-inline.tsx", "type": "registry:ui" },
+        { "path": "registry/default/publish-controls.tsx", "type": "registry:ui" },
+        { "path": "registry/default/editor-error-boundary.tsx", "type": "registry:ui" }
       ]
     }
   ]

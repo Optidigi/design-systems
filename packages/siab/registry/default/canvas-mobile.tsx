@@ -11,7 +11,7 @@ import type { ElementPath } from "@/components/editor/canvas/elementPath"
 import type { CanvasModeProps } from "@/components/ui/canvas-mode"
 import { toCssVars } from "@/lib/theme/toCssVars"
 import { useMobileSubview } from "@/lib/editor/useMobileSubview"
-import { MobileBackPill } from "@/components/editor/MobileBackPill"
+import { MobileBackPill } from "@/components/ui/mobile-back-pill"
 
 export const CanvasMobile: React.FC<CanvasModeProps> = (props) => {
   return (
