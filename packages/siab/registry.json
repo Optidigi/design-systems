@@ -1103,7 +1103,7 @@
       "name": "rich-text-toolbar",
       "type": "registry:ui",
       "title": "SIAB Rich Text Toolbar",
-      "description": "Lexical-coupled rich-text editing chrome: persistent + floating toolbars composing 4 chips (mark/color/style/link), 2 additional chips ready for future use (block/font), /-triggered command palette, themed pill + dialog, URL popover, plus useActiveTextStyle peer hook. Bound to Lexical commands; portable to any Lexical editor that provides an RtManifest + lexical Node subclasses (themed-node, styled-heading) at the host project's @/lib/richText/* paths.",
+      "description": "Lexical-coupled rich-text editing chrome: persistent + floating toolbars composing 4 chips (mark/color/style/link), 2 additional chips ready for future use (block/font), /-triggered command palette, themed pill + dialog, URL popover, plus useActiveTextStyle peer hook. Bound to Lexical commands; portable to any Lexical editor that provides an RtManifest + lexical Node subclasses (themed-node, styled-heading) at the host project's @/lib/richText/* paths. Ships the `.rt-content*`, `.rt-content-bare*`, `.rt-field`, and `.rt-placeholder` CSS that styles the admin form-mode rich-text editable + placeholder + content hierarchy (h2/h3/h4, lists, quotes, code, themed pills) — consumers automatically inherit visual hierarchy without authoring any of it.",
       "dependencies": [
         "lucide-react",
         "react-hook-form",
@@ -1138,7 +1138,63 @@
         { "path": "registry/default/block-chip.tsx", "type": "registry:ui" },
         { "path": "registry/default/font-chip.tsx", "type": "registry:ui" },
         { "path": "registry/default/use-active-text-style.ts", "type": "registry:lib", "target": "components/ui/use-active-text-style.ts" }
-      ]
+      ],
+      "css": {
+        ".rt-content": {
+          "font-size": "15px",
+          "line-height": "1.55",
+          "color": "var(--foreground)",
+          "font-family": "var(--rt-inspector-font-body, var(--rt-inspector-font-text, inherit))"
+        },
+        ".rt-content .rt-p": { "margin": "0.6em 0" },
+        ".rt-content .rt-h": { "font-weight": "600", "line-height": "1.25", "margin": "1.1em 0 0.4em" },
+        ".rt-content .rt-h-2": { "font-size": "1.55em", "font-family": "var(--rt-inspector-font-heading, inherit)" },
+        ".rt-content .rt-h-3": { "font-size": "1.3em", "font-family": "var(--rt-inspector-font-heading, inherit)" },
+        ".rt-content .rt-h-4": { "font-size": "1.12em", "font-family": "var(--rt-inspector-font-heading, inherit)" },
+        ".rt-content .rt-b": { "font-weight": "700" },
+        ".rt-content .rt-i": { "font-style": "italic" },
+        ".rt-content .rt-u": { "text-decoration": "underline" },
+        ".rt-content .rt-s": { "text-decoration": "line-through" },
+        ".rt-content .rt-code": {
+          "font-family": "var(--font-mono)",
+          "font-size": "0.92em",
+          "background": "var(--muted)",
+          "padding": "0.1em 0.35em",
+          "border-radius": "4px"
+        },
+        ".rt-content .rt-link": {
+          "text-decoration": "underline",
+          "text-underline-offset": "2px"
+        },
+        ".rt-content .rt-ul, .rt-content .rt-ol": { "margin": "0.6em 0", "padding-left": "1.5em" },
+        ".rt-content .rt-ul": { "list-style": "disc" },
+        ".rt-content .rt-ol": { "list-style": "decimal" },
+        ".rt-content .rt-li": { "margin": "0.2em 0" },
+        ".rt-content .rt-li > .rt-p": { "margin": "0" },
+        ".rt-content .rt-quote": {
+          "border-left": "3px solid var(--border)",
+          "padding-left": "0.9em",
+          "margin": "0.8em 0",
+          "color": "var(--muted-foreground)",
+          "font-style": "italic"
+        },
+        ".rt-content .rt-hr": {
+          "border": "0",
+          "border-top": "1px dashed var(--border)",
+          "margin": "1em 0"
+        },
+        ".rt-content .rt-themed": { "margin": "0.4em 0" },
+        ".rt-content-bare": { "outline": "none", "min-height": "1em" },
+        ".rt-content-bare:focus-visible": { "outline": "none" },
+        ".rt-content-bare:empty::before, .rt-content-bare .rt-p:only-child:empty::after": { "content": "\"\"" },
+        ".rt-field": { "position": "relative" },
+        ".rt-placeholder": {
+          "position": "absolute",
+          "top": "0",
+          "left": "0",
+          "user-select": "none"
+        }
+      }
     },
     {
       "name": "sidebar-inspector",
