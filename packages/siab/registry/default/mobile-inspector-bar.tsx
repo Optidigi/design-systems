@@ -93,7 +93,7 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
 
             <div
               data-mobile-inspector-mode="editing"
-              className="flex-1 min-h-0 overflow-hidden px-4 py-3"
+              className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-3"
             >
               {state.selected && (
                 <div
