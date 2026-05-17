@@ -1032,6 +1032,39 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "mobile-floating-pill",
+      "type": "registry:ui",
+      "title": "SIAB Mobile Floating Pill",
+      "description": "48px circular floating action button for mobile editor surfaces. Variants: default | warning | destructive | loading | success. Position: top/bottom + left/right with safe-area insets. Optional badge counter. Used as the base primitive for save / back / section-action FABs.",
+      "files": [
+        {
+          "path": "registry/default/mobile-floating-pill.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "save-ui",
+      "type": "registry:ui",
+      "title": "SIAB Save UI",
+      "description": "Save lifecycle UI — desktop floating status pill (SaveStatusBar) with success/saving/error states + mobile save FAB (MobileSavePill) wrapping the shared MobileFloatingPill primitive. Owns the SaveStatus type co-located with SaveStatusBar.",
+      "registryDependencies": [
+        "@siab/button",
+        "@siab/sidebar",
+        "@siab/mobile-floating-pill"
+      ],
+      "files": [
+        {
+          "path": "registry/default/save-status-bar.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/default/mobile-save-pill.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
