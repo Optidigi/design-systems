@@ -1180,6 +1180,7 @@
       "registryDependencies": [
         "@siab/button",
         "@siab/confirm-dialog",
+        "@siab/dropdown-menu",
         "@siab/input",
         "@siab/label",
         "@siab/select",
