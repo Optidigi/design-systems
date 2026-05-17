@@ -15,7 +15,7 @@ import { useMobileEditor, type MobileSnap } from "@/components/editor/canvas/mob
 import { LexicalField } from "@/components/editor/richText/LexicalField"
 import { MobileMediaSheet } from "@/components/ui/mobile-media-sheet"
 import { MobileIconSheet } from "@/components/ui/mobile-icon-sheet"
-import { resolveLucideIcon } from "@/components/editor/canvas/inline/IconPicker"
+import { resolveLucideIcon } from "@/components/ui/icon-picker"
 import { MobileArrayDrilldown } from "@/components/ui/mobile-array-drilldown"
 
 export interface MobileComponentEditorProps {

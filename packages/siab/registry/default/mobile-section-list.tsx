@@ -20,7 +20,8 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import { ChevronRight, GripVertical, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { BlockTypePicker } from "@/components/editor/BlockTypePicker"
+import { BlockTypePicker } from "@/components/ui/block-type-picker"
+import { useBlockPresets } from "@/components/editor/canvas/BlockPresetsContext"
 import { blockBySlug } from "@/blocks/registry"
 import type { CanvasBlocksApi } from "@/components/editor/canvas/useCanvasBlocks"
 import type { RtManifest } from "@/lib/richText/manifest"
@@ -28,7 +29,6 @@ import type { RtManifest } from "@/lib/richText/manifest"
 export interface MobileSectionListProps {
   api: Pick<CanvasBlocksApi, "blocks" | "reorderBlocks" | "insertBlockAt">
   manifest: RtManifest
-  tenantId: number | string
   onOpenSection: (i: number) => void
   pageTitle: string
   onOpenPageSettings: () => void
@@ -96,7 +96,6 @@ const SortableSectionCard: React.FC<SortableCardProps> = ({ id, block, index, on
 
 export const MobileSectionList: React.FC<MobileSectionListProps> = ({
   api,
-  tenantId,
   onOpenSection,
   pageTitle,
   onOpenPageSettings,
@@ -104,6 +103,7 @@ export const MobileSectionList: React.FC<MobileSectionListProps> = ({
   onDeletePage,
 }) => {
   const { blocks, reorderBlocks, insertBlockAt } = api
+  const presetsCtx = useBlockPresets()
   const [pickerOpen, setPickerOpen] = React.useState(false)
   const dndId = useId()
 
@@ -176,7 +176,7 @@ export const MobileSectionList: React.FC<MobileSectionListProps> = ({
       </section>
 
       <BlockTypePicker
-        tenantId={tenantId}
+        {...presetsCtx}
         controlledOpen={pickerOpen}
         onOpenChange={setPickerOpen}
         onAdd={(slug) => {

@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Trash2 } from "lucide-react"
-import { resolveLucideIcon } from "@/components/editor/canvas/inline/IconPicker"
+import { resolveLucideIcon } from "@/components/ui/icon-picker"
 
 const CURATED_ICONS: Array<string> = [
   "ear", "heart-handshake", "clock", "check", "check-circle", "x", "plus",

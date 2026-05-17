@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/confirm-dialog"
-import { CanvasBlockRenderer } from "@/components/editor/canvas/CanvasBlockRenderer"
+import { CanvasBlockRenderer } from "@/components/ui/canvas-block-renderer"
 import { MobileInspectorBar } from "@/components/ui/mobile-inspector-bar"
 import { MobileFloatingPill } from "@/components/ui/mobile-floating-pill"
 import { useMobileEditor } from "@/components/editor/canvas/mobile/MobileEditorContext"
@@ -23,7 +23,6 @@ export interface MobileSectionEditProps {
   api: Pick<CanvasBlocksApi, "blocks" | "updateBlock" | "deleteBlock" | "duplicateBlock" | "reorderBlocks">
   index: number
   manifest: RtManifest
-  tenantId: number | string
   theme?: ThemeTokens | null
   onBack: () => void
   onPrev?: () => void
@@ -44,7 +43,6 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
   api,
   index,
   manifest,
-  tenantId: _tenantId,
   theme,
   onBack,
   onPrev,

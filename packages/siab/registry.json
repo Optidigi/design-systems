@@ -1155,6 +1155,7 @@
       "registryDependencies": [
         "@siab/button",
         "@siab/confirm-dialog",
+        "@siab/icon-picker",
         "@siab/input",
         "@siab/label"
       ],
@@ -1178,9 +1179,12 @@
         "@dnd-kit/utilities"
       ],
       "registryDependencies": [
+        "@siab/block-type-picker",
         "@siab/button",
+        "@siab/canvas-block-renderer",
         "@siab/confirm-dialog",
         "@siab/dropdown-menu",
+        "@siab/icon-picker",
         "@siab/input",
         "@siab/label",
         "@siab/select",
@@ -1198,6 +1202,60 @@
         { "path": "registry/default/mobile-icon-sheet.tsx", "type": "registry:ui" },
         { "path": "registry/default/mobile-page-settings.tsx", "type": "registry:ui" },
         { "path": "registry/default/mobile-seo-settings.tsx", "type": "registry:ui" }
+      ]
+    },
+    {
+      "name": "icon-picker",
+      "type": "registry:ui",
+      "title": "SIAB Icon Picker",
+      "description": "Lucide icon picker — Popover-triggered grid with search. Takes value (kebab-case name), onChange, optional trigger as props. Exports resolveLucideIcon(kebab) helper for resolving stored values to React components at render time. Pure UI, no backend coupling.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@siab/popover", "@siab/input", "@siab/button"],
+      "files": [
+        { "path": "registry/default/icon-picker.tsx", "type": "registry:ui" }
+      ]
+    },
+    {
+      "name": "block-type-picker",
+      "type": "registry:ui",
+      "title": "SIAB Block Type Picker",
+      "description": "Block-type picker dialog with expandable tiles for inserting from a saved block preset. Pure UI primitive: receives blockTypes + presets + onAdd/onReloadPresets/onDeletePreset/sanitizePresetData as props. No backend coupling — caller supplies data + side-effect callbacks. Sonner toast for delete-success notification stays inside (shadcn UI-only). Type definitions BlockTypeDef and BlockPresetDef exported for caller adapters.",
+      "dependencies": ["lucide-react", "sonner"],
+      "registryDependencies": ["@siab/dialog", "@siab/button", "@siab/confirm-dialog"],
+      "files": [
+        { "path": "registry/default/block-type-picker.tsx", "type": "registry:ui" }
+      ]
+    },
+    {
+      "name": "canvas-block-renderer",
+      "type": "registry:ui",
+      "title": "SIAB Canvas Block Renderer",
+      "description": "Block-type dispatcher for the canvas editor. Renders the appropriate block component based on the block's slug. Hidden-contract host imports for the 7 SIAB block renderers (Hero, FeatureList, CTA, RichText, ContactSection, FAQ, Testimonials) from @/components/editor/canvas/blocks/* — site content stays in the host project per the application's content schema. No backend coupling.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        { "path": "registry/default/canvas-block-renderer.tsx", "type": "registry:ui" }
+      ]
+    },
+    {
+      "name": "canvas-chrome",
+      "type": "registry:ui",
+      "title": "SIAB Canvas Chrome",
+      "description": "Canvas editor chrome: desktop CanvasMode (dnd-kit reorder + zoom + selection-scroll) + mobile CanvasMobile (delegates to mobile-inspector screens) + block-gutter (per-block drag/actions) + canvas-gap-button (+-insert opening block-type-picker via useBlockPresets hook). Plus useFitZoom + useScrollToSelection as peer registry:lib hooks (both targeting components/ui/). Application-level coupling on react-hook-form (useCanvasBlocks for block-array mutations), React contexts (useCanvasSelection from CanvasSelectionContext host file), and theme tokens (ThemeTokens, toCssVars). NO backend coupling — block-presets backend integration flows through the consumer's BlockPresetsProvider via the useBlockPresets() hook.",
+      "dependencies": ["lucide-react", "@dnd-kit/core", "@dnd-kit/sortable", "@dnd-kit/utilities"],
+      "registryDependencies": [
+        "@siab/button",
+        "@siab/block-type-picker",
+        "@siab/canvas-block-renderer",
+        "@siab/mobile-inspector"
+      ],
+      "files": [
+        { "path": "registry/default/canvas-mode.tsx", "type": "registry:ui" },
+        { "path": "registry/default/canvas-mobile.tsx", "type": "registry:ui" },
+        { "path": "registry/default/block-gutter.tsx", "type": "registry:ui" },
+        { "path": "registry/default/canvas-gap-button.tsx", "type": "registry:ui" },
+        { "path": "registry/default/use-fit-zoom.ts", "type": "registry:lib", "target": "components/ui/use-fit-zoom.ts" },
+        { "path": "registry/default/use-scroll-to-selection.ts", "type": "registry:lib", "target": "components/ui/use-scroll-to-selection.ts" }
       ]
     }
   ]
