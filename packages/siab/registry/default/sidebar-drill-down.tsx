@@ -148,12 +148,16 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
               </DragOverlay>
             </DndContext>
           )}
-        </div>
-        <footer className="border-t border-border p-2">
-          <Button type="button" variant="outline" size="sm" className="w-full gap-1.5">
+          {/* Add block button lives INSIDE the scrollable list, just below the
+              last block row (or below the empty-state hint when no blocks
+              exist). Previously it was pinned to a sidebar footer; moving it
+              into the scroll area makes the "next-action" affordance sit
+              against the existing blocks rather than floating at the bottom
+              of the sidebar pane. */}
+          <Button type="button" variant="outline" size="sm" className="w-full gap-1.5 mt-1">
             <Plus className="size-3.5" aria-hidden /> Add block
           </Button>
-        </footer>
+        </div>
       </div>
     )
   } else if (mode.kind === "block") {
@@ -309,16 +313,13 @@ const BlockFormState: React.FC<{
   const [deleteOpen, setDeleteOpen] = React.useState(false)
   return (
     <div className="flex h-full flex-col">
-      <header className="flex items-center border-b border-border px-3 py-2">
-        <span className="text-xs font-medium truncate">{label}</span>
-      </header>
-      <div className="flex-1 min-h-0 overflow-y-auto p-3">
-        <BlockFormFields block={block} blockIndex={blockIndex} manifest={manifest} theme={theme} />
-      </div>
-      <footer className="border-t border-border px-3 py-2 flex items-center justify-between">
+      {/* Actions header — back (left) + delete (right). Sits above the
+          section-name header so the destructive + navigation controls are
+          at the top of the pane, not pinned to a footer at the bottom. */}
+      <header className="flex items-center justify-between border-b border-border px-3 py-2">
         <Button
           type="button"
-          variant="secondary"
+          variant="ghost"
           size="sm"
           onClick={onBack}
           className="h-8 gap-1"
@@ -337,7 +338,13 @@ const BlockFormState: React.FC<{
           <Trash2 className="size-3.5" aria-hidden />
           Delete block
         </Button>
-      </footer>
+      </header>
+      <header className="flex items-center border-b border-border px-3 py-2">
+        <span className="text-xs font-medium truncate">{label}</span>
+      </header>
+      <div className="flex-1 min-h-0 overflow-y-auto p-3">
+        <BlockFormFields block={block} blockIndex={blockIndex} manifest={manifest} theme={theme} />
+      </div>
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
