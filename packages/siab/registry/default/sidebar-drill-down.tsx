@@ -319,7 +319,7 @@ const BlockFormState: React.FC<{
       <header className="flex items-center justify-between border-b border-border px-3 py-2">
         <Button
           type="button"
-          variant="ghost"
+          variant="secondary"
           size="sm"
           onClick={onBack}
           className="h-8 gap-1"
