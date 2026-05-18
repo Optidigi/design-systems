@@ -112,7 +112,7 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
             <Settings className="size-3.5" />
           </button>
         </header>
-        <div className="flex-1 min-h-0 overflow-y-auto p-2 space-y-1">
+        <div className="flex-1 min-h-0 overflow-y-auto p-2 space-y-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {blocks.length === 0 ? (
             <p className="text-xs text-muted-foreground px-2 py-4 text-center">No blocks yet. Add one to start.</p>
           ) : (
@@ -342,7 +342,7 @@ const BlockFormState: React.FC<{
       <header className="flex items-center border-b border-border px-3 py-2">
         <span className="text-xs font-medium truncate">{label}</span>
       </header>
-      <div className="flex-1 min-h-0 overflow-y-auto p-3">
+      <div className="flex-1 min-h-0 overflow-y-auto p-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <BlockFormFields block={block} blockIndex={blockIndex} manifest={manifest} theme={theme} />
       </div>
       <ConfirmDialog
@@ -369,7 +369,7 @@ const PageSettingsState: React.FC<{
     <header className="flex items-center border-b border-border px-3 py-2">
       <span className="text-xs font-medium">Page settings</span>
     </header>
-    <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-4">
+    <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {seoCard}
       {dangerZone}
     </div>
