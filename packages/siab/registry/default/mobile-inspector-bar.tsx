@@ -84,11 +84,14 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
           <Vaul.Title className="sr-only">Section inspector</Vaul.Title>
           {/* Inner wrapper is pointer-events-auto so only the VISIBLE drawer area is interactive. */}
           <div className="pointer-events-auto flex h-full flex-col">
-            {/* Drag grip — vaul wires up dragging when handleOnly is true */}
-            <div
+            {/* Drag handle. Vaul.Handle is what actually makes the sheet
+                draggable when handleOnly is set — a plain div is not wired
+                for drag. Dragging moves between snap points; a tap cycles
+                them. !bg override keeps the handle on a theme token (vaul's
+                default [data-vaul-handle] background is a hard-coded grey). */}
+            <Vaul.Handle
               data-mobile-inspector-grip
-              className="mx-auto mt-2 h-1.5 w-12 shrink-0 rounded-full bg-muted-foreground/30"
-              aria-hidden
+              className="mt-2 shrink-0 !bg-muted-foreground/30"
             />
 
             <div

@@ -96,6 +96,9 @@ const MobileFieldRenderer: React.FC<{
   }
 
   if (!spec) return <p className="text-xs text-muted-foreground">No editor for this element.</p>
+  // Inputs below deliberately omit autoFocus: grabbing focus while the bottom
+  // sheet is still animating open pops the keyboard mid-transition, so the
+  // sheet never shifts up. The user taps a field to focus it.
   if (spec.kind === "text") {
     return (
       <div className="space-y-2 pb-4" data-mobile-editor-kind="text">
@@ -103,7 +106,6 @@ const MobileFieldRenderer: React.FC<{
         <Input
           value={value ?? ""}
           onChange={(e) => setValue(name, e.target.value, { shouldDirty: true })}
-          autoFocus
           style={{ fontFamily: roleToFontFamily(spec.role) }}
         />
       </div>
@@ -142,7 +144,6 @@ const MobileFieldRenderer: React.FC<{
             value={cta.label ?? ""}
             onChange={(e) => setValue(name, { ...cta, label: e.target.value }, { shouldDirty: true })}
             placeholder="Button text"
-            autoFocus
           />
         </div>
         <div className="space-y-1.5">
