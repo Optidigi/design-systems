@@ -52,7 +52,7 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
   const { blocks, updateBlock, deleteBlock } = api
   const block = blocks[index]
   const [deleteOpen, setDeleteOpen] = React.useState(false)
-  const { state: editorState, expandTo } = useMobileEditor()
+  const { state: editorState } = useMobileEditor()
   const isIdle = editorState.selected == null && editorState.drillStack.length === 0
 
   // Guard: if the block was deleted from elsewhere (e.g. trash icon in
@@ -81,15 +81,15 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
       <header className="sticky top-0 z-30 flex items-center justify-center gap-1 border-b border-border bg-background px-2 pt-14 pb-3 min-w-0">
           <Button
             type="button"
-            variant="ghost"
+            variant="secondary"
             size="icon"
-            className="size-11"
+            className="size-12"
             onClick={onPrev}
             disabled={!onPrev}
             aria-label="Previous section"
             data-mobile-prev
           >
-            <ChevronLeft className="size-5" />
+            <ChevronLeft className="size-6" />
           </Button>
 
           <DropdownMenu>
@@ -120,36 +120,29 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
 
           <Button
             type="button"
-            variant="ghost"
+            variant="secondary"
             size="icon"
-            className="size-11"
+            className="size-12"
             onClick={onNext}
             disabled={!onNext}
             aria-label="Next section"
             data-mobile-next
           >
-            <ChevronRight className="size-5" />
+            <ChevronRight className="size-6" />
           </Button>
 
       </header>
 
       {/* Canvas region — single rendered section.
-          touch-pan-x/y allows scrolling but suppresses pinch-zoom on the
-          canvas surface (FE-62) so a two-finger gesture can't scale it. */}
+          min-h-0 lets this flex child shrink so overflow-y-auto actually
+          engages — without it a tall section grows past the column and is
+          clipped unscrollable (FE-61).
+          touch-pan-x/y allows scrolling but suppresses pinch-zoom (FE-62). */}
       <div
         data-mobile-canvas
-        className="flex-1 overflow-y-auto touch-pan-x touch-pan-y"
+        className="flex-1 min-h-0 overflow-y-auto touch-pan-x touch-pan-y"
         onClickCapture={(e) => {
           if ((e.target as HTMLElement | null)?.closest("a[href]")) e.preventDefault()
-        }}
-        onClick={(e) => {
-          // Inline primitives stopPropagation, so this only fires on canvas background.
-          // Belt-and-suspenders: skip if we somehow caught a click on a known editable.
-          const t = e.target as HTMLElement | null
-          if (t?.closest(".rt-slot,.rt-click-edit,[data-rt-themed-pill]")) return
-          if (editorState.selected != null && editorState.activeSnapPoint !== 0.3) {
-            expandTo(0.3)
-          }
         }}
       >
         <div className="rt-canvas" data-rt-view="mobile" data-rt-mode={theme?.mode ?? "light"}>

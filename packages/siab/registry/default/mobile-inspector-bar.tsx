@@ -14,78 +14,52 @@ export interface MobileInspectorBarProps {
   theme?: ThemeTokens | null
 }
 
-const SNAP_POINTS: MobileSnap[] = [0.3, 0.5, 1]
+const SNAP_POINTS: MobileSnap[] = [0.42, 0.92]
 
 /**
  * Bottom inspector bar driven by vaul.
  *
- * Snap points: [0.3, 0.5, 1]
- *   0.5 — initial on selection (component editor half-height)
- *   0.3 — drag-down from 0.5 (editor still visible but compact)
- *   1   — fullscreen (richtext focus / media/icon sheet)
+ * Snap points: [0.42, 0.92]
+ *   0.42 — initial on selection (compact editor)
+ *   0.92 — near-full; richtext / media / array editors auto-promote here.
+ *          A canvas sliver stays visible for spatial context.
  *
  * Idle state (selected null + drillStack empty) fully hides the drawer via
  * open={false} — no persistent strip.
  *
  * vaul config:
  *   open={!isIdle}       — hidden when idle
- *   dismissible={false}  — cannot be closed; controlled by selection state
+ *   dismissible={true}   — a handle drag down past the low detent dismisses
+ *                          the sheet; onOpenChange then clears the selection
  *   modal={false}        — canvas stays interactive
  *   handleOnly={true}    — drag only on the grip, not the body
  *   noBodyStyles={true}  — PageForm uses document scroll
  *   repositionInputs={false} — iOS keyboard handled manually
- *   fadeFromIndex={2}    — overlay only when fullscreen (index 2 in 3-snap array)
  */
 export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, manifest, theme }) => {
-  const { state, expandTo } = useMobileEditor()
+  const { state, expandTo, clearSelection } = useMobileEditor()
   const isIdle = state.selected == null && state.drillStack.length === 0
   const pathKey = state.selected
     ? `${state.selected.blockIndex}.${state.selected.field}.${state.selected.itemIndex ?? ""}.${state.selected.subField ?? ""}`
     : "idle"
 
-  // Visible snap fraction. The scroll region below is capped to it so content
-  // taller than the visible snap actually overflows and scrolls (FE-60)
-  // instead of extending unreachably below the fold.
-  const snapFraction = typeof state.activeSnapPoint === "number" ? state.activeSnapPoint : 0.5
-
-  // Vaul 1.1.x sets `body { pointer-events: none }` while the drawer is
-  // open — regardless of modal=false and noBodyStyles. Stamp a data-attr
-  // on body so the override <style> can restore pointer-events outside the
-  // visible drawer area. On close we also clear the inline value directly:
-  // vaul can leave `pointer-events: none` set through its close animation,
-  // which strands the canvas unresponsive (FE-61) if we wait on its cleanup.
-  React.useEffect(() => {
-    if (isIdle) {
-      delete document.body.dataset.mobileInspectorOpen
-      document.body.style.pointerEvents = ""
-      return
-    }
-    document.body.dataset.mobileInspectorOpen = "true"
-    return () => {
-      delete document.body.dataset.mobileInspectorOpen
-      document.body.style.pointerEvents = ""
-    }
-  }, [isIdle])
+  // Visible snap fraction — the scroll region below is capped to it so content
+  // taller than the active detent stays clipped to the visible sheet (FE-60).
+  const snapFraction = typeof state.activeSnapPoint === "number" ? state.activeSnapPoint : 0.42
 
   return (
     <Vaul.Root
       open={!isIdle}
-      dismissible={false}
+      dismissible
       modal={false}
       handleOnly
       noBodyStyles
       repositionInputs={false}
       snapPoints={SNAP_POINTS}
       activeSnapPoint={state.activeSnapPoint}
-      setActiveSnapPoint={(snap) => expandTo((snap as MobileSnap) ?? 0.5)}
-      fadeFromIndex={2}
+      setActiveSnapPoint={(snap) => expandTo((snap as MobileSnap) ?? 0.42)}
+      onOpenChange={(open) => { if (!open && !isIdle) clearSelection() }}
     >
-      {/* Override vaul's body { pointer-events: none } while the drawer is
-          open. Kept outside Vaul.Portal so it can't unmount mid-close and
-          briefly strand the body unclickable (FE-61). */}
-      <style dangerouslySetInnerHTML={{
-        __html: `body[data-mobile-inspector-open="true"] { pointer-events: auto !important; }`
-      }} />
       <Vaul.Portal>
         <Vaul.Content
           data-mobile-inspector-bar
@@ -97,17 +71,19 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
           <div className="pointer-events-auto flex h-full flex-col">
             {/* Drag handle. Vaul.Handle is what actually makes the sheet
                 draggable when handleOnly is set — a plain div is not wired
-                for drag. Dragging moves between snap points; a tap cycles
-                them. !bg override keeps the handle on a theme token (vaul's
+                for drag. preventCycle disables vaul's tap-to-cycle: the
+                handle is a pure drag affordance, not a hidden toggle.
+                !bg override keeps the handle on a theme token (vaul's
                 default [data-vaul-handle] background is a hard-coded grey). */}
             <Vaul.Handle
               data-mobile-inspector-grip
+              preventCycle
               className="mt-2 shrink-0 !bg-muted-foreground/30"
             />
 
             <div
               data-mobile-inspector-mode="editing"
-              className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-3"
+              className="flex-1 min-h-0 overflow-hidden px-4 py-3"
               style={{ maxHeight: `calc(${snapFraction} * 100dvh - 1rem)` }}
             >
               {state.selected && (

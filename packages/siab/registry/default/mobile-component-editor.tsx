@@ -31,7 +31,7 @@ export interface MobileComponentEditorProps {
  * paths per kind, different presentation (vaul-sized sheet vs. side aside).
  */
 export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ path, block, manifest, theme }) => {
-  const { clearSelection } = useMobileEditor()
+  const { clearSelection, state } = useMobileEditor()
   const blockType: string | undefined = block?.blockType
   const specs: ElementSpec[] = blockType ? (BLOCK_ELEMENTS[blockType] ?? []) : []
 
@@ -59,7 +59,14 @@ export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ pa
           <X className="size-4" />
         </Button>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      {/* Single scroll owner for the sheet — scrolls (with a visible bar)
+          only at the top detent; clipped at the compact detent. overscroll
+          containment lives here so the canvas behind can't rubber-band. */}
+      <div
+        className={`flex-1 min-h-0 overscroll-contain ${
+          state.activeSnapPoint === 0.92 ? "overflow-y-auto" : "overflow-hidden"
+        }`}
+      >
         <MobileFieldRenderer spec={activeSpec} parentSpec={parentSpec} path={path} manifest={manifest} blockType={blockType} />
       </div>
     </div>
@@ -117,7 +124,7 @@ const MobileFieldRenderer: React.FC<{
         <Label className="text-xs text-muted-foreground">{spec.label}</Label>
         <div
           className="rounded-md border border-border bg-background px-3 py-2"
-          onFocusCapture={() => expandTo(0.5)}
+          onFocusCapture={() => expandTo(0.92)}
           style={{ ["--rt-inspector-font-body" as string]: roleToFontFamily(spec.role) }}
         >
           <LexicalField
@@ -215,7 +222,7 @@ const ImageEditor: React.FC<{
           type="button"
           variant="outline"
           className="flex-1"
-          onClick={() => { expandTo(1); setSheetOpen(true) }}
+          onClick={() => { expandTo(0.92); setSheetOpen(true) }}
         >
           {url ? "Replace" : "Choose"}
         </Button>
@@ -232,7 +239,7 @@ const ImageEditor: React.FC<{
       </div>
       <MobileMediaSheet
         open={sheetOpen}
-        onOpenChange={(o) => { setSheetOpen(o); if (!o) expandTo(0.5) }}
+        onOpenChange={(o) => { setSheetOpen(o); if (!o) expandTo(0.42) }}
         onPick={(m) => setValue(name, m, { shouldDirty: true })}
       />
     </div>
@@ -253,7 +260,7 @@ const IconEditor: React.FC<{
     <div className="space-y-3 pb-4" data-mobile-editor-kind="icon">
       <button
         type="button"
-        onClick={() => { expandTo(1); setSheetOpen(true) }}
+        onClick={() => { expandTo(0.92); setSheetOpen(true) }}
         className="flex w-full items-center gap-3 rounded-md border border-border bg-background px-3 py-3 text-sm hover:bg-accent/30"
       >
         {Icon ? <Icon className="size-6 shrink-0" /> : null}
@@ -263,7 +270,7 @@ const IconEditor: React.FC<{
       </button>
       <MobileIconSheet
         open={sheetOpen}
-        onOpenChange={(o) => { setSheetOpen(o); if (!o) expandTo(0.5) }}
+        onOpenChange={(o) => { setSheetOpen(o); if (!o) expandTo(0.42) }}
         value={iconName}
         onChange={(next) => setValue(name, next, { shouldDirty: true })}
       />
