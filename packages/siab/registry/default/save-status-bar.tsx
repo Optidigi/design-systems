@@ -112,7 +112,7 @@ export function SaveStatusBar({
       isClickableJump = Boolean(onJumpToError)
       body = (
         <>
-          <AlertCircle className="h-4 w-4 text-destructive" aria-hidden />
+          <AlertCircle className="h-4 w-4 text-destructive-foreground" aria-hidden />
           <span>{label}</span>
         </>
       )
@@ -121,25 +121,38 @@ export function SaveStatusBar({
       retryAction = onRetry ?? null
       body = (
         <>
-          <AlertCircle className="h-4 w-4 text-destructive" aria-hidden />
+          <AlertCircle className="h-4 w-4 text-destructive-foreground" aria-hidden />
           <span>{label}</span>
         </>
       )
     }
   }
 
-  // Saved variant: translucent green with strong backdrop blur + boosted
-  // saturation so the glass effect actually reads (the canvas content
-  // behind softly diffuses through). A thin white inset ring acts as the
-  // "glass edge" highlight, and `text-success-foreground` (white) keeps
-  // the label crisp despite the lower bg opacity.
-  const savedClasses =
-    status === "saved"
-      ? "h-9 px-4 rounded-md shadow-lg shadow-success/25 bg-success/55 supports-[backdrop-filter]:bg-success/40 backdrop-blur-xl backdrop-saturate-150 ring-1 ring-inset ring-white/30 text-success-foreground"
-      : "h-9 px-3 rounded-md border border-border shadow-md bg-card text-card-foreground"
+  // Saved and error share one translucent "glass" pill treatment: strong
+  // backdrop blur + boosted saturation so the canvas content behind softly
+  // diffuses through, with a thin white inset ring as the "glass edge"
+  // highlight. Only the colour role flips — success vs destructive — and the
+  // `*-foreground` (white) text keeps the label crisp at the lower bg
+  // opacity. Neutral states (saving) keep the plain card pill: they're
+  // transient and don't need the glass weight.
+  const variant: "success" | "destructive" | "neutral" =
+    status === "saved" ? "success" : status === "error" ? "destructive" : "neutral"
+  const glassPill =
+    "h-9 px-4 rounded-md shadow-lg backdrop-blur-xl backdrop-saturate-150 ring-1 ring-inset ring-white/30"
+  const variantClasses = {
+    success: cn(
+      glassPill,
+      "shadow-success/25 bg-success/55 supports-[backdrop-filter]:bg-success/40 text-success-foreground",
+    ),
+    destructive: cn(
+      glassPill,
+      "shadow-destructive/25 bg-destructive/55 supports-[backdrop-filter]:bg-destructive/40 text-destructive-foreground",
+    ),
+    neutral: "h-9 px-3 rounded-md border border-border shadow-md bg-card text-card-foreground",
+  }
   const innerButtonClasses = cn(
     "inline-flex items-center gap-2 font-medium",
-    savedClasses,
+    variantClasses[variant],
   )
 
   // Saved exit: fade + slide-down. The pill stays mounted during the

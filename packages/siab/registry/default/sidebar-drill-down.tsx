@@ -17,9 +17,17 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { ChevronLeft, ChevronRight, GripVertical, Plus, Settings, Trash2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, GripVertical, MoreVertical, Plus, Settings, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { ConfirmDialog } from "@/components/confirm-dialog"
+import { BlockTypePicker } from "@/components/ui/block-type-picker"
+import { useBlockPresets } from "@/components/editor/canvas/BlockPresetsContext"
 import { blockBySlug } from "@/blocks/registry"
 import type { RtManifest } from "@/lib/richText/manifest"
 import type { ThemeTokens } from "@/lib/theme/schema"
@@ -37,6 +45,7 @@ export interface SidebarDrillDownProps {
   onReorder: (from: number, to: number) => void
   onDeleteBlock: (i: number) => void
   onDuplicateBlock: (i: number) => void
+  onAddBlock: (blockType: string, seed?: Record<string, unknown>) => void
   manifest: RtManifest
   seoCard: React.ReactNode
   dangerZone: React.ReactNode
@@ -50,11 +59,14 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
   onReorder,
   onDeleteBlock,
   onDuplicateBlock,
+  onAddBlock,
   manifest,
   seoCard,
   dangerZone,
   theme,
 }) => {
+  const presetsCtx = useBlockPresets()
+  const [addBlockOpen, setAddBlockOpen] = React.useState(false)
   const [mode, setMode] = React.useState<Mode>(
     selectedBlockIndex != null ? { kind: "block", blockIndex: selectedBlockIndex } : { kind: "list" },
   )
@@ -138,6 +150,8 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
                       onSelectBlock(i)
                       setMode({ kind: "block", blockIndex: i })
                     }}
+                    onDuplicate={() => onDuplicateBlock(i)}
+                    onDelete={() => onDeleteBlock(i)}
                   />
                 ))}
               </SortableContext>
@@ -154,9 +168,27 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
               into the scroll area makes the "next-action" affordance sit
               against the existing blocks rather than floating at the bottom
               of the sidebar pane. */}
-          <Button type="button" variant="outline" size="sm" className="w-full gap-1.5 mt-1">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="w-full gap-1.5 mt-1"
+            onClick={() => setAddBlockOpen(true)}
+          >
             <Plus className="size-3.5" aria-hidden /> Add block
           </Button>
+          {/* Controlled BlockTypePicker — no trigger of its own; the button
+              above drives it. Mirrors CanvasGapButton's add-block flow so the
+              sidebar view can insert blocks without bouncing to the canvas. */}
+          <BlockTypePicker
+            {...presetsCtx}
+            controlledOpen={addBlockOpen}
+            onOpenChange={setAddBlockOpen}
+            onAdd={(slug, _atIndex, seed) => {
+              onAddBlock(slug, seed)
+              setAddBlockOpen(false)
+            }}
+          />
         </div>
       </div>
     )
@@ -210,7 +242,9 @@ const BlockListRow: React.FC<{
   block: any
   blockIndex: number
   onSelect: () => void
-}> = ({ id, block, onSelect }) => {
+  onDuplicate: () => void
+  onDelete: () => void
+}> = ({ id, block, onSelect, onDuplicate, onDelete }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -271,6 +305,42 @@ const BlockListRow: React.FC<{
           <div className="truncate text-[11px] leading-snug text-muted-foreground">{summary}</div>
         )}
       </div>
+      {/* Hover-revealed actions menu — mirrors the canvas BlockGutter's
+          ⋯ menu (Duplicate / Delete) so the sidebar list has parity with
+          the canvas. `data-[state=open]` keeps it visible while the menu
+          is open even after the pointer leaves the row. */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            aria-label="Block actions"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+            className="shrink-0 rounded-sm p-0.5 text-muted-foreground opacity-0 transition-opacity hover:bg-accent group-hover/row:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100"
+          >
+            <MoreVertical className="size-3.5" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation()
+              onDuplicate()
+            }}
+          >
+            Duplicate
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation()
+              onDelete()
+            }}
+            className="text-destructive focus:text-destructive"
+          >
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <ChevronRight className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
     </div>
   )

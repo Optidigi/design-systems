@@ -2,6 +2,7 @@
 import * as React from "react"
 import { ChevronRight, X } from "lucide-react"
 import { LexicalField } from "@/components/editor/richText/LexicalField"
+import { InlineImage } from "@/components/editor/canvas/inline/InlineImage"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { IconPicker, resolveLucideIcon } from "@/components/ui/icon-picker"
@@ -101,6 +102,14 @@ const SubFieldRenderer: React.FC<{
       <div className="space-y-1">
         <Label className="text-xs text-muted-foreground">{sub.label}</Label>
         <Input value={value ?? ""} onChange={(e) => onChange(e.target.value)} />
+      </div>
+    )
+  }
+  if (sub.kind === "image") {
+    return (
+      <div className="space-y-1">
+        <Label className="text-xs text-muted-foreground">{sub.label}</Label>
+        <InlineImage value={value} onChange={onChange} />
       </div>
     )
   }

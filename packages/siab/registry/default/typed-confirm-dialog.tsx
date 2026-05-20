@@ -90,7 +90,7 @@ export function TypedConfirmDialog({
             <div className="text-sm text-muted-foreground">{description}</div>
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-2">
+        <div className="mt-2 space-y-2">
           <Label htmlFor="confirm-phrase" className="text-sm font-normal">
             Type <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">{confirmPhrase}</code> to confirm:
           </Label>
@@ -111,7 +111,7 @@ export function TypedConfirmDialog({
           />
           {error && <p className="text-sm text-destructive">{error}</p>}
         </div>
-        <DialogFooter>
+        <DialogFooter className="mt-4">
           <Button
             type="button"
             variant="outline"

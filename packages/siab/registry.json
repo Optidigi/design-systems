@@ -1214,7 +1214,7 @@
       "name": "sidebar-inspector",
       "type": "registry:ui",
       "title": "SIAB Sidebar Inspector",
-      "description": "Drill-down inspector panel for the canvas sidebar mode: 3-state machine (block list ↔ block form ↔ page settings), per-block form rendering with field-kind dispatch (richtext/text/image/icon/cta/array), and sortable expand-in-place array item cards. Block-list uses dnd-kit drag/drop for reordering. Forms use react-hook-form via useFormContext — caller must provide the form provider. Hidden-contract host imports for LexicalField, InlineImage, IconPicker, blockBySlug, BLOCK_ELEMENTS, CanvasSelectionContext, RtManifest, ThemeTokens, inspectorFontStyle helpers — consumer provides via @/components/editor/*, @/blocks/registry, @/lib/richText/manifest, @/lib/theme/{schema,inspectorFonts} paths.",
+      "description": "Drill-down inspector panel for the canvas sidebar mode: 3-state machine (block list ↔ block form ↔ page settings), per-block form rendering with field-kind dispatch (richtext/text/image/icon/cta/array), sortable expand-in-place array item cards, per-row Duplicate/Delete actions menu, and an add-block affordance that opens BlockTypePicker. Block-list uses dnd-kit drag/drop for reordering. Forms use react-hook-form via useFormContext — caller must provide the form provider. Hidden-contract host imports for LexicalField, InlineImage, IconPicker, blockBySlug, BLOCK_ELEMENTS, CanvasSelectionContext, useBlockPresets (BlockPresetsContext), RtManifest, ThemeTokens, inspectorFontStyle helpers — consumer provides via @/components/editor/*, @/blocks/registry, @/lib/richText/manifest, @/lib/theme/{schema,inspectorFonts} paths.",
       "dependencies": [
         "lucide-react",
         "react-hook-form",
@@ -1223,8 +1223,10 @@
         "@dnd-kit/utilities"
       ],
       "registryDependencies": [
+        "@siab/block-type-picker",
         "@siab/button",
         "@siab/confirm-dialog",
+        "@siab/dropdown-menu",
         "@siab/icon-picker",
         "@siab/input",
         "@siab/label"

@@ -70,8 +70,8 @@ export function ConfirmDialog({
             <div className="text-sm text-muted-foreground">{description}</div>
           </DialogDescription>
         </DialogHeader>
-        {error && <p className="text-sm text-destructive">{error}</p>}
-        <DialogFooter>
+        {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
+        <DialogFooter className="mt-4">
           <Button
             type="button"
             variant="outline"
