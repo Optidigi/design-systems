@@ -3,8 +3,7 @@ import { useId } from "react"
 import type { Control } from "react-hook-form"
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { Save, AlertCircle, Loader2 } from "lucide-react"
+import { SaveButton } from "@/components/ui/save-button"
 import { cn } from "@/lib/utils"
 
 type Props = {
@@ -57,60 +56,10 @@ export function PublishControls({ control, pending, isDirty, errorCount, dirtyCo
           </FormItem>
         )}
       />
-      {/* The Save button itself carries the desktop "unsaved changes"
-          signal — mirrors MobileSavePill: 2px coloured border + matching
-          icon tint, with a small floating count badge in the top-right
-          corner of the button when changes are pending. Theme-tinted bg
-          so it reads in both CMS light + dark modes. */}
-      <div className="relative">
-        <Button
-          type="submit"
-          disabled={pending || !isDirty}
-          title={
-            errorCount && errorCount > 0
-              ? `Save blocked: ${errorCount} ${errorCount === 1 ? "issue" : "issues"}`
-              : isDirty
-                ? `Save (⌘S / Ctrl+S) — ${dirtyCount ?? 1} unsaved ${(dirtyCount ?? 1) === 1 ? "change" : "changes"}`
-                : "Save (⌘S / Ctrl+S)"
-          }
-          variant="default"
-          className={cn(
-            // Inverted shadcn surface — dark pill on light mode, light pill on
-            // dark mode. Matches the MobileSavePill default treatment.
-            "bg-foreground text-background hover:bg-foreground/90 gap-2",
-            isDirty && !errorCount && "border-2 border-amber-500/70",
-            errorCount != null && errorCount > 0 && "border-2 border-destructive/70",
-          )}
-        >
-          {pending ? (
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-          ) : errorCount != null && errorCount > 0 ? (
-            <AlertCircle className="h-4 w-4" aria-hidden />
-          ) : (
-            <Save className="h-4 w-4" aria-hidden />
-          )}
-          {pending ? "Saving..." : "Save"}
-        </Button>
-        {/* Floating count badge — only shows on dirty / error, mirrors the
-            MobileSavePill's top-right counter. Pointer-events-none so it
-            doesn't intercept clicks on the button. */}
-        {(isDirty || (errorCount != null && errorCount > 0)) && !pending && (
-          <span
-            aria-hidden
-            className={cn(
-              "pointer-events-none absolute -top-1.5 -right-1.5 min-w-[1.25rem] h-5 px-1 rounded-full text-[10px] font-medium flex items-center justify-center",
-              errorCount != null && errorCount > 0
-                ? "bg-destructive text-destructive-foreground"
-                : "bg-amber-500 text-white",
-            )}
-          >
-            {(() => {
-              const n = (errorCount != null && errorCount > 0) ? errorCount : (dirtyCount ?? 1)
-              return n > 9 ? "9+" : n
-            })()}
-          </span>
-        )}
-      </div>
+      {/* Canonical CMS save affordance — extracted to @siab/save-button so the
+          page editor, navigation manager and entity-edit forms render the
+          identical pill (inverted surface, dirty border, count badge). */}
+      <SaveButton pending={pending} isDirty={isDirty} errorCount={errorCount} dirtyCount={dirtyCount} />
     </div>
   )
 }

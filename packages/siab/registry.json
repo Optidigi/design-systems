@@ -1457,6 +1457,17 @@
       ]
     },
     {
+      "name": "save-button",
+      "type": "registry:ui",
+      "title": "SIAB Save Button",
+      "description": "The canonical CMS save button — an inverted-surface pill, an amber dirty-state border (destructive when validation errors are present), and a floating count badge. Single source of truth consumed by PublishControls, the navigation manager and the settings / entity-edit forms so every save affordance reads identically. Pure UI, no backend coupling.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@siab/button"],
+      "files": [
+        { "path": "registry/default/save-button.tsx", "type": "registry:ui" }
+      ]
+    },
+    {
       "name": "page-form-chrome",
       "type": "registry:ui",
       "title": "SIAB Page Form Chrome",
@@ -1466,7 +1477,8 @@
         "@siab/form",
         "@siab/input",
         "@siab/select",
-        "@siab/button"
+        "@siab/button",
+        "@siab/save-button"
       ],
       "files": [
         { "path": "registry/default/page-meta-inline.tsx", "type": "registry:ui" },
