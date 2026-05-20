@@ -18,6 +18,9 @@ export interface MobileFloatingPillProps {
   /** Override badge tone (defaults to match variant). */
   badgeTone?: "warning" | "destructive"
   disabled?: boolean
+  /** Extra inset (CSS length) along the pill's horizontal edge — lets a
+   *  second pill sit beside another that shares the same corner. */
+  offset?: string
   /** Stable test/data attrs (`data-mobile-*`). */
   dataAttrs?: Record<string, string | undefined>
 }
@@ -40,6 +43,7 @@ export const MobileFloatingPill: React.FC<MobileFloatingPillProps> = ({
   badgeCount,
   badgeTone,
   disabled,
+  offset,
   dataAttrs,
 }) => {
   const isLoading = variant === "loading"
@@ -55,8 +59,12 @@ export const MobileFloatingPill: React.FC<MobileFloatingPillProps> = ({
   const positionStyle: React.CSSProperties = {
     ...(position.startsWith("top") ? { top: "calc(env(safe-area-inset-top) + 0.75rem)" } : {}),
     ...(position.startsWith("bottom") ? { bottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" } : {}),
-    ...(position.endsWith("left") ? { left: "calc(env(safe-area-inset-left) + 0.75rem)" } : {}),
-    ...(position.endsWith("right") ? { right: "calc(env(safe-area-inset-right) + 0.75rem)" } : {}),
+    ...(position.endsWith("left")
+      ? { left: `calc(env(safe-area-inset-left) + 0.75rem${offset ? ` + ${offset}` : ""})` }
+      : {}),
+    ...(position.endsWith("right")
+      ? { right: `calc(env(safe-area-inset-right) + 0.75rem${offset ? ` + ${offset}` : ""})` }
+      : {}),
   }
 
   const variantClasses = cn(
