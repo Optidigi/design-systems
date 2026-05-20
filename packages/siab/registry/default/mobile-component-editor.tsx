@@ -31,7 +31,7 @@ export interface MobileComponentEditorProps {
  * paths per kind, different presentation (vaul-sized sheet vs. side aside).
  */
 export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ path, block, manifest, theme }) => {
-  const { clearSelection, state } = useMobileEditor()
+  const { clearSelection, state, expandTo } = useMobileEditor()
   const blockType: string | undefined = block?.blockType
   const specs: ElementSpec[] = blockType ? (BLOCK_ELEMENTS[blockType] ?? []) : []
 
@@ -61,11 +61,27 @@ export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ pa
       </div>
       {/* Single scroll owner for the sheet — scrolls (with a visible bar)
           only at the top detent; clipped at the compact detent. overscroll
-          containment lives here so the canvas behind can't rubber-band. */}
+          containment lives here so the canvas behind can't rubber-band.
+          onFocusCapture promotes the sheet to the top detent for ANY field
+          (text / cta / richtext / array) so there is room to type. The
+          --mobile-kb-inset padding (set by MobileInspectorBar's visualViewport
+          listener) keeps the focused field scrollable clear of the keyboard. */}
       <div
         className={`flex-1 min-h-0 overscroll-contain ${
           state.activeSnapPoint === 0.92 ? "overflow-y-auto" : "overflow-hidden"
         }`}
+        onFocusCapture={(e) => {
+          expandTo(0.92)
+          // If the keyboard is already open (switching between fields — no
+          // viewport resize fires), re-centre the newly focused field now.
+          // Keyboard-opening is handled by MobileInspectorBar's listener.
+          const el = e.target as HTMLElement
+          const vv = window.visualViewport
+          if (vv && window.innerHeight - vv.height > 120) {
+            requestAnimationFrame(() => el.scrollIntoView({ block: "center", behavior: "auto" }))
+          }
+        }}
+        style={{ paddingBottom: "var(--mobile-kb-inset, 0px)" }}
       >
         <MobileFieldRenderer spec={activeSpec} parentSpec={parentSpec} path={path} manifest={manifest} blockType={blockType} />
       </div>
@@ -124,7 +140,6 @@ const MobileFieldRenderer: React.FC<{
         <Label className="text-xs text-muted-foreground">{spec.label}</Label>
         <div
           className="rounded-md border border-border bg-background px-3 py-2"
-          onFocusCapture={() => expandTo(0.92)}
           style={{ ["--rt-inspector-font-body" as string]: roleToFontFamily(spec.role) }}
         >
           <LexicalField
