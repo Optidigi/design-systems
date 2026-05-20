@@ -1155,7 +1155,7 @@
       ],
       "css": {
         ".rt-content": {
-          "font-size": "15px",
+          "font-size": "16px",
           "line-height": "1.55",
           "color": "var(--foreground)",
           "font-family": "var(--rt-inspector-font-body, var(--rt-inspector-font-text, inherit))"

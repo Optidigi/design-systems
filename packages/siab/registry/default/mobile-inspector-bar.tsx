@@ -34,7 +34,8 @@ const SNAP_POINTS: MobileSnap[] = [0.42, 0.92]
  *   modal={false}        — canvas stays interactive
  *   handleOnly={true}    — drag only on the grip, not the body
  *   noBodyStyles={true}  — PageForm uses document scroll
- *   repositionInputs={false} — iOS keyboard handled manually
+ *   repositionInputs={true} — vaul repositions the sheet when the on-screen
+ *                          keyboard opens (its isInput() covers contenteditable)
  */
 export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, manifest, theme }) => {
   const { state, expandTo, clearSelection } = useMobileEditor()
@@ -54,7 +55,7 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
       modal={false}
       handleOnly
       noBodyStyles
-      repositionInputs={false}
+      repositionInputs
       snapPoints={SNAP_POINTS}
       activeSnapPoint={state.activeSnapPoint}
       setActiveSnapPoint={(snap) => expandTo((snap as MobileSnap) ?? 0.42)}
