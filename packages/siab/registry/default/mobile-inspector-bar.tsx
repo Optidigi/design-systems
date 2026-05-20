@@ -43,18 +43,27 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
     ? `${state.selected.blockIndex}.${state.selected.field}.${state.selected.itemIndex ?? ""}.${state.selected.subField ?? ""}`
     : "idle"
 
+  // Visible snap fraction. The scroll region below is capped to it so content
+  // taller than the visible snap actually overflows and scrolls (FE-60)
+  // instead of extending unreachably below the fold.
+  const snapFraction = typeof state.activeSnapPoint === "number" ? state.activeSnapPoint : 0.5
+
   // Vaul 1.1.x sets `body { pointer-events: none }` while the drawer is
   // open — regardless of modal=false and noBodyStyles. Stamp a data-attr
-  // on body so we can restore pointer-events for everything outside the
-  // visible drawer area.
+  // on body so the override <style> can restore pointer-events outside the
+  // visible drawer area. On close we also clear the inline value directly:
+  // vaul can leave `pointer-events: none` set through its close animation,
+  // which strands the canvas unresponsive (FE-61) if we wait on its cleanup.
   React.useEffect(() => {
     if (isIdle) {
       delete document.body.dataset.mobileInspectorOpen
+      document.body.style.pointerEvents = ""
       return
     }
     document.body.dataset.mobileInspectorOpen = "true"
     return () => {
       delete document.body.dataset.mobileInspectorOpen
+      document.body.style.pointerEvents = ""
     }
   }, [isIdle])
 
@@ -71,11 +80,13 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
       setActiveSnapPoint={(snap) => expandTo((snap as MobileSnap) ?? 0.5)}
       fadeFromIndex={2}
     >
+      {/* Override vaul's body { pointer-events: none } while the drawer is
+          open. Kept outside Vaul.Portal so it can't unmount mid-close and
+          briefly strand the body unclickable (FE-61). */}
+      <style dangerouslySetInnerHTML={{
+        __html: `body[data-mobile-inspector-open="true"] { pointer-events: auto !important; }`
+      }} />
       <Vaul.Portal>
-        {/* Override vaul's body { pointer-events: none } when our drawer is open. */}
-        <style dangerouslySetInnerHTML={{
-          __html: `body[data-mobile-inspector-open="true"] { pointer-events: auto !important; }`
-        }} />
         <Vaul.Content
           data-mobile-inspector-bar
           aria-label="Section inspector"
@@ -97,6 +108,7 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
             <div
               data-mobile-inspector-mode="editing"
               className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-3"
+              style={{ maxHeight: `calc(${snapFraction} * 100dvh - 1rem)` }}
             >
               {state.selected && (
                 <div

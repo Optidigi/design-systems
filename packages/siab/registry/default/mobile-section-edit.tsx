@@ -133,10 +133,12 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
 
       </header>
 
-      {/* Canvas region — single rendered section */}
+      {/* Canvas region — single rendered section.
+          touch-pan-x/y allows scrolling but suppresses pinch-zoom on the
+          canvas surface (FE-62) so a two-finger gesture can't scale it. */}
       <div
         data-mobile-canvas
-        className="flex-1 overflow-y-auto"
+        className="flex-1 overflow-y-auto touch-pan-x touch-pan-y"
         onClickCapture={(e) => {
           if ((e.target as HTMLElement | null)?.closest("a[href]")) e.preventDefault()
         }}
