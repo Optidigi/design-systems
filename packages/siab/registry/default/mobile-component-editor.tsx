@@ -63,10 +63,11 @@ export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ pa
           only at the top detent; clipped at the compact detent. overscroll
           containment lives here so the canvas behind can't rubber-band.
           onFocusCapture → focusPop(): pop the sheet to the editing detent
-          (0.92) so the focused field clears the keyboard — instantly, since
-          an animated snap racing the keyboard displaces the position:fixed
-          sheet (FE-69/70). focusPop also remembers the prior detent, which
-          MobileInspectorBar restores when the keyboard closes (FE-72). */}
+          (0.92) so the focused field clears the keyboard, and remember the
+          prior detent so MobileInspectorBar can restore it when the keyboard
+          closes (FE-72). The pop animates normally — iOS's native focus-scroll
+          (which would otherwise displace the sheet) is suppressed separately
+          by useInspectorKeyboardLock (FE-71/73). */}
       <div
         className={`flex-1 min-h-0 overscroll-contain ${
           state.activeSnapPoint === 0.92 ? "overflow-y-auto" : "overflow-hidden"
