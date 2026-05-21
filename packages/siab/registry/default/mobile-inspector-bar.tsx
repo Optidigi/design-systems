@@ -20,11 +20,12 @@ const SNAP_POINTS: MobileSnap[] = [0.42, 0.92]
  * Bottom inspector bar driven by vaul.
  *
  * Snap points: [0.42, 0.92]
- *   0.42 — idle / dismissed detent (CLEAR_SELECTION resets here; a handle
- *          drag down to it dismisses the sheet)
- *   0.92 — editing detent; the sheet opens here on every selection
- *          (SET_SELECTED) so it is settled before any input can be focused
- *          (FE-69). A canvas sliver stays visible for spatial context.
+ *   0.42 — compact detent; the sheet opens here on selection — a canvas
+ *          sliver stays visible. A handle drag down dismisses the sheet.
+ *   0.92 — editing detent; focusing a field instant-pops the sheet here so
+ *          the field clears the keyboard. The pop is instant, not animated:
+ *          an animated snap racing the keyboard displaces the sheet (FE-69's
+ *          bug); an instant one settles before the keyboard (FE-70).
  *
  * Idle state (selected null + drillStack empty) fully hides the drawer via
  * open={false} — no persistent strip.
@@ -43,7 +44,7 @@ const SNAP_POINTS: MobileSnap[] = [0.42, 0.92]
  *                          positions the focused field natively (FE-68/FE-69).
  */
 export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, manifest, theme }) => {
-  const { state, expandTo, clearSelection } = useMobileEditor()
+  const { state, expandTo, clearSelection, clearSnapInstant } = useMobileEditor()
   const isIdle = state.selected == null && state.drillStack.length === 0
   const pathKey = state.selected
     ? `${state.selected.blockIndex}.${state.selected.field}.${state.selected.itemIndex ?? ""}.${state.selected.subField ?? ""}`
@@ -52,6 +53,16 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
   // Visible snap fraction — the scroll region below is capped to it so content
   // taller than the active detent stays clipped to the visible sheet (FE-60).
   const snapFraction = typeof state.activeSnapPoint === "number" ? state.activeSnapPoint : 0.42
+
+  // snapInstant suppresses vaul's transition for the focus-time pop to 0.92.
+  // Clear it shortly after so later snaps (drag-release, picker expands) still
+  // animate — the transient flag only needs to cover that one instant pop.
+  React.useEffect(() => {
+    if (!state.snapInstant) return
+    const t = window.setTimeout(() => clearSnapInstant(), 350)
+    return () => window.clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.snapInstant])
 
   return (
     <Vaul.Root
@@ -70,7 +81,7 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
         <Vaul.Content
           data-mobile-inspector-bar
           aria-label="Section inspector"
-          className="fixed inset-x-0 top-0 z-50 flex h-[100svh] flex-col rounded-t-[10px] border-t border-border bg-background outline-none pointer-events-none"
+          className={`fixed inset-x-0 top-0 z-50 flex h-[100svh] flex-col rounded-t-[10px] border-t border-border bg-background outline-none pointer-events-none${state.snapInstant ? " !transition-none" : ""}`}
         >
           <Vaul.Title className="sr-only">Section inspector</Vaul.Title>
           {/* Inner wrapper is pointer-events-auto so only the VISIBLE drawer area is interactive. */}

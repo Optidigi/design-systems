@@ -31,7 +31,7 @@ export interface MobileComponentEditorProps {
  * paths per kind, different presentation (vaul-sized sheet vs. side aside).
  */
 export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ path, block, manifest, theme }) => {
-  const { clearSelection, state } = useMobileEditor()
+  const { clearSelection, state, expandTo } = useMobileEditor()
   const blockType: string | undefined = block?.blockType
   const specs: ElementSpec[] = blockType ? (BLOCK_ELEMENTS[blockType] ?? []) : []
 
@@ -62,16 +62,20 @@ export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ pa
       {/* Single scroll owner for the sheet — scrolls (with a visible bar)
           only at the top detent; clipped at the compact detent. overscroll
           containment lives here so the canvas behind can't rubber-band.
-          Focus must NOT move the sheet: a Vaul snap animation running
-          concurrently with the iOS keyboard-raise AND iOS's native
-          scroll-focused-input-into-view produces three racing position
-          mutations on the `position: fixed` sheet and displaces it. Instead
-          the sheet opens directly at 0.92 (see SET_SELECTED) so it is already
-          at the editing detent before any input can be focused (FE-69). */}
+          onFocusCapture pops the sheet from the compact detent (0.42) up to
+          the editing detent (0.92) so the focused field clears the keyboard.
+          The pop is INSTANT — expandTo's `instant` flag suppresses vaul's
+          snap transition. An animated snap would run concurrently with the
+          iOS keyboard-raise and displace the position:fixed sheet (the FE-69
+          bug); an instant snap settles in one frame, before the keyboard
+          (FE-70). */}
       <div
         className={`flex-1 min-h-0 overscroll-contain ${
           state.activeSnapPoint === 0.92 ? "overflow-y-auto" : "overflow-hidden"
         }`}
+        onFocusCapture={() => {
+          if (state.activeSnapPoint !== 0.92) expandTo(0.92, true)
+        }}
       >
         <MobileFieldRenderer spec={activeSpec} parentSpec={parentSpec} path={path} manifest={manifest} blockType={blockType} />
       </div>
