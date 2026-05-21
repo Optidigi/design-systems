@@ -63,25 +63,14 @@ export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ pa
           only at the top detent; clipped at the compact detent. overscroll
           containment lives here so the canvas behind can't rubber-band.
           onFocusCapture promotes the sheet to the top detent for ANY field
-          (text / cta / richtext / array) so there is room to type. The
-          --mobile-kb-inset padding (set by MobileInspectorBar's visualViewport
-          listener) keeps the focused field scrollable clear of the keyboard. */}
+          (text / cta / richtext / array) so there is room to type above the
+          keyboard. The CMS deliberately adds no keyboard handling of its own —
+          iOS scrolls the focused field into view natively (FE-68). */}
       <div
         className={`flex-1 min-h-0 overscroll-contain ${
           state.activeSnapPoint === 0.92 ? "overflow-y-auto" : "overflow-hidden"
         }`}
-        onFocusCapture={(e) => {
-          expandTo(0.92)
-          // If the keyboard is already open (switching between fields — no
-          // viewport resize fires), re-centre the newly focused field now.
-          // Keyboard-opening is handled by MobileInspectorBar's listener.
-          const el = e.target as HTMLElement
-          const vv = window.visualViewport
-          if (vv && window.innerHeight - vv.height > 120) {
-            requestAnimationFrame(() => el.scrollIntoView({ block: "center", behavior: "auto" }))
-          }
-        }}
-        style={{ paddingBottom: "var(--mobile-kb-inset, 0px)" }}
+        onFocusCapture={() => expandTo(0.92)}
       >
         <MobileFieldRenderer spec={activeSpec} parentSpec={parentSpec} path={path} manifest={manifest} blockType={blockType} />
       </div>

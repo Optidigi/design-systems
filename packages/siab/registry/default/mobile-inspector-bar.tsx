@@ -36,8 +36,9 @@ const SNAP_POINTS: MobileSnap[] = [0.42, 0.92]
  *   noBodyStyles={true}  — PageForm uses document scroll
  *   repositionInputs={false} — vaul's own keyboard handler mis-positions the
  *                          sheet at snap index 0 (it guards on a falsy
- *                          activeSnapPointIndex); the keyboard is handled
- *                          manually below via the visualViewport API
+ *                          activeSnapPointIndex), so it stays disabled. The
+ *                          CMS adds no keyboard handling of its own; iOS
+ *                          positions the focused field natively (FE-68).
  */
 export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, manifest, theme }) => {
   const { state, expandTo, clearSelection } = useMobileEditor()
@@ -49,43 +50,6 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
   // Visible snap fraction — the scroll region below is capped to it so content
   // taller than the active detent stays clipped to the visible sheet (FE-60).
   const snapFraction = typeof state.activeSnapPoint === "number" ? state.activeSnapPoint : 0.42
-
-  // Mirror the on-screen keyboard height into a CSS custom property so the
-  // editor scroll region can pad itself and keep the focused field above the
-  // keyboard. Handled manually because vaul's repositionInputs path mis-
-  // positions the sheet at snap index 0 — its keyboard math guards on a
-  // falsy `activeSnapPointIndex`, and 0 (the 0.42 detent) is falsy.
-  React.useEffect(() => {
-    if (isIdle) return
-    const vv = window.visualViewport
-    if (!vv) return
-    const root = document.documentElement
-    let prevInset = 0
-    const apply = () => {
-      const inset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop)
-      root.style.setProperty("--mobile-kb-inset", `${inset}px`)
-      // As the keyboard rises, keep the focused field above it. scrollIntoView
-      // is keyboard-unaware, so centring the field in the layout viewport —
-      // together with the --mobile-kb-inset padding on the scroll body — lands
-      // it clear of the keyboard. Only on the rising edge, so a manual pan
-      // (visualViewport scroll with no inset change) is not fought.
-      if (inset > prevInset) {
-        const active = document.activeElement
-        if (active instanceof HTMLElement && active.closest("[data-mobile-inspector-bar]")) {
-          active.scrollIntoView({ block: "center", behavior: "auto" })
-        }
-      }
-      prevInset = inset
-    }
-    apply()
-    vv.addEventListener("resize", apply)
-    vv.addEventListener("scroll", apply)
-    return () => {
-      vv.removeEventListener("resize", apply)
-      vv.removeEventListener("scroll", apply)
-      root.style.removeProperty("--mobile-kb-inset")
-    }
-  }, [isIdle])
 
   return (
     <Vaul.Root
