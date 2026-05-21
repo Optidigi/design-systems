@@ -35,7 +35,7 @@ export interface MobileSectionEditProps {
  *
  * Top chrome: ‹ Back · prev/next chevrons · section-name dropdown · save Badge.
  * Body: the single rendered section, full mobile width.
- * Bottom: persistent MobileInspectorBar (vaul) — idle strip in 3rem, expands on tap.
+ * Bottom: MobileInspectorBar (vaul) — hidden when idle, opens on selection.
  *
  * Selection state lives in MobileEditorContext (mounted by CanvasMobile).
  */

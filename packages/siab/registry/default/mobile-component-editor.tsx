@@ -31,7 +31,7 @@ export interface MobileComponentEditorProps {
  * paths per kind, different presentation (vaul-sized sheet vs. side aside).
  */
 export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ path, block, manifest, theme }) => {
-  const { clearSelection, state, focusPop } = useMobileEditor()
+  const { clearSelection, focusPop } = useMobileEditor()
   const blockType: string | undefined = block?.blockType
   const specs: ElementSpec[] = blockType ? (BLOCK_ELEMENTS[blockType] ?? []) : []
 
@@ -59,19 +59,19 @@ export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ pa
           <X className="size-4" />
         </Button>
       </div>
-      {/* Single scroll owner for the sheet — scrolls (with a visible bar)
-          only at the top detent; clipped at the compact detent. overscroll
-          containment lives here so the canvas behind can't rubber-band.
-          onFocusCapture → focusPop(): pop the sheet to the editing detent
-          (0.92) so the focused field clears the keyboard, and remember the
-          prior detent so MobileInspectorBar can restore it when the keyboard
-          closes (FE-72). The pop animates normally — iOS's native focus-scroll
-          (which would otherwise displace the sheet) is suppressed separately
-          by useInspectorKeyboardLock (FE-71/73). */}
+      {/* Single scroll owner for the sheet — always scrollable so content
+          taller than the active detent can still be reached (FE-74).
+          data-vaul-no-drag exempts it from vaul's drag arbitration: without
+          it, vaul claims the first upward scroll as a sheet-drag and the
+          content never moves. The sheet still drags via the grip handle and
+          this editor's header row (both outside this region). touch-pan-y
+          restores native vertical panning over vaul's touch-action:none.
+          onFocusCapture → focusPop() pops the sheet to the editing detent so
+          the focused field clears the keyboard; MobileInspectorBar restores
+          the prior detent on keyboard close (FE-72). */}
       <div
-        className={`flex-1 min-h-0 overscroll-contain ${
-          state.activeSnapPoint === 0.92 ? "overflow-y-auto" : "overflow-hidden"
-        }`}
+        data-vaul-no-drag
+        className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y"
         onFocusCapture={() => focusPop()}
       >
         <MobileFieldRenderer spec={activeSpec} parentSpec={parentSpec} path={path} manifest={manifest} blockType={blockType} />

@@ -7,9 +7,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { MobileMediaSheet } from "@/components/ui/mobile-media-sheet"
-export interface MobileSeoSettingsProps {
-  // onBack removed — back is handled by the central MobileBackPill in CanvasMobile
-}
 
 const resolveUrl = (v: unknown): string | null => {
   if (!v) return null
@@ -22,7 +19,7 @@ const resolveUrl = (v: unknown): string | null => {
   return null
 }
 
-export const MobileSeoSettings: React.FC<MobileSeoSettingsProps> = () => {
+export const MobileSeoSettings: React.FC = () => {
   const { watch, setValue } = useFormContext()
   const seoTitle = watch("seo.title") as string | null | undefined
   const seoDescription = watch("seo.description") as string | null | undefined

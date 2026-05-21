@@ -61,20 +61,39 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
   useInspectorKeyboardLock(!isIdle)
 
   // When the keyboard closes, return the sheet to the detent it was at before
-  // the focus-pop (FE-72). The keyboard's show/hide is a visualViewport resize;
-  // a >120px shrink vs window.innerHeight means the keyboard is up.
+  // the focus-pop (FE-72/74). focusout fires synchronously the instant a field
+  // blurs; iOS reports the visualViewport resize for a keyboard *hide* a beat
+  // late, so blur is the prompt signal. The visualViewport resize stays as an
+  // idempotent fallback for a keyboard dismissed without a blur (swipe-down).
   React.useEffect(() => {
     if (isIdle) return
+    const inspector = document.querySelector("[data-mobile-inspector-bar]")
+
+    // Primary: focus leaving an inspector field. Skip when focus moved to
+    // another field — the keyboard stays up and the follow-up focusin re-pops.
+    const onFocusOut = (e: Event) => {
+      const next = (e as FocusEvent).relatedTarget as HTMLElement | null
+      if (next && next.closest("input,textarea,[contenteditable]")) return
+      restorePreFocusSnap()
+    }
+    inspector?.addEventListener("focusout", onFocusOut)
+
+    // Fallback: visualViewport resize, for a keyboard closed without a blur.
+    // restorePreFocusSnap is idempotent — a no-op once focusout consumed it.
     const vv = window.visualViewport
-    if (!vv) return
-    let keyboardOpen = window.innerHeight - vv.height > 120
+    let keyboardOpen = vv ? window.innerHeight - vv.height > 120 : false
     const onResize = () => {
+      if (!vv) return
       const nowOpen = window.innerHeight - vv.height > 120
       if (keyboardOpen && !nowOpen) restorePreFocusSnap()
       keyboardOpen = nowOpen
     }
-    vv.addEventListener("resize", onResize)
-    return () => vv.removeEventListener("resize", onResize)
+    vv?.addEventListener("resize", onResize)
+
+    return () => {
+      inspector?.removeEventListener("focusout", onFocusOut)
+      vv?.removeEventListener("resize", onResize)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isIdle])
 
@@ -112,7 +131,6 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
             />
 
             <div
-              data-mobile-inspector-mode="editing"
               className="flex-1 min-h-0 overflow-hidden px-4 py-3"
               style={{ maxHeight: `calc(${snapFraction} * 100svh - 1rem)` }}
             >
