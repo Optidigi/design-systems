@@ -70,7 +70,7 @@ export const MobileFloatingPill: React.FC<MobileFloatingPillProps> = ({
   const variantClasses = cn(
     "border bg-foreground text-background border-transparent shadow-lg",
     variant === "warning" && "border-2 border-amber-500/70 text-amber-400 dark:text-amber-500",
-    variant === "destructive" && "border-2 border-destructive/70 text-red-400 dark:text-destructive",
+    variant === "destructive" && "text-red-400 dark:text-destructive",
     variant === "loading" && "opacity-90 cursor-wait border-transparent",
     variant === "success" && "text-background/80 border-transparent",
   )
