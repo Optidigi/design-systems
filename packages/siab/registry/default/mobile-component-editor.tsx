@@ -31,7 +31,7 @@ export interface MobileComponentEditorProps {
  * paths per kind, different presentation (vaul-sized sheet vs. side aside).
  */
 export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ path, block, manifest, theme }) => {
-  const { clearSelection, state, expandTo } = useMobileEditor()
+  const { clearSelection, state, focusPop } = useMobileEditor()
   const blockType: string | undefined = block?.blockType
   const specs: ElementSpec[] = blockType ? (BLOCK_ELEMENTS[blockType] ?? []) : []
 
@@ -62,20 +62,16 @@ export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ pa
       {/* Single scroll owner for the sheet — scrolls (with a visible bar)
           only at the top detent; clipped at the compact detent. overscroll
           containment lives here so the canvas behind can't rubber-band.
-          onFocusCapture pops the sheet from the compact detent (0.42) up to
-          the editing detent (0.92) so the focused field clears the keyboard.
-          The pop is INSTANT — expandTo's `instant` flag suppresses vaul's
-          snap transition. An animated snap would run concurrently with the
-          iOS keyboard-raise and displace the position:fixed sheet (the FE-69
-          bug); an instant snap settles in one frame, before the keyboard
-          (FE-70). */}
+          onFocusCapture → focusPop(): pop the sheet to the editing detent
+          (0.92) so the focused field clears the keyboard — instantly, since
+          an animated snap racing the keyboard displaces the position:fixed
+          sheet (FE-69/70). focusPop also remembers the prior detent, which
+          MobileInspectorBar restores when the keyboard closes (FE-72). */}
       <div
         className={`flex-1 min-h-0 overscroll-contain ${
           state.activeSnapPoint === 0.92 ? "overflow-y-auto" : "overflow-hidden"
         }`}
-        onFocusCapture={() => {
-          if (state.activeSnapPoint !== 0.92) expandTo(0.92, true)
-        }}
+        onFocusCapture={() => focusPop()}
       >
         <MobileFieldRenderer spec={activeSpec} parentSpec={parentSpec} path={path} manifest={manifest} blockType={blockType} />
       </div>
