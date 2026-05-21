@@ -44,6 +44,9 @@ const SNAP_POINTS: MobileSnap[] = [0.42, 0.92]
  *   (no handleOnly)      — the whole sheet body is draggable, not just the
  *                          grip; vaul's shouldDrag arbitrates drag-vs-scroll
  *                          per gesture (FE-72).
+ *   duration-[250ms]! ease-out! — override vaul's 500ms snap transition so
+ *                          keyboard-close restore tracks iOS keyboard hide
+ *                          more closely (FE-76).
  */
 export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, manifest, theme }) => {
   const { state, expandTo, clearSelection, restorePreFocusSnap } = useMobileEditor()
@@ -113,7 +116,7 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
         <Vaul.Content
           data-mobile-inspector-bar
           aria-label="Section inspector"
-          className="fixed inset-x-0 top-0 z-50 flex h-[100svh] flex-col rounded-t-[10px] border-t border-border bg-background outline-none pointer-events-none"
+          className="fixed inset-x-0 top-0 z-50 flex h-[100svh] flex-col rounded-t-[10px] border-t border-border bg-background outline-none pointer-events-none duration-[250ms]! ease-out!"
         >
           <Vaul.Title className="sr-only">Section inspector</Vaul.Title>
           {/* Inner wrapper is pointer-events-auto so only the VISIBLE drawer area is interactive. */}
