@@ -24,8 +24,9 @@ const SNAP_POINTS: MobileSnap[] = [0.42, 0.92]
  *   0.42 — compact detent; the sheet opens here on selection — a canvas
  *          sliver stays visible. A drag down dismisses the sheet.
  *   0.92 — editing detent; focusing a field pops the sheet here (animated)
- *          so the field clears the keyboard. When the keyboard closes the
- *          sheet returns to its pre-focus detent (FE-72).
+ *          so the field clears the keyboard. Native keyboard dismissal does
+ *          not restore the sheet; the user stays in editing mode until Done
+ *          or a manual sheet drag/close.
  *
  * Idle state (selected null + drillStack empty) fully hides the drawer via
  * open={false} — no persistent strip.
@@ -46,7 +47,7 @@ const SNAP_POINTS: MobileSnap[] = [0.42, 0.92]
  *                          per gesture (FE-72).
  */
 export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, manifest, theme }) => {
-  const { state, expandTo, clearSelection, restorePreFocusSnap } = useMobileEditor()
+  const { state, expandTo, clearSelection } = useMobileEditor()
   const isIdle = state.selected == null && state.drillStack.length === 0
   const pathKey = state.selected
     ? `${state.selected.blockIndex}.${state.selected.field}.${state.selected.itemIndex ?? ""}.${state.selected.subField ?? ""}`
@@ -59,43 +60,6 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
   // iOS Safari only: suppress the native focus-scroll that would otherwise drag
   // this position:fixed sheet off-screen when a field is focused (FE-71).
   useInspectorKeyboardLock(!isIdle)
-
-  // When the keyboard closes, return the sheet to the detent it was at before
-  // the focus-pop (FE-72/74). focusout fires synchronously the instant a field
-  // blurs; iOS reports the visualViewport resize for a keyboard *hide* a beat
-  // late, so blur is the prompt signal. The visualViewport resize stays as an
-  // idempotent fallback for a keyboard dismissed without a blur (swipe-down).
-  React.useEffect(() => {
-    if (isIdle) return
-    const inspector = document.querySelector("[data-mobile-inspector-bar]")
-
-    // Primary: focus leaving an inspector field. Skip when focus moved to
-    // another field — the keyboard stays up and the follow-up focusin re-pops.
-    const onFocusOut = (e: Event) => {
-      const next = (e as FocusEvent).relatedTarget as HTMLElement | null
-      if (next && next.closest("input,textarea,[contenteditable]")) return
-      restorePreFocusSnap()
-    }
-    inspector?.addEventListener("focusout", onFocusOut)
-
-    // Fallback: visualViewport resize, for a keyboard closed without a blur.
-    // restorePreFocusSnap is idempotent — a no-op once focusout consumed it.
-    const vv = window.visualViewport
-    let keyboardOpen = vv ? window.innerHeight - vv.height > 120 : false
-    const onResize = () => {
-      if (!vv) return
-      const nowOpen = window.innerHeight - vv.height > 120
-      if (keyboardOpen && !nowOpen) restorePreFocusSnap()
-      keyboardOpen = nowOpen
-    }
-    vv?.addEventListener("resize", onResize)
-
-    return () => {
-      inspector?.removeEventListener("focusout", onFocusOut)
-      vv?.removeEventListener("resize", onResize)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isIdle])
 
   return (
     <Vaul.Root
@@ -113,11 +77,11 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
         <Vaul.Content
           data-mobile-inspector-bar
           aria-label="Section inspector"
-          className="fixed inset-x-0 top-0 z-50 flex h-[100svh] flex-col rounded-t-[10px] border-t border-border bg-background outline-none pointer-events-none"
+          className="fixed inset-x-0 top-0 z-50 flex h-[100svh] flex-col overscroll-contain rounded-t-[10px] border-t border-border bg-background outline-none pointer-events-none"
         >
           <Vaul.Title className="sr-only">Section inspector</Vaul.Title>
           {/* Inner wrapper is pointer-events-auto so only the VISIBLE drawer area is interactive. */}
-          <div className="pointer-events-auto flex h-full flex-col">
+          <div className="pointer-events-auto flex h-full flex-col overscroll-contain">
             {/* Drag handle. The whole sheet body is draggable (vaul default, no
                 handleOnly — FE-72); the handle stays as a visible grip
                 affordance. preventCycle disables vaul's tap-to-cycle: the

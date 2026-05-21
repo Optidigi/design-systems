@@ -1,7 +1,7 @@
 "use client"
 import * as React from "react"
 import { useFormContext } from "react-hook-form"
-import { X, Image as ImageIcon } from "lucide-react"
+import { Check, Image as ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -42,6 +42,7 @@ export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ pa
   }
 
   const label = activeSpec?.label ?? path.field
+  const closeEditor = React.useCallback(() => clearSelection(), [clearSelection])
 
   return (
     <div data-mobile-editor className="flex h-full min-h-0 flex-col" style={inspectorFontStyle(theme)}>
@@ -50,27 +51,32 @@ export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ pa
         <Button
           type="button"
           variant="ghost"
-          size="icon"
-          className="size-9"
-          onClick={clearSelection}
-          aria-label="Close editor"
+          size="sm"
+          className="h-9 gap-1.5 px-2"
+          onPointerDown={(e) => {
+            if (e.pointerType === "touch") {
+              e.preventDefault()
+              closeEditor()
+            }
+          }}
+          onClick={closeEditor}
+          aria-label="Done editing"
+          data-vaul-no-drag
           data-mobile-editor-close
         >
-          <X className="size-4" />
+          <Check className="size-4" aria-hidden />
+          <span>Done</span>
         </Button>
       </div>
       {/* Single scroll owner for the sheet — always scrollable so content
           taller than the active detent can still be reached (FE-74).
-          data-vaul-no-drag exempts it from vaul's drag arbitration: without
-          it, vaul claims the first upward scroll as a sheet-drag and the
-          content never moves. The sheet still drags via the grip handle and
-          this editor's header row (both outside this region). touch-pan-y
-          restores native vertical panning over vaul's touch-action:none.
+          Vaul's drag arbitration lets a downward pull from scroll-top drag the
+          sheet while normal upward/mid-content gestures keep scrolling here.
+          overscroll-contain reduces scroll-chain escape into Safari refresh.
           onFocusCapture → focusPop() pops the sheet to the editing detent so
-          the focused field clears the keyboard; MobileInspectorBar restores
-          the prior detent on keyboard close (FE-72). */}
+          the focused field clears the keyboard. Native keyboard dismissal
+          leaves the sheet full; Done or a manual drag exits editing. */}
       <div
-        data-vaul-no-drag
         className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y"
         onFocusCapture={() => focusPop()}
       >
