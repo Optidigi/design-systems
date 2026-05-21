@@ -2,6 +2,7 @@
 import * as React from "react"
 import { Drawer as Vaul } from "vaul"
 import { useMobileEditor, type MobileSnap } from "@/components/editor/canvas/mobile/MobileEditorContext"
+import { useInspectorKeyboardLock } from "@/components/editor/canvas/mobile/useInspectorKeyboardLock"
 import { MobileComponentEditor } from "@/components/ui/mobile-component-editor"
 import type { RtManifest } from "@/lib/richText/manifest"
 import type { ThemeTokens } from "@/lib/theme/schema"
@@ -63,6 +64,10 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
     return () => window.clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.snapInstant])
+
+  // iOS Safari only: suppress the native focus-scroll that would otherwise drag
+  // this position:fixed sheet off-screen when a field is focused (FE-71).
+  useInspectorKeyboardLock(!isIdle)
 
   return (
     <Vaul.Root
