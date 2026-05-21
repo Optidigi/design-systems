@@ -31,7 +31,7 @@ export interface MobileComponentEditorProps {
  * paths per kind, different presentation (vaul-sized sheet vs. side aside).
  */
 export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ path, block, manifest, theme }) => {
-  const { clearSelection, state, expandTo } = useMobileEditor()
+  const { clearSelection, state } = useMobileEditor()
   const blockType: string | undefined = block?.blockType
   const specs: ElementSpec[] = blockType ? (BLOCK_ELEMENTS[blockType] ?? []) : []
 
@@ -62,15 +62,16 @@ export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ pa
       {/* Single scroll owner for the sheet — scrolls (with a visible bar)
           only at the top detent; clipped at the compact detent. overscroll
           containment lives here so the canvas behind can't rubber-band.
-          onFocusCapture promotes the sheet to the top detent for ANY field
-          (text / cta / richtext / array) so there is room to type above the
-          keyboard. The CMS deliberately adds no keyboard handling of its own —
-          iOS scrolls the focused field into view natively (FE-68). */}
+          Focus must NOT move the sheet: a Vaul snap animation running
+          concurrently with the iOS keyboard-raise AND iOS's native
+          scroll-focused-input-into-view produces three racing position
+          mutations on the `position: fixed` sheet and displaces it. Instead
+          the sheet opens directly at 0.92 (see SET_SELECTED) so it is already
+          at the editing detent before any input can be focused (FE-69). */}
       <div
         className={`flex-1 min-h-0 overscroll-contain ${
           state.activeSnapPoint === 0.92 ? "overflow-y-auto" : "overflow-hidden"
         }`}
-        onFocusCapture={() => expandTo(0.92)}
       >
         <MobileFieldRenderer spec={activeSpec} parentSpec={parentSpec} path={path} manifest={manifest} blockType={blockType} />
       </div>

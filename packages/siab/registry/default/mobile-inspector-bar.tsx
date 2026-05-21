@@ -20,9 +20,11 @@ const SNAP_POINTS: MobileSnap[] = [0.42, 0.92]
  * Bottom inspector bar driven by vaul.
  *
  * Snap points: [0.42, 0.92]
- *   0.42 — initial on selection (compact editor)
- *   0.92 — near-full; richtext / media / array editors auto-promote here.
- *          A canvas sliver stays visible for spatial context.
+ *   0.42 — idle / dismissed detent (CLEAR_SELECTION resets here; a handle
+ *          drag down to it dismisses the sheet)
+ *   0.92 — editing detent; the sheet opens here on every selection
+ *          (SET_SELECTED) so it is settled before any input can be focused
+ *          (FE-69). A canvas sliver stays visible for spatial context.
  *
  * Idle state (selected null + drillStack empty) fully hides the drawer via
  * open={false} — no persistent strip.
@@ -38,7 +40,7 @@ const SNAP_POINTS: MobileSnap[] = [0.42, 0.92]
  *                          sheet at snap index 0 (it guards on a falsy
  *                          activeSnapPointIndex), so it stays disabled. The
  *                          CMS adds no keyboard handling of its own; iOS
- *                          positions the focused field natively (FE-68).
+ *                          positions the focused field natively (FE-68/FE-69).
  */
 export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, manifest, theme }) => {
   const { state, expandTo, clearSelection } = useMobileEditor()
@@ -68,7 +70,7 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
         <Vaul.Content
           data-mobile-inspector-bar
           aria-label="Section inspector"
-          className="fixed inset-x-0 top-0 z-50 flex h-[100dvh] flex-col rounded-t-[10px] border-t border-border bg-background outline-none pointer-events-none"
+          className="fixed inset-x-0 top-0 z-50 flex h-[100svh] flex-col rounded-t-[10px] border-t border-border bg-background outline-none pointer-events-none"
         >
           <Vaul.Title className="sr-only">Section inspector</Vaul.Title>
           {/* Inner wrapper is pointer-events-auto so only the VISIBLE drawer area is interactive. */}
@@ -88,7 +90,7 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
             <div
               data-mobile-inspector-mode="editing"
               className="flex-1 min-h-0 overflow-hidden px-4 py-3"
-              style={{ maxHeight: `calc(${snapFraction} * 100dvh - 1rem)` }}
+              style={{ maxHeight: `calc(${snapFraction} * 100svh - 1rem)` }}
             >
               {state.selected && (
                 <div
