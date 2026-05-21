@@ -51,8 +51,8 @@ export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ pa
         <Button
           type="button"
           variant="ghost"
-          size="sm"
-          className="h-9 gap-1.5 px-2"
+          size="icon"
+          className="size-9 rounded-full border border-border bg-muted text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground"
           onPointerDown={(e) => {
             if (e.pointerType === "touch") {
               e.preventDefault()
@@ -65,7 +65,6 @@ export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ pa
           data-mobile-editor-close
         >
           <Check className="size-4" aria-hidden />
-          <span>Done</span>
         </Button>
       </div>
       {/* Single scroll owner for the sheet — always scrollable so content
