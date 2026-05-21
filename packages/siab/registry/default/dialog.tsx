@@ -4,7 +4,7 @@ import * as React from "react"
 import { XIcon } from "lucide-react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 
-import { cn } from "@/lib/utils"
+import { cn, isCoarsePointer } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
 function Dialog({
@@ -51,6 +51,7 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  onOpenAutoFocus,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
@@ -64,6 +65,18 @@ function DialogContent({
           "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:max-w-lg",
           className
         )}
+        onOpenAutoFocus={(e) => {
+          // Touch devices: keep open-focus off text inputs — autofocus pops
+          // the on-screen keyboard, which covers the dialog. Focus the dialog
+          // container instead so focus still enters it (a11y). Desktop keeps
+          // the normal first-focusable autofocus (FE-75).
+          if (isCoarsePointer()) {
+            e.preventDefault()
+            const content = e.currentTarget as HTMLElement
+            content.focus()
+          }
+          onOpenAutoFocus?.(e)
+        }}
         {...props}
       >
         <div className="max-h-[min(calc(100vh-2rem),calc(100dvh-2rem))] overflow-y-auto overscroll-contain">

@@ -4,7 +4,7 @@ import * as React from "react"
 import { XIcon } from "lucide-react"
 import { Dialog as SheetPrimitive } from "radix-ui"
 
-import { cn } from "@/lib/utils"
+import { cn, isCoarsePointer } from "@/lib/utils"
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />
@@ -49,6 +49,7 @@ function SheetContent({
   children,
   side = "right",
   showCloseButton = true,
+  onOpenAutoFocus,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
   side?: "top" | "right" | "bottom" | "left"
@@ -71,6 +72,18 @@ function SheetContent({
             "inset-x-0 bottom-0 h-auto border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
           className
         )}
+        onOpenAutoFocus={(e) => {
+          // Touch devices: keep open-focus off text inputs — autofocus pops
+          // the on-screen keyboard, which covers the sheet. Focus the sheet
+          // container instead so focus still enters it (a11y). Desktop keeps
+          // the normal first-focusable autofocus (FE-75).
+          if (isCoarsePointer()) {
+            e.preventDefault()
+            const content = e.currentTarget as HTMLElement
+            content.focus()
+          }
+          onOpenAutoFocus?.(e)
+        }}
         {...props}
       >
         {children}

@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Popover as PopoverPrimitive } from "radix-ui"
 
-import { cn } from "@/lib/utils"
+import { cn, isCoarsePointer } from "@/lib/utils"
 
 function Popover({
   ...props
@@ -21,6 +21,7 @@ function PopoverContent({
   className,
   align = "center",
   sideOffset = 4,
+  onOpenAutoFocus,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Content>) {
   return (
@@ -33,6 +34,18 @@ function PopoverContent({
           "z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
           className
         )}
+        onOpenAutoFocus={(e) => {
+          // Touch devices: keep open-focus off text inputs — autofocus pops
+          // the on-screen keyboard, which covers the popover. Focus the
+          // popover container instead so focus still enters it (a11y).
+          // Desktop keeps the normal first-focusable autofocus (FE-75).
+          if (isCoarsePointer()) {
+            e.preventDefault()
+            const content = e.currentTarget as HTMLElement
+            content.focus()
+          }
+          onOpenAutoFocus?.(e)
+        }}
         {...props}
       />
     </PopoverPrimitive.Portal>
