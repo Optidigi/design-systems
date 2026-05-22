@@ -1,13 +1,14 @@
 "use client"
 import * as React from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
-import { $getSelection, $isRangeSelection } from "lexical"
+import { $createParagraphNode, $getSelection, $isParagraphNode, $isRangeSelection } from "lexical"
 import { $patchStyleText } from "@lexical/selection"
 import { $createHeadingNode, $isHeadingNode } from "@lexical/rich-text"
 import { Wand2 } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import type { RtManifest, RtTypeStyle } from "@/lib/richText/manifest"
 import { $createStyledHeadingNode, StyledHeadingNode } from "@/lib/richText/lexical/StyledHeadingNode"
+import { $createStyledParagraphNode, StyledParagraphNode } from "@/lib/richText/lexical/StyledParagraphNode"
 import { useActiveTextStyle } from "@/components/ui/use-active-text-style"
 import { cn } from "@/lib/utils"
 
@@ -28,7 +29,7 @@ const useSelectionScope = (): "inline" | "heading" | "paragraph" | null => {
         if (!block) { setScope("inline"); return }
         if ($isHeadingNode(block) || block instanceof StyledHeadingNode) {
           setScope("heading")
-        } else if ((block as any).getType?.() === "paragraph") {
+        } else if ($isParagraphNode(block) || block instanceof StyledParagraphNode) {
           setScope("paragraph")
         } else {
           setScope("inline")
@@ -53,11 +54,50 @@ export const StyleChip: React.FC<StyleChipProps> = ({ manifest }) => {
     return false
   })
 
-  const applyInlineOrParagraph = (id: string | null) => {
+  const applyInline = (id: string | null) => {
     editor.update(() => {
       const sel = $getSelection()
       if (!$isRangeSelection(sel)) return
       $patchStyleText(sel, { "--rt-style": id })
+    })
+  }
+
+  const applyParagraph = (id: string | null) => {
+    editor.update(() => {
+      const sel = $getSelection()
+      if (!$isRangeSelection(sel)) return
+      const block = sel.anchor.getNode().getTopLevelElement()
+      if (!block) return
+      const isParagraph = $isParagraphNode(block) || block instanceof StyledParagraphNode
+      if (!isParagraph) return
+      if (id) {
+        if (block instanceof StyledParagraphNode) {
+          block.setRtStyle(id)
+        } else {
+          const styled = $createStyledParagraphNode(id)
+          for (const child of block.getChildren()) styled.append(child)
+          block.replace(styled)
+        }
+      } else if (block instanceof StyledParagraphNode) {
+        const plain = $createParagraphNode()
+        for (const child of block.getChildren()) plain.append(child)
+        block.replace(plain)
+      }
+    })
+  }
+
+  const clearParagraphOrInline = () => {
+    editor.update(() => {
+      const sel = $getSelection()
+      if (!$isRangeSelection(sel)) return
+      const block = sel.anchor.getNode().getTopLevelElement()
+      if (block instanceof StyledParagraphNode) {
+        const plain = $createParagraphNode()
+        for (const child of block.getChildren()) plain.append(child)
+        block.replace(plain)
+        return
+      }
+      $patchStyleText(sel, { "--rt-style": null })
     })
   }
 
@@ -119,7 +159,11 @@ export const StyleChip: React.FC<StyleChipProps> = ({ manifest }) => {
               type="button"
               aria-pressed={isActive}
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => s.appliesTo === "heading" ? applyHeading(s.id) : applyInlineOrParagraph(s.id)}
+              onClick={() => {
+                if (s.appliesTo === "heading") applyHeading(s.id)
+                else if (s.appliesTo === "paragraph") applyParagraph(s.id)
+                else applyInline(s.id)
+              }}
               className={cn(
                 "flex w-full flex-col items-start gap-0.5 rounded-sm px-2 py-1.5 hover:bg-accent text-left",
                 isActive && "bg-accent text-foreground ring-1 ring-foreground",
@@ -137,7 +181,7 @@ export const StyleChip: React.FC<StyleChipProps> = ({ manifest }) => {
               type="button"
               aria-pressed={activeStyle === null}
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => scope === "heading" ? applyHeading(null) : applyInlineOrParagraph(null)}
+              onClick={() => scope === "heading" ? applyHeading(null) : scope === "paragraph" ? clearParagraphOrInline() : applyInline(null)}
               className={cn(
                 "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent text-left text-muted-foreground",
                 activeStyle === null && "bg-accent text-foreground",

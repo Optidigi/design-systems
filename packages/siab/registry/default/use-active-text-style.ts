@@ -3,6 +3,7 @@ import * as React from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { $getSelection, $isRangeSelection, $isTextNode } from "lexical"
 import { StyledHeadingNode } from "@/lib/richText/lexical/StyledHeadingNode"
+import { StyledParagraphNode } from "@/lib/richText/lexical/StyledParagraphNode"
 
 /**
  * Returns the `--rt-color` and `--rt-style` values currently applied at
@@ -46,13 +47,15 @@ export const useActiveTextStyle = (): ActiveTextStyle => {
           if (style === undefined) style = s
           else if (style !== s) style = null
         }
-        // Heading-scoped style lives on the StyledHeadingNode, not on the
-        // text node's CSS — surface it so the StyleChip's active state
-        // works for heading rows too.
+        // Block-scoped styles live on their element nodes, not on text-node
+        // CSS — surface them so the StyleChip's active state works there too.
         const block = sel.anchor.getNode().getTopLevelElement()
         if (block instanceof StyledHeadingNode) {
           const headingStyle = block.getRtStyle() || null
           style = headingStyle
+        } else if (block instanceof StyledParagraphNode) {
+          const paragraphStyle = block.getRtStyle() || null
+          style = paragraphStyle
         }
         setActive({ color: color ?? null, style: style ?? null })
       })
