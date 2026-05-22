@@ -6,8 +6,8 @@ import { StyledHeadingNode } from "@/lib/richText/lexical/StyledHeadingNode"
 import { StyledParagraphNode } from "@/lib/richText/lexical/StyledParagraphNode"
 
 /**
- * Returns the `--rt-color` and `--rt-style` values currently applied at
- * the active selection — used by ColorChip / StyleChip to render the
+ * Returns the `--rt-color`, `--rt-font`, and `--rt-style` values currently applied at
+ * the active selection — used by ColorChip / FontChip / StyleChip to render the
  * matching popover option with an "active" outline.
  *
  * Subscribes to Lexical's update listener so the indicators re-derive
@@ -19,31 +19,37 @@ import { StyledParagraphNode } from "@/lib/richText/lexical/StyledParagraphNode"
  */
 export interface ActiveTextStyle {
   color: string | null
+  font: string | null
   style: string | null
 }
 
 const RT_STYLE_RE = /--rt-style\s*:\s*([a-z0-9-]+)/
 const RT_COLOR_RE = /--rt-color\s*:\s*([a-z0-9-]+)/
+const RT_FONT_RE = /--rt-font\s*:\s*([a-z0-9-]+)/
 
 export const useActiveTextStyle = (): ActiveTextStyle => {
   const [editor] = useLexicalComposerContext()
-  const [active, setActive] = React.useState<ActiveTextStyle>({ color: null, style: null })
+  const [active, setActive] = React.useState<ActiveTextStyle>({ color: null, font: null, style: null })
 
   React.useEffect(() => {
     const read = () => {
       editor.getEditorState().read(() => {
         const sel = $getSelection()
-        if (!$isRangeSelection(sel)) { setActive({ color: null, style: null }); return }
+        if (!$isRangeSelection(sel)) { setActive({ color: null, font: null, style: null }); return }
         const nodes = sel.getNodes()
         let color: string | null | undefined = undefined
+        let font: string | null | undefined = undefined
         let style: string | null | undefined = undefined
         for (const n of nodes) {
           if (!$isTextNode(n)) continue
           const css = n.getStyle()
           const c = css.match(RT_COLOR_RE)?.[1] ?? null
+          const f = css.match(RT_FONT_RE)?.[1] ?? null
           const s = css.match(RT_STYLE_RE)?.[1] ?? null
           if (color === undefined) color = c
           else if (color !== c) color = null
+          if (font === undefined) font = f
+          else if (font !== f) font = null
           if (style === undefined) style = s
           else if (style !== s) style = null
         }
@@ -57,7 +63,7 @@ export const useActiveTextStyle = (): ActiveTextStyle => {
           const paragraphStyle = block.getRtStyle() || null
           style = paragraphStyle
         }
-        setActive({ color: color ?? null, style: style ?? null })
+        setActive({ color: color ?? null, font: font ?? null, style: style ?? null })
       })
     }
     read()

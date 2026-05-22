@@ -6,6 +6,7 @@ import { $getSelection, $isRangeSelection } from "lexical"
 import type { RtManifest } from "@/lib/richText/manifest"
 import { MarkChips } from "@/components/ui/mark-chips"
 import { ColorChip } from "@/components/ui/color-chip"
+import { FontChip } from "@/components/ui/font-chip"
 import { StyleChip } from "@/components/ui/style-chip"
 import { LinkChip } from "@/components/ui/link-chip"
 import { useIsMobile } from "@/lib/hooks/useIsMobile"
@@ -22,8 +23,9 @@ export const FloatingToolbar: React.FC<{
   manifest: RtManifest
   variant: "block" | "inline"
   allowColor?: boolean
+  allowFontFamily?: boolean
   onOpenLink: () => void
-}> = ({ manifest, variant: _variant, allowColor = false, onOpenLink }) => {
+}> = ({ manifest, variant: _variant, allowColor = false, allowFontFamily = false, onOpenLink }) => {
   const [editor] = useLexicalComposerContext()
   const [coords, setCoords] = React.useState<{ x: number; y: number } | null>(null)
   const [placement, setPlacement] = React.useState<"above" | "below">("above")
@@ -123,6 +125,7 @@ export const FloatingToolbar: React.FC<{
           flows down from RtSlot → LexicalField). Every other inline slot
           gets palette control via the sitewide ThemeBar. */}
       {allowColor && <ColorChip manifest={manifest} />}
+      {allowFontFamily && <FontChip manifest={manifest} />}
       <StyleChip manifest={manifest} />
       <LinkChip onOpen={onOpenLink} surface="floating" />
     </div>

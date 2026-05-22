@@ -5,31 +5,57 @@ import { $getSelection, $isRangeSelection } from "lexical"
 import { $patchStyleText } from "@lexical/selection"
 import { Type } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import type { RtManifest } from "@/lib/richText/manifest"
+import { useAnchorRtCanvas } from "@/components/ui/use-rt-canvas-anchor"
+import { useActiveTextStyle } from "@/components/ui/use-active-text-style"
+import { cn } from "@/lib/utils"
 
-type Role = "title" | "heading" | "text"
+export interface FontChipProps {
+  manifest: RtManifest
+}
 
-const ROLES: Array<{ role: Role; label: string }> = [
-  { role: "title",   label: "Title font" },
-  { role: "heading", label: "Heading font" },
-  { role: "text",    label: "Text font" },
-]
+interface ResolvedFonts {
+  tokens: Record<string, string>
+  defaultFont: string
+}
 
-export const FontChip: React.FC = () => {
+const useResolvedFonts = (manifest: RtManifest): ResolvedFonts => {
+  const anchor = useAnchorRtCanvas()
+  const [resolved, setResolved] = React.useState<ResolvedFonts>({ tokens: {}, defaultFont: "" })
+
+  React.useEffect(() => {
+    if (!anchor) return
+    const tokens: Record<string, string> = {}
+    const cs = getComputedStyle(anchor)
+    for (const f of manifest.fontFamilies ?? []) {
+      const v = cs.getPropertyValue(f.cssVar).trim()
+      if (v) tokens[f.id] = v
+      else {
+        const mirror = cs.getPropertyValue(f.cssVar.replace(/^--font-/, "--rt-tenant-font-")).trim()
+        if (mirror) tokens[f.id] = mirror
+      }
+    }
+    setResolved({ tokens, defaultFont: cs.fontFamily || "" })
+  }, [anchor, manifest])
+
+  return resolved
+}
+
+export const FontChip: React.FC<FontChipProps> = ({ manifest }) => {
   const [editor] = useLexicalComposerContext()
+  const { tokens: resolved, defaultFont } = useResolvedFonts(manifest)
+  const { font: activeFont } = useActiveTextStyle()
+  const tokens = manifest.fontFamilies ?? []
+  if (tokens.length === 0) return null
 
-  const apply = (role: Role) => {
+  const apply = (id: string | null, cssVar?: string) => {
     editor.update(() => {
       const sel = $getSelection()
       if (!$isRangeSelection(sel)) return
-      $patchStyleText(sel, { "font-family": `var(--font-${role})` })
-    })
-  }
-
-  const clear = () => {
-    editor.update(() => {
-      const sel = $getSelection()
-      if (!$isRangeSelection(sel)) return
-      $patchStyleText(sel, { "font-family": null })
+      $patchStyleText(sel, {
+        "--rt-font": id,
+        "font-family": id && cssVar ? `var(${cssVar})` : null,
+      })
     })
   }
 
@@ -39,11 +65,10 @@ export const FontChip: React.FC = () => {
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
-          className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
+          className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
           aria-label="Font family"
         >
-          <Type className="size-3.5" aria-hidden />
-          <span>Font</span>
+          <Type className="size-4" aria-hidden />
         </button>
       </PopoverTrigger>
       <PopoverContent
@@ -53,27 +78,36 @@ export const FontChip: React.FC = () => {
         onOpenAutoFocus={(e) => e.preventDefault()}
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
-        {ROLES.map(({ role, label }) => (
-          <button
-            key={role}
-            type="button"
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={() => apply(role)}
-            className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent text-left"
-          >
-            <span className="text-foreground" style={{ fontFamily: `var(--rt-tenant-font-${role}, var(--font-${role}))` }}>Aa</span>
-            <span className="text-muted-foreground">{label}</span>
-          </button>
-        ))}
-        <div className="border-t border-border my-1" />
         <button
           type="button"
+          aria-pressed={activeFont === null}
           onMouseDown={(e) => e.preventDefault()}
-          onClick={clear}
-          className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent text-left text-muted-foreground"
+          onClick={() => apply(null)}
+          className={cn(
+            "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent",
+            activeFont === null && "bg-accent text-accent-foreground",
+          )}
         >
-          Clear font
+          <span className="text-foreground" style={{ fontFamily: defaultFont || undefined }}>Aa</span>
+          <span className="text-muted-foreground">Default font</span>
         </button>
+        <div className="my-1 border-t border-border" />
+        {tokens.map((token) => (
+          <button
+            key={token.id}
+            type="button"
+            aria-pressed={activeFont === token.id}
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => apply(token.id, token.cssVar)}
+            className={cn(
+              "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent",
+              activeFont === token.id && "bg-accent text-accent-foreground",
+            )}
+          >
+            <span className="text-foreground" style={{ fontFamily: resolved[token.id] || `var(${token.cssVar})` }}>Aa</span>
+            <span className="text-muted-foreground">{token.label}</span>
+          </button>
+        ))}
       </PopoverContent>
     </Popover>
   )

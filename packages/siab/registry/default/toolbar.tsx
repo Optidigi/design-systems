@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button"
 import type { RtManifest } from "@/lib/richText/manifest"
 import { MarkChips } from "@/components/ui/mark-chips"
 import { ColorChip } from "@/components/ui/color-chip"
+import { FontChip } from "@/components/ui/font-chip"
 import { StyleChip } from "@/components/ui/style-chip"
 import { LinkChip } from "@/components/ui/link-chip"
 
-export const Toolbar: React.FC<{ manifest: RtManifest; variant: "block" | "inline"; allowColor?: boolean; onOpenLink: () => void }> = ({ manifest, variant, allowColor = false, onOpenLink }) => {
+export const Toolbar: React.FC<{ manifest: RtManifest; variant: "block" | "inline"; allowColor?: boolean; allowFontFamily?: boolean; onOpenLink: () => void }> = ({ manifest, variant, allowColor = false, allowFontFamily = false, onOpenLink }) => {
   const [editor] = useLexicalComposerContext()
 
   return (
@@ -20,6 +21,7 @@ export const Toolbar: React.FC<{ manifest: RtManifest; variant: "block" | "inlin
           other block's inline-text fields get colour control via the
           sitewide ThemeBar. */}
       {allowColor && <ColorChip manifest={manifest} />}
+      {allowFontFamily && <FontChip manifest={manifest} />}
       <StyleChip manifest={manifest} />
       <LinkChip onOpen={onOpenLink} surface="persistent" />
       {variant === "block" && (
