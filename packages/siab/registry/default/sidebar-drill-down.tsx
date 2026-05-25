@@ -50,7 +50,28 @@ export interface SidebarDrillDownProps {
   seoCard: React.ReactNode
   dangerZone: React.ReactNode
   theme?: ThemeTokens | null
+  renderList?: (context: SidebarListSlotContext) => React.ReactNode
   renderBlockForm?: (context: SidebarBlockFormSlotContext) => React.ReactNode
+}
+
+export interface SidebarListSlotContext {
+  blocks: any[]
+  isEmpty: boolean
+  openPageSettings: () => void
+  openAddBlock: () => void
+  title: React.ReactNode
+  pageSettingsButton: React.ReactNode
+  header: React.ReactNode
+  emptyState: React.ReactNode
+  blockRows: React.ReactNode
+  addBlockButton: React.ReactNode
+  blockTypePicker: React.ReactNode
+  body: React.ReactNode
+}
+
+export interface SidebarListLayoutProps {
+  header: React.ReactNode
+  body: React.ReactNode
 }
 
 export interface SidebarBlockFormSlotContext {
@@ -88,6 +109,7 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
   seoCard,
   dangerZone,
   theme,
+  renderList,
   renderBlockForm,
 }) => {
   const presetsCtx = useBlockPresets()
@@ -136,87 +158,124 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
   let content: React.ReactNode
 
   if (mode.kind === "list") {
-    content = (
-      <div className="flex h-full flex-col">
-        <header className="flex items-center justify-between border-b border-border px-3 py-2">
-          <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Page</h2>
-          <button
-            type="button"
-            onClick={() => setMode({ kind: "page-settings" })}
-            className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-            aria-label="Page settings"
-          >
-            <Settings className="size-3.5" />
-          </button>
-        </header>
-        <div className="flex-1 min-h-0 overflow-y-auto p-2 space-y-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {blocks.length === 0 ? (
-            <p className="text-xs text-muted-foreground px-2 py-4 text-center">No blocks yet. Add one to start.</p>
-          ) : (
-            <DndContext
-              id={dndId}
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragStart={(e) => setActiveDragId(String(e.active.id))}
-              onDragEnd={(e) => {
-                setActiveDragId(null)
-                onDragEnd(e)
-              }}
-              onDragCancel={() => setActiveDragId(null)}
-            >
-              <SortableContext items={ids} strategy={verticalListSortingStrategy}>
-                {blocks.map((block, i) => (
-                  <BlockListRow
-                    key={block.id ?? i}
-                    id={String(i)}
-                    block={block}
-                    blockIndex={i}
-                    onSelect={() => {
-                      onSelectBlock(i)
-                      setMode({ kind: "block", blockIndex: i })
-                    }}
-                    onDuplicate={() => onDuplicateBlock(i)}
-                    onDelete={() => onDeleteBlock(i)}
-                  />
-                ))}
-              </SortableContext>
-              <DragOverlay>
-                {activeDragId != null ? (
-                  <BlockListRowGhost block={blocks[Number(activeDragId)]} />
-                ) : null}
-              </DragOverlay>
-            </DndContext>
-          )}
-          {/* Add block button lives INSIDE the scrollable list, just below the
-              last block row (or below the empty-state hint when no blocks
-              exist). Previously it was pinned to a sidebar footer; moving it
-              into the scroll area makes the "next-action" affordance sit
-              against the existing blocks rather than floating at the bottom
-              of the sidebar pane. */}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="w-full gap-1.5 mt-1"
-            onClick={() => setAddBlockOpen(true)}
-          >
-            <Plus className="size-3.5" aria-hidden /> Add block
-          </Button>
-          {/* Controlled BlockTypePicker — no trigger of its own; the button
-              above drives it. Mirrors CanvasGapButton's add-block flow so the
-              sidebar view can insert blocks without bouncing to the canvas. */}
-          <BlockTypePicker
-            {...presetsCtx}
-            controlledOpen={addBlockOpen}
-            onOpenChange={setAddBlockOpen}
-            onAdd={(slug, _atIndex, seed) => {
-              onAddBlock(slug, seed)
-              setAddBlockOpen(false)
-            }}
-          />
-        </div>
-      </div>
+    const openPageSettings = () => setMode({ kind: "page-settings" })
+    const openAddBlock = () => setAddBlockOpen(true)
+    const title = <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Page</h2>
+    const pageSettingsButton = (
+      <button
+        type="button"
+        onClick={openPageSettings}
+        className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+        aria-label="Page settings"
+      >
+        <Settings className="size-3.5" />
+      </button>
     )
+    const header = (
+      <header className="flex items-center justify-between border-b border-border px-3 py-2">
+        {title}
+        {pageSettingsButton}
+      </header>
+    )
+    const emptyState = (
+      <p className="text-xs text-muted-foreground px-2 py-4 text-center">No blocks yet. Add one to start.</p>
+    )
+    const blockRows = (
+      <DndContext
+        id={dndId}
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={(e) => setActiveDragId(String(e.active.id))}
+        onDragEnd={(e) => {
+          setActiveDragId(null)
+          onDragEnd(e)
+        }}
+        onDragCancel={() => setActiveDragId(null)}
+      >
+        <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+          {blocks.map((block, i) => (
+            <BlockListRow
+              key={block.id ?? i}
+              id={String(i)}
+              block={block}
+              blockIndex={i}
+              onSelect={() => {
+                onSelectBlock(i)
+                setMode({ kind: "block", blockIndex: i })
+              }}
+              onDuplicate={() => onDuplicateBlock(i)}
+              onDelete={() => onDeleteBlock(i)}
+            />
+          ))}
+        </SortableContext>
+        <DragOverlay>
+          {activeDragId != null ? (
+            <BlockListRowGhost block={blocks[Number(activeDragId)]} />
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+    )
+    const addBlockButton = (
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="w-full gap-1.5 mt-1"
+        onClick={openAddBlock}
+      >
+        <Plus className="size-3.5" aria-hidden /> Add block
+      </Button>
+    )
+    const blockTypePicker = (
+      <BlockTypePicker
+        {...presetsCtx}
+        controlledOpen={addBlockOpen}
+        onOpenChange={setAddBlockOpen}
+        onAdd={(slug, _atIndex, seed) => {
+          onAddBlock(slug, seed)
+          setAddBlockOpen(false)
+        }}
+      />
+    )
+    const body = (
+      <>
+        {blocks.length === 0 ? emptyState : blockRows}
+        {/* Add block button lives INSIDE the scrollable list, just below the
+            last block row (or below the empty-state hint when no blocks
+            exist). Previously it was pinned to a sidebar footer; moving it
+            into the scroll area makes the "next-action" affordance sit
+            against the existing blocks rather than floating at the bottom
+            of the sidebar pane. */}
+        {addBlockButton}
+        {/* Controlled BlockTypePicker — no trigger of its own; the button
+            above drives it. Mirrors CanvasGapButton's add-block flow so the
+            sidebar view can insert blocks without bouncing to the canvas. */}
+        {blockTypePicker}
+      </>
+    )
+
+    if (renderList) {
+      content = (
+        <>
+          {renderList({
+            blocks,
+            isEmpty: blocks.length === 0,
+            openPageSettings,
+            openAddBlock,
+            title,
+            pageSettingsButton,
+            header,
+            emptyState,
+            blockRows,
+            addBlockButton,
+            blockTypePicker,
+            body,
+          })}
+        </>
+      )
+    } else {
+      content = <SidebarListLayout header={header} body={body} />
+    }
   } else if (mode.kind === "block") {
     if (!blockForMode) {
       // useEffect above will redirect; render nothing in the meantime
@@ -262,6 +321,18 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
 }
 
 // ---------------------------------------------------------------------------
+
+export const SidebarListLayout: React.FC<SidebarListLayoutProps> = ({
+  header,
+  body,
+}) => (
+  <div className="flex h-full flex-col">
+    {header}
+    <div className="flex-1 min-h-0 overflow-y-auto p-2 space-y-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {body}
+    </div>
+  </div>
+)
 
 const BlockListRow: React.FC<{
   id: string
