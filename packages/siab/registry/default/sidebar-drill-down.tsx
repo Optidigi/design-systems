@@ -52,6 +52,7 @@ export interface SidebarDrillDownProps {
   theme?: ThemeTokens | null
   renderList?: (context: SidebarListSlotContext) => React.ReactNode
   renderBlockForm?: (context: SidebarBlockFormSlotContext) => React.ReactNode
+  renderPageSettings?: (context: SidebarPageSettingsSlotContext) => React.ReactNode
 }
 
 export interface SidebarListSlotContext {
@@ -97,6 +98,23 @@ export interface SidebarBlockFormLayoutProps {
   deleteDialog?: React.ReactNode
 }
 
+export interface SidebarPageSettingsSlotContext {
+  onBack: () => void
+  title: React.ReactNode
+  header: React.ReactNode
+  body: React.ReactNode
+  footer: React.ReactNode
+  backButton: React.ReactNode
+  seoCard: React.ReactNode
+  dangerZone: React.ReactNode
+}
+
+export interface SidebarPageSettingsLayoutProps {
+  header: React.ReactNode
+  body: React.ReactNode
+  footer: React.ReactNode
+}
+
 export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
   blocks,
   selectedBlockIndex,
@@ -111,6 +129,7 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
   theme,
   renderList,
   renderBlockForm,
+  renderPageSettings,
 }) => {
   const presetsCtx = useBlockPresets()
   const [addBlockOpen, setAddBlockOpen] = React.useState(false)
@@ -302,6 +321,7 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
         onBack={() => setMode({ kind: "list" })}
         seoCard={seoCard}
         dangerZone={dangerZone}
+        renderPageSettings={renderPageSettings}
       />
     )
   }
@@ -584,27 +604,75 @@ const PageSettingsState: React.FC<{
   onBack: () => void
   seoCard: React.ReactNode
   dangerZone: React.ReactNode
-}> = ({ onBack, seoCard, dangerZone }) => (
-  <div className="flex h-full flex-col">
+  renderPageSettings?: (context: SidebarPageSettingsSlotContext) => React.ReactNode
+}> = ({ onBack, seoCard, dangerZone, renderPageSettings }) => {
+  const title = <span className="text-xs font-medium">Page settings</span>
+  const header = (
     <header className="flex items-center border-b border-border px-3 py-2">
-      <span className="text-xs font-medium">Page settings</span>
+      {title}
     </header>
-    <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+  )
+  const body = (
+    <>
       {seoCard}
       {dangerZone}
-    </div>
+    </>
+  )
+  const backButton = (
+    <Button
+      type="button"
+      variant="secondary"
+      size="sm"
+      onClick={onBack}
+      className="h-8 gap-1"
+      aria-label="Back to block list"
+    >
+      <ChevronLeft className="size-4" aria-hidden />
+      Back
+    </Button>
+  )
+  const footer = (
     <footer className="border-t border-border px-3 py-2 flex items-center">
-      <Button
-        type="button"
-        variant="secondary"
-        size="sm"
-        onClick={onBack}
-        className="h-8 gap-1"
-        aria-label="Back to block list"
-      >
-        <ChevronLeft className="size-4" aria-hidden />
-        Back
-      </Button>
+      {backButton}
     </footer>
+  )
+
+  if (renderPageSettings) {
+    return (
+      <>
+        {renderPageSettings({
+          onBack,
+          title,
+          header,
+          body,
+          footer,
+          backButton,
+          seoCard,
+          dangerZone,
+        })}
+      </>
+    )
+  }
+
+  return (
+    <SidebarPageSettingsLayout
+      header={header}
+      body={body}
+      footer={footer}
+    />
+  )
+}
+
+export const SidebarPageSettingsLayout: React.FC<SidebarPageSettingsLayoutProps> = ({
+  header,
+  body,
+  footer,
+}) => (
+  <div className="flex h-full flex-col">
+    {header}
+    <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {body}
+    </div>
+    {footer}
   </div>
 )
