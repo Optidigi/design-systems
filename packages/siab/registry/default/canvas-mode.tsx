@@ -189,7 +189,7 @@ const CanvasModeDesktop: React.FC<CanvasModeProps> = ({ manifest, tenantCss, vie
     deleteBlock,
     duplicateBlock,
     reorderBlocks,
-  } = useCanvasBlocks()
+  } = useCanvasBlocks(manifest)
 
   const { select, selected } = useCanvasSelection()
 

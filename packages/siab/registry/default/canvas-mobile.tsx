@@ -23,7 +23,7 @@ export const CanvasMobile: React.FC<CanvasModeProps> = (props) => {
 
 const CanvasMobileInner: React.FC<CanvasModeProps> = ({ manifest, tenantCss, dangerZone: _dangerZone, seoCard: _seoCard, theme, reorderBlocks, deleteBlock, duplicateBlock, pageTitle, onDeletePage }) => {
   const { state, setSelected, clearSelection } = useMobileEditor()
-  const { blocks, activeIndex, setActiveIndex, updateBlock, insertBlockAt } = useCanvasBlocks()
+  const { blocks, activeIndex, setActiveIndex, updateBlock, insertBlockAt } = useCanvasBlocks(manifest)
   const api = { blocks, activeIndex, setActiveIndex, updateBlock, insertBlockAt, reorderBlocks, deleteBlock, duplicateBlock }
   const { view, goto } = useMobileSubview()
 
