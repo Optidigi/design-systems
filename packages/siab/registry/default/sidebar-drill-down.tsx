@@ -50,6 +50,30 @@ export interface SidebarDrillDownProps {
   seoCard: React.ReactNode
   dangerZone: React.ReactNode
   theme?: ThemeTokens | null
+  renderBlockForm?: (context: SidebarBlockFormSlotContext) => React.ReactNode
+}
+
+export interface SidebarBlockFormSlotContext {
+  block: any
+  blockIndex: number
+  label: string
+  manifest: RtManifest
+  theme?: ThemeTokens | null
+  onBack: () => void
+  onDelete: () => void
+  requestDelete: () => void
+  backButton: React.ReactNode
+  deleteButton: React.ReactNode
+  title: React.ReactNode
+  fields: React.ReactNode
+  deleteDialog: React.ReactNode
+}
+
+export interface SidebarBlockFormLayoutProps {
+  actions: React.ReactNode
+  title: React.ReactNode
+  body: React.ReactNode
+  deleteDialog?: React.ReactNode
 }
 
 export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
@@ -64,6 +88,7 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
   seoCard,
   dangerZone,
   theme,
+  renderBlockForm,
 }) => {
   const presetsCtx = useBlockPresets()
   const [addBlockOpen, setAddBlockOpen] = React.useState(false)
@@ -203,6 +228,7 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
           blockIndex={mode.blockIndex}
           manifest={manifest}
           theme={theme}
+          renderBlockForm={renderBlockForm}
           onBack={() => setMode({ kind: "list" })}
           onDelete={() => {
             onDeleteBlock(mode.blockIndex)
@@ -373,62 +399,115 @@ const BlockFormState: React.FC<{
   blockIndex: number
   manifest: RtManifest
   theme?: ThemeTokens | null
+  renderBlockForm?: (context: SidebarBlockFormSlotContext) => React.ReactNode
   onBack: () => void
   onDelete: () => void
-}> = ({ block, blockIndex, manifest, theme, onBack, onDelete }) => {
+}> = ({ block, blockIndex, manifest, theme, renderBlockForm, onBack, onDelete }) => {
   const cfg = blockBySlug[block.blockType]
   const label = cfg
     ? (typeof cfg.labels?.singular === "string" ? cfg.labels.singular : cfg.slug)
     : block.blockType
   const [deleteOpen, setDeleteOpen] = React.useState(false)
+  const backButton = (
+    <Button
+      type="button"
+      variant="secondary"
+      size="sm"
+      onClick={onBack}
+      className="h-8 gap-1"
+      aria-label="Back to block list"
+    >
+      <ChevronLeft className="size-4" aria-hidden />
+      Back
+    </Button>
+  )
+  const deleteButton = (
+    <Button
+      type="button"
+      variant="destructive"
+      size="sm"
+      onClick={() => setDeleteOpen(true)}
+      className="gap-1.5"
+    >
+      <Trash2 className="size-3.5" aria-hidden />
+      Delete block
+    </Button>
+  )
+  const title = <span className="text-xs font-medium truncate">{label}</span>
+  const fields = <BlockFormFields block={block} blockIndex={blockIndex} manifest={manifest} theme={theme} />
+  const deleteDialog = (
+    <ConfirmDialog
+      open={deleteOpen}
+      onOpenChange={setDeleteOpen}
+      title="Delete this block?"
+      description={`${label} will be removed from this page. This can't be undone.`}
+      confirmLabel="Delete block"
+      variant="destructive"
+      onConfirm={async () => {
+        onDelete()
+      }}
+    />
+  )
+
+  if (renderBlockForm) {
+    return (
+      <>
+        {renderBlockForm({
+          block,
+          blockIndex,
+          label,
+          manifest,
+          theme,
+          onBack,
+          onDelete,
+          requestDelete: () => setDeleteOpen(true),
+          backButton,
+          deleteButton,
+          title,
+          fields,
+          deleteDialog,
+        })}
+      </>
+    )
+  }
+
   return (
-    <div className="flex h-full flex-col">
-      {/* Actions header — back (left) + delete (right). Sits above the
-          section-name header so the destructive + navigation controls are
-          at the top of the pane, not pinned to a footer at the bottom. */}
-      <header className="flex items-center justify-between border-b border-border px-3 py-2">
-        <Button
-          type="button"
-          variant="secondary"
-          size="sm"
-          onClick={onBack}
-          className="h-8 gap-1"
-          aria-label="Back to block list"
-        >
-          <ChevronLeft className="size-4" aria-hidden />
-          Back
-        </Button>
-        <Button
-          type="button"
-          variant="destructive"
-          size="sm"
-          onClick={() => setDeleteOpen(true)}
-          className="gap-1.5"
-        >
-          <Trash2 className="size-3.5" aria-hidden />
-          Delete block
-        </Button>
-      </header>
-      <header className="flex items-center border-b border-border px-3 py-2">
-        <span className="text-xs font-medium truncate">{label}</span>
-      </header>
-      <div className="flex-1 min-h-0 overflow-y-auto p-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <BlockFormFields block={block} blockIndex={blockIndex} manifest={manifest} theme={theme} />
-      </div>
-      <ConfirmDialog
-        open={deleteOpen}
-        onOpenChange={setDeleteOpen}
-        title="Delete this block?"
-        description={`${label} will be removed from this page. This can't be undone.`}
-        confirmLabel="Delete block"
-        variant="destructive"
-        onConfirm={async () => {
-          onDelete()
-        }}
-      />
-    </div>
+    <SidebarBlockFormLayout
+      actions={
+        <>
+          {backButton}
+          {deleteButton}
+        </>
+      }
+      title={title}
+      body={fields}
+      deleteDialog={deleteDialog}
+    />
   )
 }
+
+export const SidebarBlockFormLayout: React.FC<SidebarBlockFormLayoutProps> = ({
+  actions,
+  title,
+  body,
+  deleteDialog,
+}) => (
+  <div className="flex h-full flex-col">
+    {/* Actions header — back (left) + delete (right). Sits above the
+        section-name header so the destructive + navigation controls are
+        at the top of the pane, not pinned to a footer at the bottom. */}
+    <header className="flex items-center justify-between border-b border-border px-3 py-2">
+      {actions}
+    </header>
+    <header className="flex items-center border-b border-border px-3 py-2">
+      {title}
+    </header>
+    <div className="flex-1 min-h-0 overflow-y-auto p-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {body}
+    </div>
+    {deleteDialog}
+  </div>
+)
 
 const PageSettingsState: React.FC<{
   onBack: () => void
