@@ -13,6 +13,22 @@ export interface MobileInspectorBarProps {
   manifest: RtManifest
   /** Used ONLY to extract font family overrides for editor content; the drawer chrome itself still inherits admin tokens. */
   theme?: ThemeTokens | null
+  renderInspector?: (context: MobileInspectorBarSlotContext) => React.ReactNode
+}
+
+export interface MobileInspectorBarSlotContext {
+  isIdle: boolean
+  snapFraction: number
+  pathKey: string
+  handle: React.ReactNode
+  editor: React.ReactNode
+  body: React.ReactNode
+}
+
+export interface MobileInspectorBarLayoutProps {
+  snapFraction: number
+  handle: React.ReactNode
+  body: React.ReactNode
 }
 
 const SNAP_POINTS: MobileSnap[] = [0.42, 0.92]
@@ -46,7 +62,7 @@ const SNAP_POINTS: MobileSnap[] = [0.42, 0.92]
  *                          grip; vaul's shouldDrag arbitrates drag-vs-scroll
  *                          per gesture (FE-72).
  */
-export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, manifest, theme }) => {
+export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, manifest, theme, renderInspector }) => {
   const { state, expandTo, clearSelection } = useMobileEditor()
   const isIdle = state.selected == null && state.drillStack.length === 0
   const pathKey = state.selected
@@ -60,6 +76,44 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
   // iOS Safari only: suppress the native focus-scroll that would otherwise drag
   // this position:fixed sheet off-screen when a field is focused (FE-71).
   useInspectorKeyboardLock(!isIdle)
+
+  const handle = (
+    <Vaul.Handle
+      data-mobile-inspector-grip
+      preventCycle
+      className="mt-2 shrink-0 !bg-muted-foreground/30"
+    />
+  )
+  const editor = state.selected ? (
+    <div
+      key={pathKey}
+      className="h-full animate-in fade-in slide-in-from-bottom-2 duration-200"
+    >
+      <MobileComponentEditor
+        path={state.selected}
+        block={block}
+        manifest={manifest}
+        theme={theme}
+      />
+    </div>
+  ) : null
+  const body = (
+    <div
+      className="flex-1 min-h-0 overflow-hidden px-4 py-3"
+      style={{ maxHeight: `calc(${snapFraction} * 100svh - 1rem)` }}
+    >
+      {editor}
+    </div>
+  )
+  const content = renderInspector
+    ? renderInspector({ isIdle, snapFraction, pathKey, handle, editor, body })
+    : (
+      <MobileInspectorBarLayout
+        snapFraction={snapFraction}
+        handle={handle}
+        body={body}
+      />
+    )
 
   return (
     <Vaul.Root
@@ -80,41 +134,21 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
           className="fixed inset-x-0 top-0 z-50 flex h-[100svh] flex-col overscroll-contain rounded-t-[10px] border-t border-border bg-background outline-none pointer-events-none"
         >
           <Vaul.Title className="sr-only">Section inspector</Vaul.Title>
-          {/* Inner wrapper is pointer-events-auto so only the VISIBLE drawer area is interactive. */}
-          <div className="pointer-events-auto flex h-full flex-col overscroll-contain">
-            {/* Drag handle. The whole sheet body is draggable (vaul default, no
-                handleOnly — FE-72); the handle stays as a visible grip
-                affordance. preventCycle disables vaul's tap-to-cycle: the
-                handle is a pure drag affordance, not a hidden toggle.
-                !bg override keeps the handle on a theme token (vaul's
-                default [data-vaul-handle] background is a hard-coded grey). */}
-            <Vaul.Handle
-              data-mobile-inspector-grip
-              preventCycle
-              className="mt-2 shrink-0 !bg-muted-foreground/30"
-            />
-
-            <div
-              className="flex-1 min-h-0 overflow-hidden px-4 py-3"
-              style={{ maxHeight: `calc(${snapFraction} * 100svh - 1rem)` }}
-            >
-              {state.selected && (
-                <div
-                  key={pathKey}
-                  className="h-full animate-in fade-in slide-in-from-bottom-2 duration-200"
-                >
-                  <MobileComponentEditor
-                    path={state.selected}
-                    block={block}
-                    manifest={manifest}
-                    theme={theme}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
+          {content}
         </Vaul.Content>
       </Vaul.Portal>
     </Vaul.Root>
   )
 }
+
+export const MobileInspectorBarLayout: React.FC<MobileInspectorBarLayoutProps> = ({
+  handle,
+  body,
+}) => (
+  <div className="pointer-events-auto flex h-full flex-col overscroll-contain">
+    {/* Drag handle. The whole sheet body is draggable (vaul default, no
+        handleOnly — FE-72); the handle stays as a visible grip affordance. */}
+    {handle}
+    {body}
+  </div>
+)

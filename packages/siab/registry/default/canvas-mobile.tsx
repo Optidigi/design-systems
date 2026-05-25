@@ -21,7 +21,23 @@ export const CanvasMobile: React.FC<CanvasModeProps> = (props) => {
   )
 }
 
-const CanvasMobileInner: React.FC<CanvasModeProps> = ({ manifest, tenantCss, dangerZone: _dangerZone, seoCard: _seoCard, theme, reorderBlocks, deleteBlock, duplicateBlock, pageTitle, onDeletePage }) => {
+const CanvasMobileInner: React.FC<CanvasModeProps> = ({
+  manifest,
+  tenantCss,
+  dangerZone: _dangerZone,
+  seoCard: _seoCard,
+  theme,
+  reorderBlocks,
+  deleteBlock,
+  duplicateBlock,
+  pageTitle,
+  onDeletePage,
+  renderMobileList,
+  renderMobileSectionEdit,
+  renderMobileInspector,
+  renderMobilePageSettings,
+  renderMobileSeoSettings,
+}) => {
   const { state, setSelected, clearSelection } = useMobileEditor()
   const { blocks, activeIndex, setActiveIndex, updateBlock, insertBlockAt } = useCanvasBlocks(manifest)
   const api = { blocks, activeIndex, setActiveIndex, updateBlock, insertBlockAt, reorderBlocks, deleteBlock, duplicateBlock }
@@ -55,19 +71,20 @@ const CanvasMobileInner: React.FC<CanvasModeProps> = ({ manifest, tenantCss, dan
             onOpenPageSettings={() => goto({ kind: "page-settings" })}
             onOpenSeo={() => goto({ kind: "seo" })}
             onDeletePage={onDeletePage}
+            renderList={renderMobileList}
           />
         </div>
       )}
 
       {view.kind === "page-settings" && (
         <div className="fixed inset-0 z-30 flex flex-col bg-background overflow-hidden">
-          <MobilePageSettings />
+          <MobilePageSettings renderPageSettings={renderMobilePageSettings} />
         </div>
       )}
 
       {view.kind === "seo" && (
         <div className="fixed inset-0 z-30 flex flex-col bg-background overflow-hidden">
-          <MobileSeoSettings />
+          <MobileSeoSettings renderSeoSettings={renderMobileSeoSettings} />
         </div>
       )}
 
@@ -82,6 +99,8 @@ const CanvasMobileInner: React.FC<CanvasModeProps> = ({ manifest, tenantCss, dan
             onPrev={view.index > 0 ? () => { clearSelection(); goto({ kind: "section", index: view.index - 1 }, { replace: true }) } : undefined}
             onNext={view.index < blocks.length - 1 ? () => { clearSelection(); goto({ kind: "section", index: view.index + 1 }, { replace: true }) } : undefined}
             onJumpToSection={(i) => { clearSelection(); goto({ kind: "section", index: i }, { replace: true }) }}
+            renderSectionEdit={renderMobileSectionEdit}
+            renderInspector={renderMobileInspector}
           />
         </div>
       )}

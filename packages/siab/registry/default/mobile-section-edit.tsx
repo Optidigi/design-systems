@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/confirm-dialog"
 import { CanvasBlockRenderer } from "@/components/ui/canvas-block-renderer"
-import { MobileInspectorBar } from "@/components/ui/mobile-inspector-bar"
+import { MobileInspectorBar, type MobileInspectorBarProps } from "@/components/ui/mobile-inspector-bar"
 import { MobileFloatingPill } from "@/components/ui/mobile-floating-pill"
 import { useMobileEditor } from "@/components/editor/canvas/mobile/MobileEditorContext"
 import { blockBySlug } from "@/blocks/registry"
@@ -28,6 +28,28 @@ export interface MobileSectionEditProps {
   onPrev?: () => void
   onNext?: () => void
   onJumpToSection: (i: number) => void
+  renderSectionEdit?: (context: MobileSectionEditSlotContext) => React.ReactNode
+  renderInspector?: MobileInspectorBarProps["renderInspector"]
+}
+
+export interface MobileSectionEditSlotContext {
+  block: any
+  index: number
+  label: string
+  isIdle: boolean
+  header: React.ReactNode
+  canvas: React.ReactNode
+  inspectorBar: React.ReactNode
+  trashPill: React.ReactNode
+  deleteDialog: React.ReactNode
+}
+
+export interface MobileSectionEditLayoutProps {
+  header: React.ReactNode
+  canvas: React.ReactNode
+  inspectorBar: React.ReactNode
+  trashPill?: React.ReactNode
+  deleteDialog?: React.ReactNode
 }
 
 /**
@@ -48,6 +70,8 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
   onPrev,
   onNext,
   onJumpToSection,
+  renderSectionEdit,
+  renderInspector,
 }) => {
   const { blocks, updateBlock, deleteBlock } = api
   const block = blocks[index]
@@ -75,9 +99,7 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
     ? (typeof cfg.labels?.singular === "string" ? cfg.labels.singular : cfg.slug)
     : (block?.blockType ?? "?")
 
-  return (
-    <div data-mobile-section-edit className="flex h-full min-h-0 flex-col">
-      {/* Top chrome */}
+  const header = (
       <header className="sticky top-0 z-30 flex items-center justify-center gap-1 border-b border-border bg-background px-2 pt-14 pb-3 min-w-0">
           <Button
             type="button"
@@ -132,12 +154,8 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
           </Button>
 
       </header>
-
-      {/* Canvas region — single rendered section.
-          min-h-0 lets this flex child shrink so overflow-y-auto actually
-          engages — without it a tall section grows past the column and is
-          clipped unscrollable (FE-61).
-          touch-pan-x/y allows scrolling but suppresses pinch-zoom (FE-62). */}
+  )
+  const canvas = (
       <div
         data-mobile-canvas
         className="flex-1 min-h-0 overflow-y-auto touch-pan-x touch-pan-y"
@@ -156,16 +174,16 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
           />
         </div>
       </div>
-
-      {/* Inspector bar — hidden when idle (vaul open={false}), visible on selection */}
+  )
+  const inspectorBar = (
       <MobileInspectorBar
         block={block}
         manifest={manifest}
         theme={theme}
+        renderInspector={renderInspector}
       />
-
-      {/* Idle trash pill — visible only when no element is selected */}
-      {isIdle && (
+  )
+  const trashPill = isIdle ? (
         <MobileFloatingPill
           position="bottom-right"
           icon={<Trash2 className="h-5 w-5" aria-hidden />}
@@ -174,9 +192,9 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
           variant="destructive"
           dataAttrs={{ "data-mobile-trash-pill": "" }}
         />
-      )}
-
-      <ConfirmDialog
+  ) : null
+  const deleteDialog = (
+    <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         title="Delete this section?"
@@ -188,6 +206,49 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
           onBack()
         }}
       />
-    </div>
+  )
+
+  if (renderSectionEdit) {
+    return (
+      <>
+        {renderSectionEdit({
+          block,
+          index,
+          label,
+          isIdle,
+          header,
+          canvas,
+          inspectorBar,
+          trashPill,
+          deleteDialog,
+        })}
+      </>
+    )
+  }
+
+  return (
+    <MobileSectionEditLayout
+      header={header}
+      canvas={canvas}
+      inspectorBar={inspectorBar}
+      trashPill={trashPill}
+      deleteDialog={deleteDialog}
+    />
   )
 }
+
+export const MobileSectionEditLayout: React.FC<MobileSectionEditLayoutProps> = ({
+  header,
+  canvas,
+  inspectorBar,
+  trashPill,
+  deleteDialog,
+}) => (
+  <div data-mobile-section-edit className="flex h-full min-h-0 flex-col">
+    {header}
+    {canvas}
+    {inspectorBar}
+    {trashPill}
+    {deleteDialog}
+  </div>
+)

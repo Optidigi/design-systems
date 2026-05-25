@@ -19,7 +19,26 @@ const resolveUrl = (v: unknown): string | null => {
   return null
 }
 
-export const MobileSeoSettings: React.FC = () => {
+export interface MobileSeoSettingsProps {
+  renderSeoSettings?: (context: MobileSeoSettingsSlotContext) => React.ReactNode
+}
+
+export interface MobileSeoSettingsSlotContext {
+  header: React.ReactNode
+  body: React.ReactNode
+  titleField: React.ReactNode
+  descriptionField: React.ReactNode
+  imageField: React.ReactNode
+  mediaSheet: React.ReactNode
+}
+
+export interface MobileSeoSettingsLayoutProps {
+  header: React.ReactNode
+  body: React.ReactNode
+  mediaSheet: React.ReactNode
+}
+
+export const MobileSeoSettings: React.FC<MobileSeoSettingsProps> = ({ renderSeoSettings }) => {
   const { watch, setValue } = useFormContext()
   const seoTitle = watch("seo.title") as string | null | undefined
   const seoDescription = watch("seo.description") as string | null | undefined
@@ -27,21 +46,25 @@ export const MobileSeoSettings: React.FC = () => {
   const [sheetOpen, setSheetOpen] = React.useState(false)
   const url = resolveUrl(ogImage)
 
-  return (
-    <div data-mobile-seo-settings>
-      <header className="sticky top-0 z-30 flex items-center justify-center gap-2 border-b border-border bg-background px-2 pt-14 pb-3">
-        <h2 className="text-sm font-medium truncate">SEO</h2>
-      </header>
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        <div className="space-y-1.5">
+  const header = (
+    <header className="sticky top-0 z-30 flex items-center justify-center gap-2 border-b border-border bg-background px-2 pt-14 pb-3">
+      <h2 className="text-sm font-medium truncate">SEO</h2>
+    </header>
+  )
+  const titleField = (
+    <div className="space-y-1.5">
           <Label htmlFor="mobile-seo-title" className="text-sm">SEO title</Label>
           <Input id="mobile-seo-title" value={seoTitle ?? ""} onChange={(e) => setValue("seo.title", e.target.value, { shouldDirty: true })} />
         </div>
-        <div className="space-y-1.5">
+  )
+  const descriptionField = (
+    <div className="space-y-1.5">
           <Label htmlFor="mobile-seo-description" className="text-sm">SEO description</Label>
           <Textarea id="mobile-seo-description" value={seoDescription ?? ""} onChange={(e) => setValue("seo.description", e.target.value, { shouldDirty: true })} rows={4} />
         </div>
-        <div className="space-y-1.5">
+  )
+  const imageField = (
+    <div className="space-y-1.5">
           <Label className="text-sm">Open Graph image</Label>
           {url ? (
             <img src={url} alt="" className="w-full max-h-48 object-cover rounded-md border border-border" />
@@ -61,8 +84,45 @@ export const MobileSeoSettings: React.FC = () => {
             )}
           </div>
         </div>
-      </div>
-      <MobileMediaSheet open={sheetOpen} onOpenChange={setSheetOpen} onPick={(m) => setValue("seo.ogImage", m, { shouldDirty: true })} />
-    </div>
+  )
+  const body = (
+    <>
+      {titleField}
+      {descriptionField}
+      {imageField}
+    </>
+  )
+  const mediaSheet = (
+    <MobileMediaSheet open={sheetOpen} onOpenChange={setSheetOpen} onPick={(m) => setValue("seo.ogImage", m, { shouldDirty: true })} />
+  )
+
+  if (renderSeoSettings) {
+    return (
+      <>
+        {renderSeoSettings({ header, body, titleField, descriptionField, imageField, mediaSheet })}
+      </>
+    )
+  }
+
+  return (
+    <MobileSeoSettingsLayout
+      header={header}
+      body={body}
+      mediaSheet={mediaSheet}
+    />
   )
 }
+
+export const MobileSeoSettingsLayout: React.FC<MobileSeoSettingsLayoutProps> = ({
+  header,
+  body,
+  mediaSheet,
+}) => (
+  <div data-mobile-seo-settings>
+    {header}
+    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {body}
+    </div>
+    {mediaSheet}
+  </div>
+)

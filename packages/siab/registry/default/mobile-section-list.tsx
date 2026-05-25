@@ -34,6 +34,33 @@ export interface MobileSectionListProps {
   onOpenPageSettings: () => void
   onOpenSeo: () => void
   onDeletePage: () => void
+  renderList?: (context: MobileSectionListSlotContext) => React.ReactNode
+}
+
+export interface MobileSectionListSlotContext {
+  blocks: any[]
+  isEmpty: boolean
+  pageTitle: string
+  openAddSection: () => void
+  header: React.ReactNode
+  sectionsHeader: React.ReactNode
+  emptyState: React.ReactNode
+  sectionCards: React.ReactNode
+  addSectionButton: React.ReactNode
+  pageActionsTitle: React.ReactNode
+  pageRows: React.ReactNode
+  blockTypePicker: React.ReactNode
+}
+
+export interface MobileSectionListLayoutProps {
+  header: React.ReactNode
+  sectionsHeader: React.ReactNode
+  emptyState: React.ReactNode
+  sectionCards: React.ReactNode
+  addSectionButton: React.ReactNode
+  pageActionsTitle: React.ReactNode
+  pageRows: React.ReactNode
+  blockTypePicker: React.ReactNode
 }
 
 interface SortableCardProps {
@@ -101,6 +128,7 @@ export const MobileSectionList: React.FC<MobileSectionListProps> = ({
   onOpenPageSettings,
   onOpenSeo,
   onDeletePage,
+  renderList,
 }) => {
   const { blocks, reorderBlocks, insertBlockAt } = api
   const presetsCtx = useBlockPresets()
@@ -124,69 +152,138 @@ export const MobileSectionList: React.FC<MobileSectionListProps> = ({
     reorderBlocks(from, to)
   }
 
+  const openAddSection = () => setPickerOpen(true)
+  const header = (
+    <header className="flex items-center justify-between gap-3 pb-1">
+      <h1 className="truncate text-base font-semibold text-foreground" data-mobile-page-title>
+        {pageTitle || "Untitled page"}
+      </h1>
+    </header>
+  )
+  const sectionsHeader = (
+    <div className="flex items-center justify-between">
+      <h2 className="text-xs uppercase tracking-wide text-muted-foreground">Sections</h2>
+      <span className="text-[11px] text-muted-foreground">Drag to reorder</span>
+    </div>
+  )
+  const emptyState = blocks.length === 0 ? (
+    <div className="flex h-24 items-center justify-center rounded-lg border border-dashed border-border text-sm text-muted-foreground">
+      No sections yet. Tap "+ Add section" below.
+    </div>
+  ) : null
+  const sectionCards = (
+    <DndContext id={dndId} sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+      <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+        <div className="flex flex-col gap-2">
+          {blocks.map((block, i) => (
+            <SortableSectionCard
+              key={block.id ?? i}
+              id={String(i)}
+              block={block}
+              index={i}
+              onOpen={() => onOpenSection(i)}
+            />
+          ))}
+        </div>
+      </SortableContext>
+    </DndContext>
+  )
+  const addSectionButton = (
+    <Button
+      type="button"
+      variant="default"
+      className="w-full mt-1 gap-2"
+      onClick={openAddSection}
+      data-mobile-add-section
+    >
+      <Plus className="size-4" /> Add section
+    </Button>
+  )
+  const pageActionsTitle = (
+    <h2 className="text-xs uppercase tracking-wide text-muted-foreground pb-1">Page</h2>
+  )
+  const pageRows = (
+    <>
+      <PageRow label="Page settings" onClick={onOpenPageSettings} data-test="mobile-row-page-settings" />
+      <PageRow label="SEO" onClick={onOpenSeo} data-test="mobile-row-seo" />
+      <PageRow label="Delete page" onClick={onDeletePage} variant="destructive" data-test="mobile-row-delete" />
+    </>
+  )
+  const blockTypePicker = (
+    <BlockTypePicker
+      {...presetsCtx}
+      controlledOpen={pickerOpen}
+      onOpenChange={setPickerOpen}
+      onAdd={(slug, _atIndex, seed) => {
+        insertBlockAt(blocks.length, slug, seed)
+        setPickerOpen(false)
+      }}
+    />
+  )
+
+  if (renderList) {
+    return (
+      <>
+        {renderList({
+          blocks,
+          isEmpty: blocks.length === 0,
+          pageTitle,
+          openAddSection,
+          header,
+          sectionsHeader,
+          emptyState,
+          sectionCards,
+          addSectionButton,
+          pageActionsTitle,
+          pageRows,
+          blockTypePicker,
+        })}
+      </>
+    )
+  }
+
   return (
+    <MobileSectionListLayout
+      header={header}
+      sectionsHeader={sectionsHeader}
+      emptyState={emptyState}
+      sectionCards={sectionCards}
+      addSectionButton={addSectionButton}
+      pageActionsTitle={pageActionsTitle}
+      pageRows={pageRows}
+      blockTypePicker={blockTypePicker}
+    />
+  )
+}
+
+export const MobileSectionListLayout: React.FC<MobileSectionListLayoutProps> = ({
+  header,
+  sectionsHeader,
+  emptyState,
+  sectionCards,
+  addSectionButton,
+  pageActionsTitle,
+  pageRows,
+  blockTypePicker,
+}) => (
     <div className="flex flex-col gap-4 p-4" data-mobile-section-list>
-      <header className="flex items-center justify-between gap-3 pb-1">
-        <h1 className="truncate text-base font-semibold text-foreground" data-mobile-page-title>
-          {pageTitle || "Untitled page"}
-        </h1>
-      </header>
+      {header}
 
       <section className="space-y-2" aria-label="Sections">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xs uppercase tracking-wide text-muted-foreground">Sections</h2>
-          <span className="text-[11px] text-muted-foreground">Drag to reorder</span>
-        </div>
-        {blocks.length === 0 && (
-          <div className="flex h-24 items-center justify-center rounded-lg border border-dashed border-border text-sm text-muted-foreground">
-            No sections yet. Tap "+ Add section" below.
-          </div>
-        )}
-        <DndContext id={dndId} sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-          <SortableContext items={ids} strategy={verticalListSortingStrategy}>
-            <div className="flex flex-col gap-2">
-              {blocks.map((block, i) => (
-                <SortableSectionCard
-                  key={block.id ?? i}
-                  id={String(i)}
-                  block={block}
-                  index={i}
-                  onOpen={() => onOpenSection(i)}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
-        <Button
-          type="button"
-          variant="default"
-          className="w-full mt-1 gap-2"
-          onClick={() => setPickerOpen(true)}
-          data-mobile-add-section
-        >
-          <Plus className="size-4" /> Add section
-        </Button>
+        {sectionsHeader}
+        {emptyState}
+        {sectionCards}
+        {addSectionButton}
       </section>
 
       <section className="space-y-1" aria-label="Page actions">
-        <h2 className="text-xs uppercase tracking-wide text-muted-foreground pb-1">Page</h2>
-        <PageRow label="Page settings" onClick={onOpenPageSettings} data-test="mobile-row-page-settings" />
-        <PageRow label="SEO" onClick={onOpenSeo} data-test="mobile-row-seo" />
-        <PageRow label="Delete page" onClick={onDeletePage} variant="destructive" data-test="mobile-row-delete" />
+        {pageActionsTitle}
+        {pageRows}
       </section>
 
-      <BlockTypePicker
-        {...presetsCtx}
-        controlledOpen={pickerOpen}
-        onOpenChange={setPickerOpen}
-        onAdd={(slug, _atIndex, seed) => {
-          insertBlockAt(blocks.length, slug, seed)
-          setPickerOpen(false)
-        }}
-      />
+      {blockTypePicker}
     </div>
-  )
-}
+)
 
 const PageRow: React.FC<{
   label: string

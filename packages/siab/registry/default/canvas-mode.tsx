@@ -34,6 +34,11 @@ import type { ThemeTokens } from "@/lib/theme/schema"
 import { toCssVars } from "@/lib/theme/toCssVars"
 import { isReadOnlyView } from "@/components/editor/canvas/canvasView"
 import type { CanvasView } from "@/components/editor/canvas/canvasView"
+import type { MobileSectionListSlotContext } from "@/components/ui/mobile-section-list"
+import type { MobileSectionEditSlotContext } from "@/components/ui/mobile-section-edit"
+import type { MobileInspectorBarSlotContext } from "@/components/ui/mobile-inspector-bar"
+import type { MobilePageSettingsSlotContext } from "@/components/ui/mobile-page-settings"
+import type { MobileSeoSettingsSlotContext } from "@/components/ui/mobile-seo-settings"
 
 /** The fixed "desktop" width the canvas surface is laid out at before being
  *  zoom-fitted into the (narrower) editor pane — see useFitZoom. */
@@ -76,6 +81,11 @@ export interface CanvasModeProps {
   /** Called when the mobile overview's Delete-page row is tapped. Owner is
    *  PageForm — opens the existing TypedConfirmDialog. */
   onDeletePage: () => void
+  renderMobileList?: (context: MobileSectionListSlotContext) => React.ReactNode
+  renderMobileSectionEdit?: (context: MobileSectionEditSlotContext) => React.ReactNode
+  renderMobileInspector?: (context: MobileInspectorBarSlotContext) => React.ReactNode
+  renderMobilePageSettings?: (context: MobilePageSettingsSlotContext) => React.ReactNode
+  renderMobileSeoSettings?: (context: MobileSeoSettingsSlotContext) => React.ReactNode
 }
 
 // ---------------------------------------------------------------------------
@@ -153,7 +163,7 @@ const SortableBlockItem: React.FC<SortableBlockItemProps> = ({
  * Reads/writes the form state via react-hook-form (RHF) — the form is
  * provided by PageForm's existing FormProvider.
  */
-export const CanvasMode: React.FC<CanvasModeProps> = ({ manifest, tenantCss, view, dangerZone, seoCard, theme, reorderBlocks, deleteBlock, duplicateBlock, pageTitle, onDeletePage }) => {
+export const CanvasMode: React.FC<CanvasModeProps> = ({ manifest, tenantCss, view, dangerZone, seoCard, theme, reorderBlocks, deleteBlock, duplicateBlock, pageTitle, onDeletePage, renderMobileList, renderMobileSectionEdit, renderMobileInspector, renderMobilePageSettings, renderMobileSeoSettings }) => {
   const isMobile = useIsMobile()
 
   if (isMobile) {
@@ -170,6 +180,11 @@ export const CanvasMode: React.FC<CanvasModeProps> = ({ manifest, tenantCss, vie
         duplicateBlock={duplicateBlock}
         pageTitle={pageTitle}
         onDeletePage={onDeletePage}
+        renderMobileList={renderMobileList}
+        renderMobileSectionEdit={renderMobileSectionEdit}
+        renderMobileInspector={renderMobileInspector}
+        renderMobilePageSettings={renderMobilePageSettings}
+        renderMobileSeoSettings={renderMobileSeoSettings}
       />
     )
   }
