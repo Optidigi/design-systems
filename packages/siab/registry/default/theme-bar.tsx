@@ -9,7 +9,7 @@ import {
 import { Palette, Type, SquareRoundCorner } from "lucide-react"
 import { PalettePicker, type PalettePreset } from "@/components/ui/palette-picker"
 import { FontPicker, type FontPreset } from "@/components/ui/font-picker"
-import { RadiusControl } from "@/components/ui/radius-control"
+import { RadiusControl, type RadiusLevel } from "@/components/ui/radius-control"
 import type { ThemeTokens } from "@/lib/theme/schema"
 import type { RtManifest } from "@/lib/richText/manifest"
 import { SegmentedPill } from "@/components/ui/segmented-pill"
@@ -24,12 +24,14 @@ export function ThemeBar({
   onThemeChange,
   palettes,
   fonts,
+  radiusLevels,
 }: {
   theme: ThemeTokens | null
   manifest: RtManifest
   onThemeChange: (theme: ThemeTokens) => void
   palettes: PalettePreset[]
   fonts: FontPreset[]
+  radiusLevels?: RadiusLevel[]
 }) {
   // Theme edits are *not* autosaved — they flow up via onThemeChange so the
   // parent form can track them in the same dirty/Save cycle as page-form
@@ -109,6 +111,7 @@ export function ThemeBar({
           {openSegment === "shape" && (
             <RadiusControl
               radius={theme?.radius}
+              levels={radiusLevels}
               onChange={(next) => handleUpdate(next)}
             />
           )}

@@ -4,21 +4,35 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Square, Squircle, Circle } from "lucide-react"
 import type { ThemeTokens } from "@/lib/theme/schema"
 
-const RADIUS_LEVELS: { id: string; label: string; value: string; Icon: React.ComponentType<{ className?: string }> }[] = [
-  { id: "sharp", label: "Sharp", value: "0", Icon: Square },
-  { id: "soft", label: "Soft", value: "0.5rem", Icon: Squircle },
-  { id: "round", label: "Round", value: "1.5rem", Icon: Circle },
+export type RadiusLevel = {
+  id: string
+  label: string
+  value: string
+  icon?: "square" | "squircle" | "circle"
+}
+
+export const DEFAULT_RADIUS_LEVELS: RadiusLevel[] = [
+  { id: "sharp", label: "Sharp", value: "0", icon: "square" },
+  { id: "soft", label: "Soft", value: "0.5rem", icon: "squircle" },
+  { id: "round", label: "Round", value: "1.5rem", icon: "circle" },
 ]
 
-function findRadiusLevel(radius: string | undefined): string | undefined {
-  return RADIUS_LEVELS.find((l) => l.value === radius)?.id
+function iconFor(level: RadiusLevel): React.ComponentType<{ className?: string }> {
+  if (level.icon === "circle") return Circle
+  if (level.icon === "squircle") return Squircle
+  return Square
+}
+
+function findRadiusLevel(radius: string | undefined, levels: RadiusLevel[]): string | undefined {
+  return levels.find((l) => l.value === radius)?.id
 }
 
 export const RadiusControl: React.FC<{
   radius: ThemeTokens["radius"]
+  levels?: RadiusLevel[]
   onChange: (next: { radius?: string }) => void
-}> = ({ radius, onChange }) => {
-  const activeLevel = findRadiusLevel(radius)
+}> = ({ radius, levels = DEFAULT_RADIUS_LEVELS, onChange }) => {
+  const activeLevel = findRadiusLevel(radius, levels)
 
   return (
     <div className="flex items-center gap-2">
@@ -27,21 +41,24 @@ export const RadiusControl: React.FC<{
         value={activeLevel ?? ""}
         onValueChange={(id) => {
           if (!id) return
-          const level = RADIUS_LEVELS.find((l) => l.id === id)
+          const level = levels.find((l) => l.id === id)
           if (level) onChange({ radius: level.value })
         }}
         className="gap-1"
       >
-        {RADIUS_LEVELS.map(({ id, label, Icon }) => (
-          <ToggleGroupItem
-            key={id}
-            value={id}
-            aria-label={label}
-            className="size-9 rounded-md border border-border bg-background data-[state=on]:border-primary data-[state=on]:bg-primary/5"
-          >
-            <Icon className="size-4" aria-hidden />
-          </ToggleGroupItem>
-        ))}
+        {levels.map((level) => {
+          const Icon = iconFor(level)
+          return (
+            <ToggleGroupItem
+              key={level.id}
+              value={level.id}
+              aria-label={level.label}
+              className="size-9 rounded-md border border-border bg-background data-[state=on]:border-primary data-[state=on]:bg-primary/5"
+            >
+              <Icon className="size-4" aria-hidden />
+            </ToggleGroupItem>
+          )
+        })}
       </ToggleGroup>
     </div>
   )
