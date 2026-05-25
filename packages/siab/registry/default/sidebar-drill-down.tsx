@@ -607,7 +607,7 @@ const PageSettingsState: React.FC<{
   renderPageSettings?: (context: SidebarPageSettingsSlotContext) => React.ReactNode
 }> = ({ onBack, seoCard, dangerZone, renderPageSettings }) => {
   const title = <span className="text-xs font-medium">Page settings</span>
-  const header = (
+  const titleHeader = (
     <header className="flex items-center border-b border-border px-3 py-2">
       {title}
     </header>
@@ -631,11 +631,18 @@ const PageSettingsState: React.FC<{
       Back
     </Button>
   )
-  const footer = (
-    <footer className="border-t border-border px-3 py-2 flex items-center">
+  const actionsHeader = (
+    <header className="flex items-center border-b border-border px-3 py-2">
       {backButton}
-    </footer>
+    </header>
   )
+  const header = (
+    <>
+      {actionsHeader}
+      {titleHeader}
+    </>
+  )
+  const footer = null
 
   if (renderPageSettings) {
     return (
