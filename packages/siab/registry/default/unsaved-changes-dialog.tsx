@@ -8,6 +8,7 @@ import {
   DialogTitle
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { useTranslations } from "next-intl"
 
 /**
  * UnsavedChangesDialog — stateless, props-driven shadcn Dialog used by
@@ -35,9 +36,10 @@ export function UnsavedChangesDialog({
   open,
   onCancel,
   onConfirm,
-  title = "Discard changes?",
-  description = "You have unsaved changes that will be lost."
+  title,
+  description
 }: Props) {
+  const t = useTranslations("common")
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onCancel()}>
       <DialogContent
@@ -46,15 +48,15 @@ export function UnsavedChangesDialog({
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogTitle>{title ?? t("discardChangesTitle")}</DialogTitle>
+          <DialogDescription>{description ?? t("discardChangesDescription")}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onCancel}>
-            Keep editing
+            {t("keepEditing")}
           </Button>
           <Button type="button" variant="destructive" onClick={onConfirm}>
-            Discard changes
+            {t("discardChanges")}
           </Button>
         </DialogFooter>
       </DialogContent>

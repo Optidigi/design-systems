@@ -9,6 +9,7 @@ import type { RtManifest } from "@/lib/richText/manifest"
 import { useAnchorRtCanvas } from "@/components/ui/use-rt-canvas-anchor"
 import { useActiveTextStyle } from "@/components/ui/use-active-text-style"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 export interface ColorChipProps {
   manifest: RtManifest
@@ -44,6 +45,7 @@ const useResolvedColors = (manifest: RtManifest): ResolvedColors => {
 }
 
 export const ColorChip: React.FC<ColorChipProps> = ({ manifest }) => {
+  const t = useTranslations("editor")
   const [editor] = useLexicalComposerContext()
   const { tokens: resolved, defaultColor } = useResolvedColors(manifest)
   const { color: activeColor } = useActiveTextStyle()
@@ -65,7 +67,7 @@ export const ColorChip: React.FC<ColorChipProps> = ({ manifest }) => {
           type="button"
           onMouseDown={(e) => e.preventDefault()}
           className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-          aria-label="Text colour"
+          aria-label={t("textColour")}
         >
           <Palette className="size-4" aria-hidden />
         </button>
@@ -83,9 +85,9 @@ export const ColorChip: React.FC<ColorChipProps> = ({ manifest }) => {
               picking it visually "matches" the colour the text reverts to. */}
           <button
             type="button"
-            aria-label="Default colour"
+            aria-label={t("defaultColour")}
             aria-pressed={activeColor === null}
-            title="Default colour"
+            title={t("defaultColour")}
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => apply(null)}
             className={cn(

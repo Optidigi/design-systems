@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 /**
  * Three-state theme toggle: Light / Dark / System.
@@ -22,6 +23,7 @@ import { cn } from "@/lib/utils"
  *   to OS changes when "system" is selected.
  */
 export function ThemeToggle() {
+  const t = useTranslations("common")
   const { theme, setTheme } = useTheme()
   // `theme` is "light" | "dark" | "system" | undefined (during SSR/first
   // paint). Coerce undefined to "system" so the radio group has a defined
@@ -36,19 +38,19 @@ export function ThemeToggle() {
         <Button variant="ghost" size="icon">
           <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">Change theme</span>
+          <span className="sr-only">{t("changeTheme")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-36">
         <DropdownMenuRadioGroup value={value} onValueChange={setTheme}>
           <DropdownMenuRadioItem value="light">
-            <Sun className="mr-2 h-4 w-4" /> Light
+            <Sun className="mr-2 h-4 w-4" /> {t("light")}
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="dark">
-            <Moon className="mr-2 h-4 w-4" /> Dark
+            <Moon className="mr-2 h-4 w-4" /> {t("dark")}
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="system">
-            <Monitor className="mr-2 h-4 w-4" /> System
+            <Monitor className="mr-2 h-4 w-4" /> {t("system")}
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
@@ -68,24 +70,31 @@ const themeIcons = {
 }
 
 export function ThemeSwitcher() {
+  const t = useTranslations("common")
   const { theme, setTheme } = useTheme()
+  const themeLabel = {
+    light: t("light"),
+    dark: t("dark"),
+    system: t("system"),
+  }
+
   return (
     <div className="flex w-full items-center gap-1 px-2 py-1.5">
-      <span className="text-xs text-muted-foreground mr-auto">Theme</span>
-      {(["light", "dark", "system"] as const).map((t) => {
-        const Icon = themeIcons[t]
+      <span className="text-xs text-muted-foreground mr-auto">{t("theme")}</span>
+      {(["light", "dark", "system"] as const).map((mode) => {
+        const Icon = themeIcons[mode]
         return (
           <button
-            key={t}
+            key={mode}
             type="button"
-            onClick={() => setTheme(t)}
+            onClick={() => setTheme(mode)}
             className={cn(
               "inline-flex items-center justify-center rounded-md h-9 w-9 hover:bg-accent transition-colors",
-              theme === t && "bg-accent",
+              theme === mode && "bg-accent",
             )}
-            aria-pressed={theme === t}
-            aria-label={t}
-            title={t}
+            aria-pressed={theme === mode}
+            aria-label={themeLabel[mode]}
+            title={themeLabel[mode]}
           >
             <Icon className="h-4 w-4" aria-hidden />
           </button>

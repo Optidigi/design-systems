@@ -5,6 +5,7 @@ import {
   useMobileMediaSheet,
   type MediaItem,
 } from "@/components/editor/canvas/MobileMediaSheetContext"
+import { useTranslations } from "next-intl"
 
 export type { MediaItem }
 
@@ -21,6 +22,7 @@ export const MobileMediaSheet: React.FC<MobileMediaSheetProps> = ({
   onPick,
   tenantId,
 }) => {
+  const t = useTranslations("editor")
   const { resolveTenantId, fetchMedia, MediaPickerComponent } = useMobileMediaSheet()
   const [resolvedTenantId, setResolvedTenantId] = React.useState<number | string | null>(
     tenantId ?? null,
@@ -57,7 +59,7 @@ export const MobileMediaSheet: React.FC<MobileMediaSheetProps> = ({
         data-mobile-media-sheet
       >
         <SheetHeader className="pb-3">
-          <SheetTitle>Choose image</SheetTitle>
+          <SheetTitle>{t("chooseImage")}</SheetTitle>
         </SheetHeader>
         {resolvedTenantId != null && (
           <MediaPickerComponent

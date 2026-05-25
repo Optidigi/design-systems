@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-table"
 import { useState } from "react"
 import Link from "next/link"
+import { useTranslations } from "next-intl"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -23,6 +24,7 @@ type Props<T> = {
 }
 
 export function DataTable<T>({ columns, data, filterColumn, filterPlaceholder, emptyState, getRowHref }: Props<T>) {
+  const t = useTranslations("common")
   const [sorting, setSorting] = useState<SortingState>([])
   const [filter, setFilter] = useState("")
 
@@ -39,6 +41,11 @@ export function DataTable<T>({ columns, data, filterColumn, filterPlaceholder, e
   })
 
   const isEmpty = table.getRowModel().rows.length === 0
+  const pageIndex = table.getState().pagination.pageIndex
+  const pageSize = table.getState().pagination.pageSize
+  const filteredRows = table.getFilteredRowModel().rows.length
+  const currentFrom = filteredRows === 0 ? 0 : pageIndex * pageSize + 1
+  const currentTo = Math.min((pageIndex + 1) * pageSize, filteredRows)
   // Distinguish "list is empty" (show caller-supplied empty state with
   // primary CTA like "+ New page") from "filter narrowed to zero rows"
   // (always show the generic "No results / adjust your search" state).
@@ -52,7 +59,7 @@ export function DataTable<T>({ columns, data, filterColumn, filterPlaceholder, e
         <div className="relative w-full md:max-w-sm">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden />
           <Input
-            placeholder={filterPlaceholder ?? "Search…"}
+            placeholder={filterPlaceholder ?? t("search")}
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             inputMode="search"
@@ -66,7 +73,7 @@ export function DataTable<T>({ columns, data, filterColumn, filterPlaceholder, e
               type="button"
               onClick={() => setFilter("")}
               className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded-md hover:bg-accent text-muted-foreground"
-              aria-label="Clear search"
+              aria-label={t("clearSearch")}
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -78,15 +85,15 @@ export function DataTable<T>({ columns, data, filterColumn, filterPlaceholder, e
         isFilterNarrowed ? (
           <EmptyState
             icon={<FileQuestion className="h-10 w-10 text-muted-foreground" aria-hidden />}
-            title="No results"
-            description="Try adjusting your search or filter."
+            title={t("noResults")}
+            description={t("noResultsDescription")}
           />
         ) : (
           emptyState ?? (
             <EmptyState
               icon={<FileQuestion className="h-10 w-10 text-muted-foreground" aria-hidden />}
-              title="No results"
-              description="Try adjusting your search or filter."
+              title={t("noResults")}
+              description={t("noResultsDescription")}
             />
           )
         )
@@ -162,7 +169,7 @@ export function DataTable<T>({ columns, data, filterColumn, filterPlaceholder, e
                   {href ? (
                     <Link
                       href={href}
-                      aria-label="Open"
+                      aria-label={t("open")}
                       className="flex-1 min-w-0 rounded-[inherit] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
                       {inner}
@@ -234,10 +241,7 @@ export function DataTable<T>({ columns, data, filterColumn, filterPlaceholder, e
       {table.getPageCount() > 1 && (
         <div className="sticky bottom-0 flex items-center justify-between gap-2 border-t bg-background/95 backdrop-blur px-3 py-2 text-sm">
           <span className="text-muted-foreground">
-            {`Showing ${table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}–${Math.min(
-              (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-              table.getFilteredRowModel().rows.length
-            )} of ${table.getFilteredRowModel().rows.length}`}
+            {t("showing", { from: currentFrom, to: currentTo, total: filteredRows })}
           </span>
           <div className="flex items-center gap-1">
             <Button
@@ -246,7 +250,7 @@ export function DataTable<T>({ columns, data, filterColumn, filterPlaceholder, e
               size="sm"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              aria-label="Previous page"
+              aria-label={t("previousPage")}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -259,7 +263,7 @@ export function DataTable<T>({ columns, data, filterColumn, filterPlaceholder, e
               size="sm"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              aria-label="Next page"
+              aria-label={t("nextPage")}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>

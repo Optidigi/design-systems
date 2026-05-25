@@ -7,6 +7,7 @@ import { ConfirmDialog } from "@/components/confirm-dialog"
 import { Plus, ChevronDown, ChevronRight, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 export type BlockTypeDef = {
   slug: string
@@ -75,6 +76,7 @@ export function BlockTypePicker({
   controlledOpen,
   onOpenChange,
 }: BlockTypePickerProps) {
+  const t = useTranslations("editor")
   const [internalOpen, setInternalOpen] = useState(false)
   const isControlled = controlledOpen !== undefined
   const open = isControlled ? controlledOpen : internalOpen
@@ -110,20 +112,20 @@ export function BlockTypePicker({
       {!isControlled && (
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" type="button">
-            <Plus className="mr-1 h-4 w-4" /> Add block
+            <Plus className="mr-1 h-4 w-4" /> {t("addBlock")}
           </Button>
         </DialogTrigger>
       )}
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Add a block</DialogTitle>
+          <DialogTitle>{t("addBlockTitle")}</DialogTitle>
           <DialogDescription className="sr-only">
-            Pick a block type to insert at this position.
+            {t("pickBlockType")}
           </DialogDescription>
         </DialogHeader>
         {presetsError && (
           <p className="text-xs text-destructive">
-            Couldn&apos;t load saved presets: {presetsError}. You can still pick a blank block.
+            {t("presetLoadFailed", { message: presetsError })}
           </p>
         )}
         <div className="space-y-2 max-h-[60vh] overflow-y-auto">
@@ -159,8 +161,8 @@ export function BlockTypePicker({
                         {typeof b.labels?.singular === "string" ? b.labels.singular : b.slug}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {b.description ?? `${b.fields.length} fields`}
-                        {hasPresets && ` · ${tilePresets.length} preset${tilePresets.length === 1 ? "" : "s"}`}
+                        {b.description ?? t("fieldCount", { count: b.fields.length })}
+                        {hasPresets && ` · ${t("presetCount", { count: tilePresets.length })}`}
                       </div>
                     </div>
                   </div>
@@ -181,7 +183,7 @@ export function BlockTypePicker({
                       }}
                     >
                       <span className="text-muted-foreground">+</span>
-                      <span>Blank {b.slug}</span>
+                      <span>{t("blankBlock", { type: b.slug })}</span>
                     </button>
                     {tilePresets.map((preset) => (
                       <PresetRow
@@ -225,6 +227,7 @@ function PresetRow({
   onDelete: (preset: BlockPresetDef) => Promise<void>
   onDeleted: () => void
 }) {
+  const t = useTranslations("editor")
   const [confirmOpen, setConfirmOpen] = useState(false)
 
   return (
@@ -243,7 +246,7 @@ function PresetRow({
           e.stopPropagation()
           setConfirmOpen(true)
         }}
-        aria-label={`Delete preset ${preset.name}`}
+        aria-label={t("deletePresetLabel", { name: preset.name })}
         className="h-7 w-7"
       >
         <Trash2 className="h-3.5 w-3.5"/>
@@ -251,16 +254,12 @@ function PresetRow({
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        title={`Delete preset "${preset.name}"?`}
-        description={
-          <>
-            This removes the preset from the picker. <strong>It won&apos;t affect blocks already inserted on pages.</strong>
-          </>
-        }
-        confirmLabel="Delete preset"
+        title={t("deletePresetTitle", { name: preset.name })}
+        description={t("deletePresetDescription")}
+        confirmLabel={t("deletePreset")}
         onConfirm={async () => {
           await onDelete(preset)  // throws on failure; ConfirmDialog handles error
-          toast.success(`Deleted preset "${preset.name}"`)
+          toast.success(t("deletedPreset", { name: preset.name }))
           onDeleted()
         }}
       />

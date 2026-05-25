@@ -2,6 +2,7 @@
 import * as React from "react"
 import { X } from "lucide-react"
 import { MobileFloatingPill, type MobileFloatingPillPosition } from "@/components/ui/mobile-floating-pill"
+import { useTranslations } from "next-intl"
 
 export interface MobileBackPillProps {
   onBack: () => void
@@ -25,14 +26,17 @@ export const MobileBackPill: React.FC<MobileBackPillProps> = ({
   onBack,
   position = "top-left",
   offset,
-}) => (
-  <MobileFloatingPill
-    position={position}
-    offset={offset}
-    icon={<X className="h-5 w-5" aria-hidden />}
-    onClick={onBack}
-    ariaLabel="Close"
-    variant="default"
-    dataAttrs={{ "data-mobile-back-pill": "" }}
-  />
-)
+}) => {
+  const t = useTranslations("common")
+  return (
+    <MobileFloatingPill
+      position={position}
+      offset={offset}
+      icon={<X className="h-5 w-5" aria-hidden />}
+      onClick={onBack}
+      ariaLabel={t("close")}
+      variant="default"
+      dataAttrs={{ "data-mobile-back-pill": "" }}
+    />
+  )
+}

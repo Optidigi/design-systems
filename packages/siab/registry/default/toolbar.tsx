@@ -10,8 +10,10 @@ import { ColorChip } from "@/components/ui/color-chip"
 import { FontChip } from "@/components/ui/font-chip"
 import { StyleChip } from "@/components/ui/style-chip"
 import { LinkChip } from "@/components/ui/link-chip"
+import { useTranslations } from "next-intl"
 
 export const Toolbar: React.FC<{ manifest: RtManifest; variant: "block" | "inline"; allowColor?: boolean; allowFontFamily?: boolean; onOpenLink: () => void }> = ({ manifest, variant, allowColor = false, allowFontFamily = false, onOpenLink }) => {
+  const t = useTranslations("editor")
   const [editor] = useLexicalComposerContext()
 
   return (
@@ -27,9 +29,9 @@ export const Toolbar: React.FC<{ manifest: RtManifest; variant: "block" | "inlin
       {variant === "block" && (
         <>
           <span className="mx-1 h-5 w-px bg-border" />
-          <Button type="button" size="sm" variant="ghost" aria-label="Align left" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left")}><AlignLeft className="size-4" /></Button>
-          <Button type="button" size="sm" variant="ghost" aria-label="Align center" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center")}><AlignCenter className="size-4" /></Button>
-          <Button type="button" size="sm" variant="ghost" aria-label="Align right" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right")}><AlignRight className="size-4" /></Button>
+          <Button type="button" size="sm" variant="ghost" aria-label={t("alignLeft")} onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left")}><AlignLeft className="size-4" /></Button>
+          <Button type="button" size="sm" variant="ghost" aria-label={t("alignCenter")} onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center")}><AlignCenter className="size-4" /></Button>
+          <Button type="button" size="sm" variant="ghost" aria-label={t("alignRight")} onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right")}><AlignRight className="size-4" /></Button>
         </>
       )}
     </div>

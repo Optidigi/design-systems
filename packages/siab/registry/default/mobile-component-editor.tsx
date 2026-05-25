@@ -17,6 +17,7 @@ import { MobileMediaSheet } from "@/components/ui/mobile-media-sheet"
 import { MobileIconSheet } from "@/components/ui/mobile-icon-sheet"
 import { resolveLucideIcon } from "@/components/ui/icon-picker"
 import { MobileArrayDrilldown } from "@/components/ui/mobile-array-drilldown"
+import { useTranslations } from "next-intl"
 
 export interface MobileComponentEditorProps {
   path: ElementPath
@@ -31,6 +32,7 @@ export interface MobileComponentEditorProps {
  * paths per kind, different presentation (vaul-sized sheet vs. side aside).
  */
 export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ path, block, manifest, theme }) => {
+  const t = useTranslations("editor")
   const { clearSelection, focusPop } = useMobileEditor()
   const blockType: string | undefined = block?.blockType
   const specs: ElementSpec[] = blockType ? (BLOCK_ELEMENTS[blockType] ?? []) : []
@@ -60,7 +62,7 @@ export const MobileComponentEditor: React.FC<MobileComponentEditorProps> = ({ pa
             }
           }}
           onClick={closeEditor}
-          aria-label="Done editing"
+          aria-label={t("doneEditing")}
           data-vaul-no-drag
           data-mobile-editor-close
         >
@@ -92,6 +94,7 @@ const MobileFieldRenderer: React.FC<{
   manifest: RtManifest
   blockType: string | undefined
 }> = ({ spec, parentSpec, path, manifest, blockType }) => {
+  const t = useTranslations("editor")
   const { watch, setValue } = useFormContext()
   const { expandTo } = useMobileEditor()
   const name = elementPathToName(path)
@@ -114,7 +117,7 @@ const MobileFieldRenderer: React.FC<{
     )
   }
 
-  if (!spec) return <p className="text-xs text-muted-foreground">No editor for this element.</p>
+  if (!spec) return <p className="text-xs text-muted-foreground">{t("noEditorForElement")}</p>
   // Inputs below deliberately omit autoFocus: grabbing focus while the bottom
   // sheet is still animating open pops the keyboard mid-transition, so the
   // sheet never shifts up. The user taps a field to focus it.
@@ -157,11 +160,11 @@ const MobileFieldRenderer: React.FC<{
     return (
       <div className="space-y-3 pb-4" data-mobile-editor-kind="cta">
         <div className="space-y-1.5">
-          <Label className="text-xs text-muted-foreground">Label</Label>
+          <Label className="text-xs text-muted-foreground">{t("label")}</Label>
           <Input
             value={cta.label ?? ""}
             onChange={(e) => setValue(name, { ...cta, label: e.target.value }, { shouldDirty: true })}
-            placeholder="Button text"
+            placeholder={t("buttonText")}
           />
         </div>
         <div className="space-y-1.5">
@@ -169,7 +172,7 @@ const MobileFieldRenderer: React.FC<{
           <Input
             value={cta.href ?? ""}
             onChange={(e) => setValue(name, { ...cta, href: e.target.value }, { shouldDirty: true })}
-            placeholder="https://..."
+            placeholder={t("urlPlaceholder")}
             inputMode="url"
             autoCapitalize="none"
             autoCorrect="off"
@@ -215,6 +218,7 @@ const ImageEditor: React.FC<{
   name: string
   expandTo: (snap: MobileSnap) => void
 }> = ({ value, setValue, name, expandTo }) => {
+  const t = useTranslations("editor")
   const [sheetOpen, setSheetOpen] = React.useState(false)
   const url = resolveUrl(value)
 
@@ -225,7 +229,7 @@ const ImageEditor: React.FC<{
       ) : (
         <div className="flex h-24 items-center justify-center rounded-md border-2 border-dashed border-border bg-muted/30 text-sm text-muted-foreground gap-2">
           <ImageIcon className="size-5" />
-          No image
+          {t("noImage")}
         </div>
       )}
       <div className="flex gap-2">
@@ -235,7 +239,7 @@ const ImageEditor: React.FC<{
           className="flex-1"
           onClick={() => { expandTo(0.92); setSheetOpen(true) }}
         >
-          {url ? "Replace" : "Choose"}
+          {url ? t("replace") : t("choose")}
         </Button>
         {url && (
           <Button
@@ -244,7 +248,7 @@ const ImageEditor: React.FC<{
             className="text-destructive hover:bg-destructive/10 hover:text-destructive"
             onClick={() => setValue(name, null, { shouldDirty: true })}
           >
-            Remove
+            {t("remove")}
           </Button>
         )}
       </div>
@@ -263,6 +267,7 @@ const IconEditor: React.FC<{
   name: string
   expandTo: (snap: MobileSnap) => void
 }> = ({ value, setValue, name, expandTo }) => {
+  const t = useTranslations("editor")
   const [sheetOpen, setSheetOpen] = React.useState(false)
   const iconName: string | null = value ?? null
   const Icon = resolveLucideIcon(iconName)
@@ -276,7 +281,7 @@ const IconEditor: React.FC<{
       >
         {Icon ? <Icon className="size-6 shrink-0" /> : null}
         <span className={Icon ? undefined : "text-muted-foreground"}>
-          {iconName ?? "Choose icon"}
+          {iconName ?? t("chooseIcon")}
         </span>
       </button>
       <MobileIconSheet

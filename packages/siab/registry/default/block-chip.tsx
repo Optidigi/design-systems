@@ -11,23 +11,24 @@ import { $getNearestNodeOfType } from "@lexical/utils"
 import { Pilcrow, Heading2, Heading3, Heading4, Quote, List, ListOrdered, ChevronDown } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import type { RtManifest } from "@/lib/richText/manifest"
+import { useTranslations } from "next-intl"
 
 type Kind = "paragraph" | "h2" | "h3" | "h4" | "quote" | "ul" | "ol"
 
 const ICONS: Record<Kind, React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>> = {
   paragraph: Pilcrow, h2: Heading2, h3: Heading3, h4: Heading4, quote: Quote, ul: List, ol: ListOrdered,
 }
-const LABELS: Record<Kind, string> = {
-  paragraph: "Paragraph", h2: "Heading 2", h3: "Heading 3", h4: "Heading 4",
-  quote: "Quote", ul: "Bulleted list", ol: "Numbered list",
-}
-
 export interface BlockChipProps {
   manifest: RtManifest
 }
 
 export const BlockChip: React.FC<BlockChipProps> = ({ manifest }) => {
+  const t = useTranslations("editor")
   const [editor] = useLexicalComposerContext()
+  const labels: Record<Kind, string> = {
+    paragraph: t("paragraph"), h2: t("heading2"), h3: t("heading3"), h4: t("heading4"),
+    quote: t("quote"), ul: t("bulletedList"), ol: t("numberedList"),
+  }
 
   const kinds: Kind[] = ["paragraph"]
   for (const l of manifest.blockTypes.heading?.levels ?? []) {
@@ -87,10 +88,10 @@ export const BlockChip: React.FC<BlockChipProps> = ({ manifest }) => {
           type="button"
           onMouseDown={(e) => e.preventDefault()}
           className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
-          aria-label="Block type"
+          aria-label={t("blockType")}
         >
           <Pilcrow className="size-3.5" aria-hidden />
-          <span>Block</span>
+          <span>{t("block")}</span>
           <ChevronDown className="size-3" aria-hidden />
         </button>
       </PopoverTrigger>
@@ -112,7 +113,7 @@ export const BlockChip: React.FC<BlockChipProps> = ({ manifest }) => {
               className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent text-left"
             >
               <Icon className="size-4 text-muted-foreground" aria-hidden />
-              <span>{LABELS[k]}</span>
+              <span>{labels[k]}</span>
             </button>
           )
         })}

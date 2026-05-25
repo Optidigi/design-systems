@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useTranslations } from "next-intl"
 
 /**
  * Typed-confirmation dialog for destructive actions.
@@ -47,9 +48,10 @@ export function TypedConfirmDialog({
   title,
   description,
   confirmPhrase,
-  confirmLabel = "Delete",
+  confirmLabel,
   onConfirm
 }: TypedConfirmDialogProps) {
+  const t = useTranslations("common")
   const [value, setValue] = useState("")
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -92,7 +94,9 @@ export function TypedConfirmDialog({
         </DialogHeader>
         <div className="mt-2 space-y-2">
           <Label htmlFor="confirm-phrase" className="text-sm font-normal">
-            Type <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">{confirmPhrase}</code> to confirm:
+            {t.rich("typeToConfirm", {
+              phrase: () => <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">{confirmPhrase}</code>,
+            })}
           </Label>
           <Input
             id="confirm-phrase"
@@ -118,7 +122,7 @@ export function TypedConfirmDialog({
             onClick={() => onOpenChange(false)}
             disabled={pending}
           >
-            Cancel
+            {t("cancel")}
           </Button>
           <Button
             type="button"
@@ -126,7 +130,7 @@ export function TypedConfirmDialog({
             onClick={submit}
             disabled={!canSubmit}
           >
-            {pending ? "Working..." : confirmLabel}
+            {pending ? t("working") : (confirmLabel ?? t("delete"))}
           </Button>
         </DialogFooter>
       </DialogContent>

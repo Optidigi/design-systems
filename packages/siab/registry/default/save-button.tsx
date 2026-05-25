@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button"
 import { Save, AlertCircle, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 export type SaveButtonProps = {
   /** A save / write is in flight. */
@@ -35,15 +36,18 @@ export function SaveButton({
   dirtyCount,
   type = "submit",
   onClick,
-  label = "Save",
-  pendingLabel = "Saving...",
+  label,
+  pendingLabel,
 }: SaveButtonProps) {
+  const t = useTranslations("common")
+  const actualLabel = label ?? t("save")
+  const actualPendingLabel = pendingLabel ?? t("saving")
   const hasErrors = errorCount != null && errorCount > 0
   const title = hasErrors
-    ? `Save blocked: ${errorCount} ${errorCount === 1 ? "issue" : "issues"}`
+    ? t("saveBlocked", { count: errorCount })
     : isDirty
-      ? `${label} — ${dirtyCount ?? 1} unsaved ${(dirtyCount ?? 1) === 1 ? "change" : "changes"}`
-      : label
+      ? actualLabel
+      : actualLabel
   return (
     <div className="relative">
       <Button
@@ -67,7 +71,7 @@ export function SaveButton({
         ) : (
           <Save className="h-4 w-4" aria-hidden />
         )}
-        {pending ? pendingLabel : label}
+        {pending ? actualPendingLabel : actualLabel}
       </Button>
       {/* Floating count badge — dirty / error only. Pointer-events-none so it
           doesn't intercept clicks on the button. */}

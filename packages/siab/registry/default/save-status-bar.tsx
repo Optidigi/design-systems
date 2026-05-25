@@ -4,6 +4,7 @@ import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useSidebar } from "@/components/ui/sidebar"
+import { useTranslations } from "next-intl"
 
 export type SaveStatus = "idle" | "dirty" | "saving" | "saved" | "error"
 
@@ -44,6 +45,7 @@ export function SaveStatusBar({
   onRetry,
   onJumpToError,
 }: Props) {
+  const t = useTranslations("common")
   const { state, isMobile } = useSidebar()
   // Saved is visible for 3.25s, then transitions out via opacity + slide
   // down before unmounting. A bit slower than the previous 2.5s so the
@@ -91,7 +93,7 @@ export function SaveStatusBar({
   let retryAction: (() => void) | null = null
 
   if (status === "saving") {
-    label = "Saving..."
+    label = t("saving")
     body = (
       <>
         <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -99,7 +101,7 @@ export function SaveStatusBar({
       </>
     )
   } else if (status === "saved") {
-    label = "Saved"
+    label = t("saved")
     body = (
       <>
         <CheckCircle2 className="h-4 w-4 text-success-foreground" aria-hidden />
@@ -108,7 +110,7 @@ export function SaveStatusBar({
     )
   } else if (status === "error") {
     if (errorCount > 0) {
-      label = `Save blocked: ${errorCount} ${errorCount === 1 ? "issue" : "issues"}`
+      label = t("saveBlocked", { count: errorCount })
       isClickableJump = Boolean(onJumpToError)
       body = (
         <>
@@ -117,7 +119,7 @@ export function SaveStatusBar({
         </>
       )
     } else {
-      label = "Save failed"
+      label = t("saveFailed")
       retryAction = onRetry ?? null
       body = (
         <>
@@ -197,10 +199,10 @@ export function SaveStatusBar({
             size="sm"
             variant="default"
             onClick={retryAction}
-            aria-label="Retry save"
+            aria-label={t("retry")}
             className="h-9"
           >
-            Retry
+            {t("retry")}
           </Button>
         </div>
       ) : (

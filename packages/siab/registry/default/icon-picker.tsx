@@ -5,6 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 /** Curated lucide-react icon names (kebab-case stored, PascalCase imported).
  *  Add to this list as tenants ask for more icons. Avoiding the full lucide
@@ -38,6 +39,7 @@ export interface IconPickerProps {
 }
 
 export const IconPicker: React.FC<IconPickerProps> = ({ value, onChange, trigger }) => {
+  const t = useTranslations("editor")
   const [open, setOpen] = React.useState(false)
   const [filter, setFilter] = React.useState("")
   const visible = CURATED_ICONS.filter((i) => i.toLowerCase().includes(filter.toLowerCase()))
@@ -50,11 +52,11 @@ export const IconPicker: React.FC<IconPickerProps> = ({ value, onChange, trigger
           <Input
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            placeholder="Filter icons…"
+            placeholder={t("filterIcons")}
             className="flex-1 h-8 text-sm"
           />
           {value && (
-            <Button type="button" size="sm" variant="ghost" onClick={() => { onChange(null); setOpen(false) }} aria-label="Remove icon">
+            <Button type="button" size="sm" variant="ghost" onClick={() => { onChange(null); setOpen(false) }} aria-label={t("removeIcon")}>
               <X className="size-3.5" />
             </Button>
           )}

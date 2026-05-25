@@ -15,6 +15,7 @@ import type { RtManifest } from "@/lib/richText/manifest"
 import { SegmentedPill } from "@/components/ui/segmented-pill"
 import { FLOATING_PILL_CLASS } from "@/components/ui/mode-bar"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 type Segment = "palette" | "fonts" | "shape"
 
@@ -33,6 +34,7 @@ export function ThemeBar({
   fonts: FontPreset[]
   radiusLevels?: RadiusLevel[]
 }) {
+  const t = useTranslations("editor")
   // Theme edits are *not* autosaved — they flow up via onThemeChange so the
   // parent form can track them in the same dirty/Save cycle as page-form
   // fields. The previous debounced setTenantTheme inside ThemeBar was a
@@ -64,14 +66,14 @@ export function ThemeBar({
         <div className="flex justify-center py-2">
           <div className={cn(FLOATING_PILL_CLASS)}>
             <SegmentedPill<Segment>
-              ariaLabel="Theme controls"
+              ariaLabel={t("themeControls")}
               value={openSegment}
               onValueChange={(next) => setOpenSegment(next)}
               itemRef={(value, el) => { segmentRefs.current[value] = el }}
               items={[
-                { value: "palette", label: "Colours", icon: Palette, ariaLabel: "Colour palette" },
-                { value: "fonts", label: "Fonts", icon: Type, ariaLabel: "Font pairings" },
-                { value: "shape", label: "Shape", icon: SquareRoundCorner, ariaLabel: "Corner radius" },
+                { value: "palette", label: t("colours"), icon: Palette, ariaLabel: t("colourPalette") },
+                { value: "fonts", label: t("fonts"), icon: Type, ariaLabel: t("fontPairings") },
+                { value: "shape", label: t("shape"), icon: SquareRoundCorner, ariaLabel: t("cornerRadius") },
               ]}
             />
           </div>

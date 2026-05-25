@@ -9,6 +9,7 @@ import { IconPicker, resolveLucideIcon } from "@/components/ui/icon-picker"
 import type { ElementSpec } from "@/components/editor/canvas/blockElements"
 import type { RtManifest } from "@/lib/richText/manifest"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 export interface ArrayItemCardProps {
   spec: ElementSpec
@@ -81,6 +82,7 @@ const SubFieldRenderer: React.FC<{
   itemIndex: number
   manifest: RtManifest
 }> = ({ sub, value, onChange, blockIndex, itemIndex, manifest }) => {
+  const t = useTranslations("editor")
   if (sub.kind === "richtext") {
     return (
       <div className="space-y-1">
@@ -125,12 +127,12 @@ const SubFieldRenderer: React.FC<{
           trigger={
             <button type="button" className="flex w-full items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-sm hover:bg-accent/30">
               {Icon ? <Icon className="size-4 shrink-0" /> : null}
-              <span className={Icon ? undefined : "text-muted-foreground"}>{iconValue ?? "Choose icon"}</span>
+              <span className={Icon ? undefined : "text-muted-foreground"}>{iconValue ?? t("chooseIcon")}</span>
             </button>
           }
         />
       </div>
     )
   }
-  return <p className="text-xs text-muted-foreground">Unknown sub-field kind: {String(sub.kind)}</p>
+  return <p className="text-xs text-muted-foreground">{t("unknownSubFieldKind", { kind: String(sub.kind) })}</p>
 }

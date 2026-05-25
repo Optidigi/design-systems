@@ -2,6 +2,7 @@
 import * as React from "react"
 import { SegmentedPill } from "@/components/ui/segmented-pill"
 import { LayoutGrid, PanelLeft } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 /**
  * Editor view mode. Canvas = WYSIWYG inline editing; sidebar = select-only
@@ -19,17 +20,20 @@ export const ModeToggle: React.FC<{
   mode: EditorMode
   onChange: (next: EditorMode) => void
   className?: string
-}> = ({ mode, onChange, className }) => (
-  <SegmentedPill<EditorMode>
-    ariaLabel="Editor view"
-    value={mode}
-    onValueChange={(next) => next && onChange(next)}
-    allowDeselect={false}
-    labelBreakpoint="md"
-    items={[
-      { value: "canvas",  label: "Canvas",  icon: LayoutGrid, ariaLabel: "Canvas view" },
-      { value: "sidebar", label: "Sidebar", icon: PanelLeft,  ariaLabel: "Sidebar view" },
-    ]}
-    className={className}
-  />
-)
+}> = ({ mode, onChange, className }) => {
+  const t = useTranslations("editor")
+  return (
+    <SegmentedPill<EditorMode>
+      ariaLabel={t("editorView")}
+      value={mode}
+      onValueChange={(next) => next && onChange(next)}
+      allowDeselect={false}
+      labelBreakpoint="md"
+      items={[
+        { value: "canvas",  label: t("canvas"),  icon: LayoutGrid, ariaLabel: t("canvasView") },
+        { value: "sidebar", label: t("sidebar"), icon: PanelLeft,  ariaLabel: t("sidebarView") },
+      ]}
+      className={className}
+    />
+  )
+}

@@ -3,6 +3,7 @@ import * as React from "react"
 import { Plus } from "lucide-react"
 import { BlockTypePicker } from "@/components/ui/block-type-picker"
 import { useBlockPresets } from "@/components/editor/canvas/BlockPresetsContext"
+import { useTranslations } from "next-intl"
 
 /**
  * A hover-revealed zone between canvas blocks.
@@ -15,6 +16,7 @@ export const CanvasGapButton: React.FC<{
    *  `seed` carries preset field values when inserting from a preset. */
   onInsert: (blockType: string, seed?: Record<string, unknown>) => void
 }> = ({ onInsert }) => {
+  const t = useTranslations("editor")
   const presetsCtx = useBlockPresets()
   const [open, setOpen] = React.useState(false)
   return (
@@ -22,7 +24,7 @@ export const CanvasGapButton: React.FC<{
       <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-border opacity-0 transition-opacity group-hover/gap:opacity-100" />
       <button
         type="button"
-        aria-label="Insert block here"
+        aria-label={t("insertBlockHere")}
         onClick={() => setOpen(true)}
         className="relative z-10 inline-flex size-6 items-center justify-center rounded-full border border-border bg-popover text-popover-foreground opacity-0 shadow-sm transition-opacity group-hover/gap:opacity-100 hover:bg-accent hover:text-accent-foreground focus:opacity-100"
       >

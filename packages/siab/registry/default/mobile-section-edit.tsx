@@ -17,6 +17,7 @@ import { blockBySlug } from "@/blocks/registry"
 import type { CanvasBlocksApi } from "@/components/editor/canvas/useCanvasBlocks"
 import type { RtManifest } from "@/lib/richText/manifest"
 import type { ThemeTokens } from "@/lib/theme/schema"
+import { useTranslations } from "next-intl"
 
 
 export interface MobileSectionEditProps {
@@ -73,6 +74,7 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
   renderSectionEdit,
   renderInspector,
 }) => {
+  const t = useTranslations("editor")
   const { blocks, updateBlock, deleteBlock } = api
   const block = blocks[index]
   const [deleteOpen, setDeleteOpen] = React.useState(false)
@@ -108,7 +110,7 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
             className="size-12"
             onClick={onPrev}
             disabled={!onPrev}
-            aria-label="Previous section"
+            aria-label={t("previousSection")}
             data-mobile-prev
           >
             <ChevronLeft className="size-6" />
@@ -116,7 +118,7 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button type="button" variant="ghost" className="h-11 max-w-[10rem] truncate font-medium" aria-label={`Switch section (current: ${label})`} data-mobile-section-name>
+              <Button type="button" variant="ghost" className="h-11 max-w-[10rem] truncate font-medium" aria-label={t("switchSection", { label })} data-mobile-section-name>
                 {label}
               </Button>
             </DropdownMenuTrigger>
@@ -147,7 +149,7 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
             className="size-12"
             onClick={onNext}
             disabled={!onNext}
-            aria-label="Next section"
+            aria-label={t("nextSection")}
             data-mobile-next
           >
             <ChevronRight className="size-6" />
@@ -188,7 +190,7 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
           position="bottom-right"
           icon={<Trash2 className="h-5 w-5" aria-hidden />}
           onClick={() => setDeleteOpen(true)}
-          ariaLabel={`Delete ${label} section`}
+          ariaLabel={t("deleteSection")}
           variant="destructive"
           dataAttrs={{ "data-mobile-trash-pill": "" }}
         />
@@ -197,9 +199,9 @@ export const MobileSectionEdit: React.FC<MobileSectionEditProps> = ({
     <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title="Delete this section?"
-        description={`${label} will be removed from this page. This can't be undone.`}
-        confirmLabel="Delete section"
+        title={t("deleteSectionTitle")}
+        description={t("deleteBlockDescription", { label })}
+        confirmLabel={t("deleteSection")}
         variant="destructive"
         onConfirm={async () => {
           deleteBlock(index)

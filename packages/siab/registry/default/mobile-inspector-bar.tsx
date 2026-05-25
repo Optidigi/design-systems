@@ -6,6 +6,7 @@ import { useInspectorKeyboardLock } from "@/components/editor/canvas/mobile/useI
 import { MobileComponentEditor } from "@/components/ui/mobile-component-editor"
 import type { RtManifest } from "@/lib/richText/manifest"
 import type { ThemeTokens } from "@/lib/theme/schema"
+import { useTranslations } from "next-intl"
 
 export interface MobileInspectorBarProps {
   /** Block currently displayed in the section view — passed to MobileComponentEditor. */
@@ -63,6 +64,7 @@ const SNAP_POINTS: MobileSnap[] = [0.42, 0.92]
  *                          per gesture (FE-72).
  */
 export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, manifest, theme, renderInspector }) => {
+  const t = useTranslations("editor")
   const { state, expandTo, clearSelection } = useMobileEditor()
   const isIdle = state.selected == null && state.drillStack.length === 0
   const pathKey = state.selected
@@ -130,10 +132,10 @@ export const MobileInspectorBar: React.FC<MobileInspectorBarProps> = ({ block, m
       <Vaul.Portal>
         <Vaul.Content
           data-mobile-inspector-bar
-          aria-label="Section inspector"
+          aria-label={t("sectionInspector")}
           className="fixed inset-x-0 top-0 z-50 flex h-[100svh] flex-col overscroll-contain rounded-t-[10px] border-t border-border bg-background outline-none pointer-events-none"
         >
-          <Vaul.Title className="sr-only">Section inspector</Vaul.Title>
+          <Vaul.Title className="sr-only">{t("sectionInspector")}</Vaul.Title>
           {content}
         </Vaul.Content>
       </Vaul.Portal>

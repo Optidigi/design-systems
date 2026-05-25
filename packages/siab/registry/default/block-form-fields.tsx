@@ -12,6 +12,7 @@ import { CanvasSelectionProvider } from "@/components/editor/canvas/CanvasSelect
 import type { RtManifest } from "@/lib/richText/manifest"
 import type { ThemeTokens } from "@/lib/theme/schema"
 import { inspectorFontStyle, roleToFontFamily } from "@/lib/theme/inspectorFonts"
+import { useTranslations } from "next-intl"
 
 export interface BlockFormFieldsProps {
   block: any
@@ -59,6 +60,7 @@ const FieldRenderer: React.FC<{
   manifest: RtManifest
   theme?: ThemeTokens | null
 }> = ({ spec, block: _block, blockIndex, manifest, theme }) => {
+  const t = useTranslations("editor")
   const { watch, setValue } = useFormContext()
   const name = `blocks.${blockIndex}.${spec.field}`
   const value = watch(name)
@@ -122,7 +124,7 @@ const FieldRenderer: React.FC<{
             >
               {Icon ? <Icon className="size-4 shrink-0" /> : null}
               <span className={Icon ? undefined : "text-muted-foreground"}>
-                {iconValue ?? "Choose icon"}
+                {iconValue ?? t("chooseIcon")}
               </span>
             </button>
           }
@@ -138,11 +140,11 @@ const FieldRenderer: React.FC<{
         <Label className="text-xs text-muted-foreground">{spec.label}</Label>
         <div className="space-y-2 pl-1">
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">Label</Label>
+            <Label className="text-xs text-muted-foreground">{t("label")}</Label>
             <Input
               value={cta.label ?? ""}
               onChange={(e) => setShouldDirty({ ...cta, label: e.target.value })}
-              placeholder="Button text"
+              placeholder={t("buttonText")}
             />
           </div>
           <div className="space-y-1">
@@ -150,7 +152,7 @@ const FieldRenderer: React.FC<{
             <Input
               value={cta.href ?? ""}
               onChange={(e) => setShouldDirty({ ...cta, href: e.target.value })}
-              placeholder="https://..."
+              placeholder={t("urlPlaceholder")}
               inputMode="url"
             />
           </div>
@@ -159,7 +161,7 @@ const FieldRenderer: React.FC<{
     )
   }
 
-  return <p className="text-xs text-muted-foreground">Unknown field kind: {String(spec.kind)}</p>
+  return <p className="text-xs text-muted-foreground">{t("unknownFieldKind", { kind: String(spec.kind) })}</p>
 }
 
 const ArraySection: React.FC<{

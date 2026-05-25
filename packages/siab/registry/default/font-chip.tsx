@@ -9,6 +9,7 @@ import type { RtManifest } from "@/lib/richText/manifest"
 import { useAnchorRtCanvas } from "@/components/ui/use-rt-canvas-anchor"
 import { useActiveTextStyle } from "@/components/ui/use-active-text-style"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 export interface FontChipProps {
   manifest: RtManifest
@@ -42,6 +43,7 @@ const useResolvedFonts = (manifest: RtManifest): ResolvedFonts => {
 }
 
 export const FontChip: React.FC<FontChipProps> = ({ manifest }) => {
+  const t = useTranslations("editor")
   const [editor] = useLexicalComposerContext()
   const { tokens: resolved, defaultFont } = useResolvedFonts(manifest)
   const { font: activeFont } = useActiveTextStyle()
@@ -66,7 +68,7 @@ export const FontChip: React.FC<FontChipProps> = ({ manifest }) => {
           type="button"
           onMouseDown={(e) => e.preventDefault()}
           className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-          aria-label="Font family"
+          aria-label={t("fontFamily")}
         >
           <Type className="size-4" aria-hidden />
         </button>
@@ -89,7 +91,7 @@ export const FontChip: React.FC<FontChipProps> = ({ manifest }) => {
           )}
         >
           <span className="text-foreground" style={{ fontFamily: defaultFont || undefined }}>Aa</span>
-          <span className="text-muted-foreground">Default font</span>
+          <span className="text-muted-foreground">{t("defaultFont")}</span>
         </button>
         <div className="my-1 border-t border-border" />
         {tokens.map((token) => (

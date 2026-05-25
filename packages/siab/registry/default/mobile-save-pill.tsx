@@ -3,6 +3,7 @@ import * as React from "react"
 import { Save, AlertCircle, CheckCircle2 } from "lucide-react"
 import { MobileFloatingPill, type MobileFloatingPillVariant } from "@/components/ui/mobile-floating-pill"
 import type { SaveStatus } from "@/components/ui/save-status-bar"
+import { useTranslations } from "next-intl"
 
 export interface MobileSavePillProps {
   status: SaveStatus
@@ -31,13 +32,14 @@ const ICON: Record<SaveStatus, React.ReactNode> = {
  * Top-right floating save pill. Thin status-aware wrapper over MobileFloatingPill.
  */
 export const MobileSavePill: React.FC<MobileSavePillProps> = ({ status, dirtyCount, errorCount = 0, onSave }) => {
+  const t = useTranslations("common")
   const isError = status === "error"
   const badgeCount = isError ? errorCount : (dirtyCount ?? 0)
   const ariaLabel =
-    status === "saving" ? "Saving" :
-    status === "error" ? `Save (${errorCount} error${errorCount === 1 ? "" : "s"})` :
-    status === "dirty" ? `Save (${badgeCount} unsaved)` :
-    "Saved"
+    status === "saving" ? t("saving") :
+    status === "error" ? t("saveBlocked", { count: errorCount }) :
+    status === "dirty" ? t("save") :
+    t("saved")
 
   return (
     <MobileFloatingPill

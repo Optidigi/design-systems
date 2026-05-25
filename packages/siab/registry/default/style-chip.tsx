@@ -11,6 +11,7 @@ import { $createStyledHeadingNode, StyledHeadingNode } from "@/lib/richText/lexi
 import { $createStyledParagraphNode, StyledParagraphNode } from "@/lib/richText/lexical/StyledParagraphNode"
 import { useActiveTextStyle } from "@/components/ui/use-active-text-style"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 export interface StyleChipProps {
   manifest: RtManifest
@@ -41,6 +42,7 @@ const useSelectionScope = (): "inline" | "heading" | "paragraph" | null => {
 }
 
 export const StyleChip: React.FC<StyleChipProps> = ({ manifest }) => {
+  const t = useTranslations("editor")
   const [editor] = useLexicalComposerContext()
   const scope = useSelectionScope()
   const { style: activeStyle } = useActiveTextStyle()
@@ -135,7 +137,7 @@ export const StyleChip: React.FC<StyleChipProps> = ({ manifest }) => {
           type="button"
           onMouseDown={(e) => e.preventDefault()}
           className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-          aria-label="Text style"
+          aria-label={t("textStyle")}
         >
           <Wand2 className="size-4" aria-hidden />
         </button>

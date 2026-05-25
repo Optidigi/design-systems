@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 export interface BlockGutterProps {
   onDelete: () => void
@@ -34,7 +35,11 @@ export const BlockGutter: React.FC<BlockGutterProps> = ({
   onDelete,
   onDuplicate,
   dragHandleProps,
-}) => (
+}) => {
+  const t = useTranslations("editor")
+  const tCommon = useTranslations("common")
+
+  return (
   <div
     className={cn(
       "absolute top-2 right-2 z-10 inline-flex items-center gap-0.5 rounded-md",
@@ -44,7 +49,7 @@ export const BlockGutter: React.FC<BlockGutterProps> = ({
   >
     <button
       type="button"
-      aria-label="Drag to reorder"
+      aria-label={t("dragToReorder")}
       className="cursor-grab rounded-sm p-1 text-muted-foreground hover:bg-accent active:cursor-grabbing"
       {...(dragHandleProps ?? {})}
     >
@@ -54,21 +59,22 @@ export const BlockGutter: React.FC<BlockGutterProps> = ({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          aria-label="Block actions"
+          aria-label={t("blockActions")}
           className="rounded-sm p-1 text-muted-foreground hover:bg-accent"
         >
           <MoreVertical className="size-4" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={onDuplicate}>Duplicate</DropdownMenuItem>
+        <DropdownMenuItem onClick={onDuplicate}>{t("duplicate")}</DropdownMenuItem>
         <DropdownMenuItem
           onClick={onDelete}
           className="text-destructive focus:text-destructive"
         >
-          Delete
+          {tCommon("delete")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   </div>
-)
+  )
+}

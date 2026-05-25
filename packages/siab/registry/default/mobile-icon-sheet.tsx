@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Trash2 } from "lucide-react"
 import { resolveLucideIcon } from "@/components/ui/icon-picker"
+import { useTranslations } from "next-intl"
 
 const CURATED_ICONS: Array<string> = [
   "ear", "heart-handshake", "clock", "check", "check-circle", "x", "plus",
@@ -25,6 +26,7 @@ export interface MobileIconSheetProps {
 }
 
 export const MobileIconSheet: React.FC<MobileIconSheetProps> = ({ open, onOpenChange, value, onChange }) => {
+  const t = useTranslations("editor")
   const [filter, setFilter] = React.useState("")
   const visible = CURATED_ICONS.filter((i) => i.toLowerCase().includes(filter.toLowerCase()))
 
@@ -36,13 +38,13 @@ export const MobileIconSheet: React.FC<MobileIconSheetProps> = ({ open, onOpenCh
         data-mobile-icon-sheet
       >
         <SheetHeader className="pb-3">
-          <SheetTitle>Choose icon</SheetTitle>
+          <SheetTitle>{t("chooseIcon")}</SheetTitle>
         </SheetHeader>
         <div className="flex items-center gap-2 mb-3">
           <Input
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            placeholder="Filter icons…"
+            placeholder={t("filterIcons")}
             className="flex-1"
           />
           {value && (
@@ -52,7 +54,7 @@ export const MobileIconSheet: React.FC<MobileIconSheetProps> = ({ open, onOpenCh
               size="icon"
               className="size-11 text-destructive hover:bg-destructive/10 hover:text-destructive"
               onClick={() => { onChange(null); onOpenChange(false) }}
-              aria-label="Remove icon"
+              aria-label={t("removeIcon")}
             >
               <Trash2 className="size-5" />
             </Button>

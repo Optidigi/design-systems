@@ -5,6 +5,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SaveButton } from "@/components/ui/save-button"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 type Props = {
   control: Control<any>
@@ -24,6 +25,8 @@ type Props = {
  * schema and existing inline JSX in PageForm.
  */
 export function PublishControls({ control, pending, isDirty, errorCount, dirtyCount, variant = "card" }: Props) {
+  const t = useTranslations("common")
+  const tTable = useTranslations("table")
   // WCAG 4.1.2 — shadcn's FormControl forwards id/aria-describedby to a Radix
   // Select root, not its trigger button, so the SelectTrigger ends up with no
   // accessible name. We mint a stable id here, attach it to the FormLabel, and
@@ -40,15 +43,15 @@ export function PublishControls({ control, pending, isDirty, errorCount, dirtyCo
         name="status"
         render={({ field }) => (
           <FormItem className={cn("min-w-0", variant === "card" ? "flex-1" : "min-w-[140px]")}>
-            <FormLabel id={labelId} className={cn(variant === "bare" && "sr-only")}>Status</FormLabel>
+            <FormLabel id={labelId} className={cn(variant === "bare" && "sr-only")}>{tTable("status")}</FormLabel>
             <FormControl>
               <Select onValueChange={field.onChange} value={field.value ?? "draft"}>
                 <SelectTrigger className="w-full" aria-labelledby={labelId}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="published">Published</SelectItem>
+                  <SelectItem value="draft">{t("status.draft")}</SelectItem>
+                  <SelectItem value="published">{t("status.published")}</SelectItem>
                 </SelectContent>
               </Select>
             </FormControl>

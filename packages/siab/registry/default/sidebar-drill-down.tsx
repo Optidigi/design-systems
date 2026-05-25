@@ -32,6 +32,7 @@ import { blockBySlug } from "@/blocks/registry"
 import type { RtManifest } from "@/lib/richText/manifest"
 import type { ThemeTokens } from "@/lib/theme/schema"
 import { BlockFormFields } from "@/components/ui/block-form-fields"
+import { useTranslations } from "next-intl"
 
 type Mode =
   | { kind: "list" }
@@ -131,6 +132,7 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
   renderBlockForm,
   renderPageSettings,
 }) => {
+  const t = useTranslations("editor")
   const presetsCtx = useBlockPresets()
   const [addBlockOpen, setAddBlockOpen] = React.useState(false)
   const [mode, setMode] = React.useState<Mode>(
@@ -179,13 +181,13 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
   if (mode.kind === "list") {
     const openPageSettings = () => setMode({ kind: "page-settings" })
     const openAddBlock = () => setAddBlockOpen(true)
-    const title = <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Page</h2>
+    const title = <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("page")}</h2>
     const pageSettingsButton = (
       <button
         type="button"
         onClick={openPageSettings}
         className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-        aria-label="Page settings"
+        aria-label={t("pageSettings")}
       >
         <Settings className="size-3.5" />
       </button>
@@ -242,7 +244,7 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
         className="w-full gap-1.5 mt-1"
         onClick={openAddBlock}
       >
-        <Plus className="size-3.5" aria-hidden /> Add block
+        <Plus className="size-3.5" aria-hidden /> {t("addBlock")}
       </Button>
     )
     const blockTypePicker = (
@@ -362,6 +364,8 @@ const BlockListRow: React.FC<{
   onDuplicate: () => void
   onDelete: () => void
 }> = ({ id, block, onSelect, onDuplicate, onDelete }) => {
+  const t = useTranslations("editor")
+  const tCommon = useTranslations("common")
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -407,7 +411,7 @@ const BlockListRow: React.FC<{
     >
       <button
         type="button"
-        aria-label="Drag to reorder"
+        aria-label={t("dragToReorder")}
         {...attributes}
         {...listeners}
         onClick={(e) => e.stopPropagation()}
@@ -430,7 +434,7 @@ const BlockListRow: React.FC<{
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            aria-label="Block actions"
+            aria-label={t("blockActions")}
             onClick={(e) => e.stopPropagation()}
             onKeyDown={(e) => e.stopPropagation()}
             className="shrink-0 rounded-sm p-0.5 text-muted-foreground opacity-0 transition-opacity hover:bg-accent group-hover/row:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100"
@@ -445,7 +449,7 @@ const BlockListRow: React.FC<{
               onDuplicate()
             }}
           >
-            Duplicate
+            {t("duplicate")}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={(e) => {
@@ -454,7 +458,7 @@ const BlockListRow: React.FC<{
             }}
             className="text-destructive focus:text-destructive"
           >
-            Delete
+            {tCommon("delete")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -494,6 +498,7 @@ const BlockFormState: React.FC<{
   onBack: () => void
   onDelete: () => void
 }> = ({ block, blockIndex, manifest, theme, renderBlockForm, onBack, onDelete }) => {
+  const t = useTranslations("editor")
   const cfg = blockBySlug[block.blockType]
   const label = cfg
     ? (typeof cfg.labels?.singular === "string" ? cfg.labels.singular : cfg.slug)
@@ -506,10 +511,10 @@ const BlockFormState: React.FC<{
       size="sm"
       onClick={onBack}
       className="h-8 gap-1"
-      aria-label="Back to block list"
+      aria-label={t("backToBlockList")}
     >
       <ChevronLeft className="size-4" aria-hidden />
-      Back
+      {t("back")}
     </Button>
   )
   const deleteButton = (
@@ -521,7 +526,7 @@ const BlockFormState: React.FC<{
       className="gap-1.5"
     >
       <Trash2 className="size-3.5" aria-hidden />
-      Delete block
+      {t("deleteBlock")}
     </Button>
   )
   const title = <span className="text-xs font-medium truncate">{label}</span>
@@ -530,9 +535,9 @@ const BlockFormState: React.FC<{
     <ConfirmDialog
       open={deleteOpen}
       onOpenChange={setDeleteOpen}
-      title="Delete this block?"
-      description={`${label} will be removed from this page. This can't be undone.`}
-      confirmLabel="Delete block"
+      title={t("deleteBlockTitle")}
+      description={t("deleteBlockDescription", { label })}
+      confirmLabel={t("deleteBlock")}
       variant="destructive"
       onConfirm={async () => {
         onDelete()
@@ -606,7 +611,8 @@ const PageSettingsState: React.FC<{
   dangerZone: React.ReactNode
   renderPageSettings?: (context: SidebarPageSettingsSlotContext) => React.ReactNode
 }> = ({ onBack, seoCard, dangerZone, renderPageSettings }) => {
-  const title = <span className="text-xs font-medium">Page settings</span>
+  const t = useTranslations("editor")
+  const title = <span className="text-xs font-medium">{t("pageSettings")}</span>
   const titleHeader = (
     <header className="flex items-center border-b border-border px-3 py-2">
       {title}
@@ -625,10 +631,10 @@ const PageSettingsState: React.FC<{
       size="sm"
       onClick={onBack}
       className="h-8 gap-1"
-      aria-label="Back to block list"
+      aria-label={t("backToBlockList")}
     >
       <ChevronLeft className="size-4" aria-hidden />
-      Back
+      {t("back")}
     </Button>
   )
   const actionsHeader = (

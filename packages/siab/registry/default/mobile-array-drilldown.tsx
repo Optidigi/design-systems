@@ -29,6 +29,7 @@ import { resolveLucideIcon } from "@/components/ui/icon-picker"
 import type { ElementSpec } from "@/components/editor/canvas/blockElements"
 import type { RtManifest } from "@/lib/richText/manifest"
 import { useMobileEditor, type DrillFrame } from "@/components/editor/canvas/mobile/MobileEditorContext"
+import { useTranslations } from "next-intl"
 
 export interface MobileArrayDrilldownProps {
   spec: ElementSpec
@@ -177,6 +178,7 @@ const SortableArrayList: React.FC<{
 }
 
 const SortableArrayRow: React.FC<{ id: string; label: string; onOpen: () => void }> = ({ id, label, onOpen }) => {
+  const t = useTranslations("editor")
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -191,7 +193,7 @@ const SortableArrayRow: React.FC<{ id: string; label: string; onOpen: () => void
     >
       <button
         type="button"
-        aria-label="Drag to reorder"
+        aria-label={t("dragToReorder")}
         {...attributes}
         {...listeners}
         className="flex h-11 w-11 shrink-0 items-center justify-center cursor-grab rounded-sm text-muted-foreground hover:bg-accent active:cursor-grabbing touch-none"
@@ -223,6 +225,7 @@ const MobileArrayItemEditor: React.FC<{
   onBack: () => void
   onOpenSubField: (subField: string) => void
 }> = ({ spec, item, itemIndex, onRemove, onBack, onOpenSubField }) => {
+  const t = useTranslations("editor")
   const subFields = spec.itemFields ?? []
   const itemLabel = spec.itemLabel ? spec.itemLabel(item, itemIndex) : `${spec.label} ${itemIndex + 1}`
 
@@ -235,7 +238,7 @@ const MobileArrayItemEditor: React.FC<{
           size="icon"
           className="size-11"
           onClick={onBack}
-          aria-label="Back to list"
+          aria-label={t("backToList")}
         >
           <ChevronLeft className="size-5" />
         </Button>
@@ -246,7 +249,7 @@ const MobileArrayItemEditor: React.FC<{
           size="icon"
           className="size-11 text-destructive hover:bg-destructive/10 hover:text-destructive"
           onClick={onRemove}
-          aria-label={`Remove ${itemLabel}`}
+          aria-label={t("removeItem", { item: itemLabel })}
         >
           <Trash2 className="size-5" />
         </Button>
@@ -371,6 +374,8 @@ const MobileArraySubFieldEditor: React.FC<{
   manifest: RtManifest
   onBack: () => void
 }> = ({ sub, value, onChange, blockIndex, itemIndex, manifest, onBack }) => {
+  const t = useTranslations("editor")
+
   return (
     <div className="flex h-full min-h-0 flex-col" data-mobile-subfield-editor>
       <div className="flex items-center gap-2 pb-2 shrink-0">
@@ -380,7 +385,7 @@ const MobileArraySubFieldEditor: React.FC<{
           size="icon"
           className="size-11"
           onClick={onBack}
-          aria-label="Back to item"
+          aria-label={t("backToItem")}
         >
           <ChevronLeft className="size-5" />
         </Button>
@@ -449,6 +454,7 @@ const SubFieldIcon: React.FC<{
   onChange: (next: string | null) => void
   hideLabel?: boolean
 }> = ({ label, value, onChange, hideLabel }) => {
+  const t = useTranslations("editor")
   const [open, setOpen] = React.useState(false)
   const iconName: string | null = value ?? null
   const Icon = resolveLucideIcon(iconName)
@@ -461,7 +467,7 @@ const SubFieldIcon: React.FC<{
         className="flex w-full items-center gap-3 rounded-md border border-border bg-background px-3 py-3 text-sm hover:bg-accent/30"
       >
         {Icon ? <Icon className="size-5 shrink-0" /> : null}
-        <span className={Icon ? undefined : "text-muted-foreground"}>{iconName ?? "Choose icon"}</span>
+        <span className={Icon ? undefined : "text-muted-foreground"}>{iconName ?? t("chooseIcon")}</span>
       </button>
       <MobileIconSheet open={open} onOpenChange={setOpen} value={iconName} onChange={onChange} />
     </div>
@@ -484,6 +490,7 @@ const SubFieldImage: React.FC<{
   onChange: (next: any) => void
   hideLabel?: boolean
 }> = ({ label, value, onChange, hideLabel }) => {
+  const t = useTranslations("editor")
   const [open, setOpen] = React.useState(false)
   const url = resolveImageUrl(value)
   return (
@@ -493,16 +500,16 @@ const SubFieldImage: React.FC<{
         <img src={url} alt="" className="w-full max-h-40 object-cover rounded-md border border-border" />
       ) : (
         <div className="flex h-20 items-center justify-center rounded-md border-2 border-dashed border-border bg-muted/30 text-sm text-muted-foreground gap-2">
-          <ImageIcon className="size-4" /> No image
+          <ImageIcon className="size-4" /> {t("noImage")}
         </div>
       )}
       <div className="flex gap-2">
         <Button type="button" variant="outline" className="flex-1" onClick={() => setOpen(true)}>
-          {url ? "Replace" : "Choose"}
+          {url ? t("replace") : t("choose")}
         </Button>
         {url && (
           <Button type="button" variant="ghost" className="text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => onChange(null)}>
-            Remove
+            {t("remove")}
           </Button>
         )}
       </div>

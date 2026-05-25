@@ -5,6 +5,7 @@ import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/f
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { slugify } from "@/lib/slugify"
+import { useTranslations } from "next-intl"
 
 type Props = {
   control: Control<any>
@@ -41,6 +42,7 @@ const FLOATING_ERROR_CLASS =
  * exactly — no extra autoComplete or onBlur beyond what spread-field provides.
  */
 export function PageMetaInline({ control, setValue, getValues }: Props) {
+  const t = useTranslations("editor")
   // FN-2026-0042 — slug-touched ref persists across renders.
   const slugTouched = useRef(false)
   const onTitleBlur = () => {
@@ -60,7 +62,7 @@ export function PageMetaInline({ control, setValue, getValues }: Props) {
           <FormItem className="relative flex-1 min-w-0">
             <FormControl>
               <Input
-                placeholder="Page title"
+                placeholder={t("pageTitle")}
                 {...field}
                 value={field.value ?? ""}
                 onBlur={(e) => {
@@ -89,7 +91,7 @@ export function PageMetaInline({ control, setValue, getValues }: Props) {
               <FormControl>
                 <div
                   className="relative"
-                  title="URL path. Lowercase, digits, hyphens."
+                  title={t("slugTitle")}
                   onMouseDown={(e) => {
                     if (e.target === e.currentTarget) {
                       e.preventDefault()

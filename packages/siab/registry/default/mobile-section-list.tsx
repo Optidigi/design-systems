@@ -25,6 +25,7 @@ import { useBlockPresets } from "@/components/editor/canvas/BlockPresetsContext"
 import { blockBySlug } from "@/blocks/registry"
 import type { CanvasBlocksApi } from "@/components/editor/canvas/useCanvasBlocks"
 import type { RtManifest } from "@/lib/richText/manifest"
+import { useTranslations } from "next-intl"
 
 export interface MobileSectionListProps {
   api: Pick<CanvasBlocksApi, "blocks" | "reorderBlocks" | "insertBlockAt">
@@ -71,6 +72,7 @@ interface SortableCardProps {
 }
 
 const SortableSectionCard: React.FC<SortableCardProps> = ({ id, block, index, onOpen }) => {
+  const t = useTranslations("editor")
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -94,7 +96,7 @@ const SortableSectionCard: React.FC<SortableCardProps> = ({ id, block, index, on
     >
       <button
         type="button"
-        aria-label="Drag to reorder"
+        aria-label={t("dragToReorder")}
         className="flex h-11 w-11 shrink-0 items-center justify-center cursor-grab rounded-sm text-muted-foreground hover:bg-muted active:cursor-grabbing touch-none"
         {...attributes}
         {...listeners}
@@ -130,6 +132,7 @@ export const MobileSectionList: React.FC<MobileSectionListProps> = ({
   onDeletePage,
   renderList,
 }) => {
+  const t = useTranslations("editor")
   const { blocks, reorderBlocks, insertBlockAt } = api
   const presetsCtx = useBlockPresets()
   const [pickerOpen, setPickerOpen] = React.useState(false)
@@ -156,19 +159,19 @@ export const MobileSectionList: React.FC<MobileSectionListProps> = ({
   const header = (
     <header className="flex items-center justify-between gap-3 pb-1">
       <h1 className="truncate text-base font-semibold text-foreground" data-mobile-page-title>
-        {pageTitle || "Untitled page"}
+        {pageTitle || t("untitledPage")}
       </h1>
     </header>
   )
   const sectionsHeader = (
     <div className="flex items-center justify-between">
-      <h2 className="text-xs uppercase tracking-wide text-muted-foreground">Sections</h2>
-      <span className="text-[11px] text-muted-foreground">Drag to reorder</span>
+      <h2 className="text-xs uppercase tracking-wide text-muted-foreground">{t("sections")}</h2>
+      <span className="text-[11px] text-muted-foreground">{t("dragToReorder")}</span>
     </div>
   )
   const emptyState = blocks.length === 0 ? (
     <div className="flex h-24 items-center justify-center rounded-lg border border-dashed border-border text-sm text-muted-foreground">
-      No sections yet. Tap "+ Add section" below.
+      {t("noSectionsYet")}
     </div>
   ) : null
   const sectionCards = (
@@ -196,17 +199,17 @@ export const MobileSectionList: React.FC<MobileSectionListProps> = ({
       onClick={openAddSection}
       data-mobile-add-section
     >
-      <Plus className="size-4" /> Add section
+      <Plus className="size-4" /> {t("addSection")}
     </Button>
   )
   const pageActionsTitle = (
-    <h2 className="text-xs uppercase tracking-wide text-muted-foreground pb-1">Page</h2>
+    <h2 className="text-xs uppercase tracking-wide text-muted-foreground pb-1">{t("page")}</h2>
   )
   const pageRows = (
     <>
-      <PageRow label="Page settings" onClick={onOpenPageSettings} data-test="mobile-row-page-settings" />
+      <PageRow label={t("pageSettings")} onClick={onOpenPageSettings} data-test="mobile-row-page-settings" />
       <PageRow label="SEO" onClick={onOpenSeo} data-test="mobile-row-seo" />
-      <PageRow label="Delete page" onClick={onDeletePage} variant="destructive" data-test="mobile-row-delete" />
+      <PageRow label={t("deletePage")} onClick={onDeletePage} variant="destructive" data-test="mobile-row-delete" />
     </>
   )
   const blockTypePicker = (
@@ -265,25 +268,28 @@ export const MobileSectionListLayout: React.FC<MobileSectionListLayoutProps> = (
   pageActionsTitle,
   pageRows,
   blockTypePicker,
-}) => (
+}) => {
+  const t = useTranslations("editor")
+  return (
     <div className="flex flex-col gap-4 p-4" data-mobile-section-list>
       {header}
 
-      <section className="space-y-2" aria-label="Sections">
+      <section className="space-y-2" aria-label={t("sections")}>
         {sectionsHeader}
         {emptyState}
         {sectionCards}
         {addSectionButton}
       </section>
 
-      <section className="space-y-1" aria-label="Page actions">
+      <section className="space-y-1" aria-label={t("pageActions")}>
         {pageActionsTitle}
         {pageRows}
       </section>
 
       {blockTypePicker}
     </div>
-)
+  )
+}
 
 const PageRow: React.FC<{
   label: string

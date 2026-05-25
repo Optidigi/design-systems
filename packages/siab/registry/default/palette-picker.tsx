@@ -6,6 +6,7 @@ import type { ThemeTokens } from "@/lib/theme/schema"
 import { useAnchorRtCanvas } from "@/components/ui/use-rt-canvas-anchor"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 type Palette = NonNullable<ThemeTokens["palette"]>
 
@@ -71,13 +72,6 @@ function useDefaultPalettes(): { light: Palette; dark: Palette } {
   return resolved
 }
 
-const SLOT_LABELS: Record<keyof Palette, string> = {
-  accent: "Accent",
-  bg: "Background",
-  ink: "Text",
-  muted: "Muted",
-}
-
 // `<input type="color">` requires a literal #rrggbb string; CSS custom
 // properties (var(--…)) are silently rejected and fall back to #000000.
 // Used when the tenant has no palette saved yet.
@@ -90,6 +84,13 @@ export const PalettePicker: React.FC<{
   mode: "light" | "dark"
   onChange: (next: { palette?: Palette; darkPalette?: Palette; mode?: "light" | "dark" }) => void
 }> = ({ palettes, value, darkValue, mode, onChange }) => {
+  const t = useTranslations("editor")
+  const slotLabels: Record<keyof Palette, string> = {
+    accent: t("paletteSlot.accent"),
+    bg: t("paletteSlot.bg"),
+    ink: t("paletteSlot.ink"),
+    muted: t("paletteSlot.muted"),
+  }
   const activePalette = mode === "dark" ? darkValue : value
   const defaults = useDefaultPalettes()
 
@@ -145,7 +146,7 @@ export const PalettePicker: React.FC<{
   const rows: Row[] = [
     {
       id: "default",
-      label: "Default",
+      label: t("default"),
       palette: defaults[mode],
       isActive: isDefaultHalf(mode),
       onPick: () => pickDefault(mode),
@@ -169,7 +170,7 @@ export const PalettePicker: React.FC<{
           <Switch
             checked={mode === "dark"}
             onCheckedChange={(checked) => onChange({ mode: checked ? "dark" : "light" })}
-            aria-label="Toggle dark mode"
+            aria-label={t("toggleDarkMode")}
           />
           <Moon className={cn("size-3.5", mode === "dark" && "text-foreground")} aria-hidden />
         </div>
@@ -180,7 +181,7 @@ export const PalettePicker: React.FC<{
               key={row.id}
               type="button"
               onClick={row.onPick}
-              aria-label={`Apply ${row.label}`}
+              aria-label={t("applyPalette", { label: row.label })}
               aria-pressed={row.isActive}
               className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
@@ -207,7 +208,7 @@ export const PalettePicker: React.FC<{
             <button
               type="button"
               className="flex flex-col items-center gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md p-0.5"
-              aria-label="Custom palette"
+              aria-label={t("customPalette")}
             >
               <span className="size-8 rounded-full border-2 border-dashed border-border/60 flex items-center justify-center text-muted-foreground">
                 <Plus className="size-3.5" aria-hidden />
@@ -216,7 +217,7 @@ export const PalettePicker: React.FC<{
           </PopoverTrigger>
           <PopoverContent side="bottom" align="end" className="w-72 p-3">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs text-muted-foreground">Mode</span>
+              <span className="text-xs text-muted-foreground">{t("mode")}</span>
               <div className="flex rounded-md border border-border overflow-hidden">
                 <button
                   type="button"
@@ -226,7 +227,7 @@ export const PalettePicker: React.FC<{
                     mode === "light" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent/30",
                   ].join(" ")}
                 >
-                  Light
+                  {t("light")}
                 </button>
                 <button
                   type="button"
@@ -236,14 +237,14 @@ export const PalettePicker: React.FC<{
                     mode === "dark" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent/30",
                   ].join(" ")}
                 >
-                  Dark
+                  {t("dark")}
                 </button>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               {(["accent", "bg", "ink", "muted"] as const).map((slot) => (
                 <label key={slot} className="flex flex-col gap-1 text-xs">
-                  <span className="text-muted-foreground">{SLOT_LABELS[slot]}</span>
+                  <span className="text-muted-foreground">{slotLabels[slot]}</span>
                   <input
                     type="color"
                     value={activePalette?.[slot] ?? COLOR_INPUT_FALLBACK_HEX}
