@@ -18,8 +18,8 @@ Use threshold-preserving Tailwind variants:
 <section class="@min-[48rem]/site-frame:flex-row">
 ```
 
-Do not blindly replace `md:` with `@md/site-frame:`. Tailwind's container `@md`
-threshold is `28rem`; viewport `md` is `48rem`.
+Do not blindly replace `md:` with `@md/site-frame:`. Tailwind's container
+`@md` threshold is `28rem`; viewport `md` is `48rem`.
 
 Keep true browser/device behavior as media queries: `print`,
 `prefers-reduced-motion`, `prefers-color-scheme`, `forced-colors`, `hover`,

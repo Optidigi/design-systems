@@ -180,6 +180,25 @@ function scanPayload(rootDir) {
       )
     }
   }
+
+  const tenantFacingCanvasDirs = [
+    join(rootDir, "src/components/editor/canvas/blocks"),
+  ]
+  const tenantFacingCanvasFiles = [
+    join(rootDir, "src/components/editor/canvas/SiteChromePreview.tsx"),
+  ]
+
+  for (const dir of tenantFacingCanvasDirs) {
+    if (!existsSync(dir)) continue
+    for (const file of walk(dir)) {
+      scanSiteFile(file, readFileSync(file, "utf8"))
+    }
+  }
+
+  for (const file of tenantFacingCanvasFiles) {
+    if (!existsSync(file)) continue
+    scanSiteFile(file, readFileSync(file, "utf8"))
+  }
 }
 
 function scanOrchestrator(rootDir) {
