@@ -1314,10 +1314,30 @@
       ]
     },
     {
+      "name": "responsive-canvas-lint",
+      "type": "registry:lib",
+      "title": "SIAB Responsive Canvas Contract",
+      "description": "Shared OBS-62 responsive canvas contract checker. Installs a self-contained `scripts/check-responsive.mjs` CLI plus the contract note used by Payload, generated tenant sites, and orchestrators. Enforces named `site-frame` container-query authoring for layout-width responsiveness while allowing true browser/device media behavior by explicit review.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/default/responsive-canvas-lint.mjs",
+          "type": "registry:lib",
+          "target": "./scripts/check-responsive.mjs"
+        },
+        {
+          "path": "registry/default/responsive-canvas-contract.md",
+          "type": "registry:file",
+          "target": "./docs/responsive-canvas-contract.md"
+        }
+      ]
+    },
+    {
       "name": "canvas-chrome",
       "type": "registry:ui",
       "title": "SIAB Canvas Chrome",
-      "description": "Canvas editor chrome: desktop CanvasMode (dnd-kit reorder + zoom + selection-scroll) + mobile CanvasMobile (delegates to mobile-inspector screens) + block-gutter (per-block drag/actions) + canvas-gap-button (+-insert opening block-type-picker via useBlockPresets hook). Plus useFitZoom + useScrollToSelection as peer registry:lib hooks (both targeting components/ui/). Application-level coupling on react-hook-form (useCanvasBlocks for block-array mutations), React contexts (useCanvasSelection from CanvasSelectionContext host file), and theme tokens (ThemeTokens, toCssVars). NO backend coupling — block-presets backend integration flows through the consumer's BlockPresetsProvider via the useBlockPresets() hook. Ships the full `.rt-canvas*` CSS surface: token re-bindings inside @layer base (admin shadcn tokens → tenant tokens from ThemeBar's runtime overlay + tenant compiled CSS), default-dark fallback (unlayered so tenant CSS overrides), `--rt-affordance` accent, themed `::selection`, `.cms-block` active/hover rings, inline-edit affordances (`.rt-slot` / `.rt-click-edit` hover/focus rings + nested-edit suppression), inline-variant slot tightening, `[data-rt-selected]` sidebar-mode ring, `@keyframes rt-arrival-pulse` arrival animation + `prefers-reduced-motion` guard, and FE-39 mobile dashed hit-targets.",
+      "description": "Canvas editor chrome: desktop CanvasMode (dnd-kit reorder + actual-width site-frame container + selection-scroll) + mobile CanvasMobile (delegates to mobile-inspector screens) + block-gutter (per-block drag/actions) + canvas-gap-button (+-insert opening block-type-picker via useBlockPresets hook). Plus useScrollToSelection as a peer registry:lib hook targeting components/ui/. Application-level coupling on react-hook-form (useCanvasBlocks for block-array mutations), React contexts (useCanvasSelection from CanvasSelectionContext host file), and theme tokens (ThemeTokens, toCssVars). NO backend coupling — block-presets backend integration flows through the consumer's BlockPresetsProvider via the useBlockPresets() hook. Ships the full `.rt-canvas*` CSS surface: token re-bindings inside @layer base (admin shadcn tokens → tenant tokens from ThemeBar's runtime overlay + tenant compiled CSS), default-dark fallback (unlayered so tenant CSS overrides), `--rt-affordance` accent, named site-frame container declarations, themed `::selection`, `.cms-block` active/hover rings, inline-edit affordances (`.rt-slot` / `.rt-click-edit` hover/focus rings + nested-edit suppression), inline-variant slot tightening, `[data-rt-selected]` sidebar-mode ring, `@keyframes rt-arrival-pulse` arrival animation + `prefers-reduced-motion` guard, and FE-39 mobile dashed hit-targets.",
       "dependencies": ["lucide-react", "@dnd-kit/core", "@dnd-kit/sortable", "@dnd-kit/utilities"],
       "registryDependencies": [
         "@siab/block-type-picker",
@@ -1331,7 +1351,6 @@
         { "path": "registry/default/canvas-mobile.tsx", "type": "registry:ui" },
         { "path": "registry/default/block-gutter.tsx", "type": "registry:ui" },
         { "path": "registry/default/canvas-gap-button.tsx", "type": "registry:ui" },
-        { "path": "registry/default/use-fit-zoom.ts", "type": "registry:lib", "target": "components/ui/use-fit-zoom.ts" },
         { "path": "registry/default/use-scroll-to-selection.ts", "type": "registry:lib", "target": "components/ui/use-scroll-to-selection.ts" }
       ],
       "css": {
@@ -1354,6 +1373,9 @@
             "--border": "var(--color-rule, rgba(0, 0, 0, 0.1))",
             "--input": "rgba(0, 0, 0, 0.1)",
             "--ring": "var(--color-accent, currentColor)",
+            "container-type": "inline-size",
+            "container-name": "site-frame",
+            "contain": "layout",
             "background-color": "var(--color-bg, #fff)",
             "color-scheme": "light"
           }

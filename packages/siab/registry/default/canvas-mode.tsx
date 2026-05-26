@@ -10,7 +10,6 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
-  type Modifier,
 } from "@dnd-kit/core"
 import {
   SortableContext,
@@ -24,7 +23,6 @@ import { CanvasGapButton } from "@/components/ui/canvas-gap-button"
 import { BlockGutter } from "@/components/ui/block-gutter"
 import { useCanvasBlocks } from "@/components/editor/canvas/useCanvasBlocks"
 import { useCanvasSelection } from "@/components/editor/canvas/CanvasSelectionContext"
-import { useFitZoom } from "@/components/ui/use-fit-zoom"
 import { useScrollToSelection } from "@/components/ui/use-scroll-to-selection"
 import { remapSelectionAfterReorder, remapSelectionAfterDelete, remapSelectionAfterInsert } from "@/components/editor/canvas/elementPath"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -40,10 +38,6 @@ import type { MobileInspectorBarSlotContext } from "@/components/ui/mobile-inspe
 import type { MobilePageSettingsSlotContext } from "@/components/ui/mobile-page-settings"
 import type { MobileSeoSettingsSlotContext } from "@/components/ui/mobile-seo-settings"
 import { useTranslations } from "next-intl"
-
-/** The fixed "desktop" width the canvas surface is laid out at before being
- *  zoom-fitted into the (narrower) editor pane — see useFitZoom. */
-const CANVAS_DESIGN_WIDTH = 1280
 
 export interface CanvasModeProps {
   manifest: RtManifest
@@ -220,9 +214,7 @@ const CanvasModeDesktop: React.FC<CanvasModeProps> = ({ manifest, tenantCss, vie
     setActiveIndex(selected?.blockIndex ?? null)
   }, [selected?.blockIndex])
 
-  // Render the canvas at a fixed desktop width, zoom-fitted into the pane so
-  // the tenant site's viewport breakpoints resolve to their desktop layout.
-  const { ref: paneRef, zoom } = useFitZoom(CANVAS_DESIGN_WIDTH)
+  const paneRef = React.useRef<HTMLDivElement>(null)
 
   // When the sidebar selects an element, scroll it into view and fire the
   // arrival-pulse animation so the user's eye is drawn to the selected node.
@@ -268,23 +260,6 @@ const CanvasModeDesktop: React.FC<CanvasModeProps> = ({ manifest, tenantCss, vie
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
-  // dnd-kit emits transforms in viewport-px. CSS `zoom` on the canvas wrapper
-  // scales them down, so a translate of N looks like N*zoom on screen — and
-  // dnd-kit's displacement calculations for sibling blocks produce wildly wrong
-  // positions during drag. Divide every transform component by zoom so the
-  // rendered translate produces the viewport-px movement dnd-kit expects.
-  const zoomCompensateModifier = React.useMemo<Modifier>(
-    () => ({ transform }) => {
-      if (zoom === 1) return transform
-      return {
-        ...transform,
-        x: transform.x / zoom,
-        y: transform.y / zoom,
-      }
-    },
-    [zoom],
-  )
-
   // Stable sortable IDs: index-based strings. After a drag, blocks array is
   // reordered in state so indices stay correct.
   const sortableIds = blocks.map((_, i) => String(i))
@@ -300,16 +275,12 @@ const CanvasModeDesktop: React.FC<CanvasModeProps> = ({ manifest, tenantCss, vie
 
   return (
     <div className="w-full">
-      {/* Canvas surface — measured for zoom-fit. No scroll here: the parent
-          (PageForm) owns the scroll container (Task 6).
-          `contain: inline-size` is load-bearing: the fixed-width (1280px) zoom
-          child would otherwise propagate its width up and cause unwanted layout
-          side-effects — `min-w-0` + `overflow-x-hidden` alone don't stop it
-          under CSS `zoom`. Containment makes the pane's width purely
-          context-determined; the child is then just visually clipped. */}
+      {/* Canvas surface. No scroll here: PageForm owns document scroll. The
+          tenant-facing `.rt-canvas` inside this pane is the named site-frame
+          container, so tenant layout CSS resolves against actual pane width. */}
       <div
         ref={paneRef}
-        className="min-w-0 [contain:inline-size] overflow-x-hidden bg-background"
+        className="min-w-0 overflow-x-hidden bg-background"
         onClick={onCanvasClick}
       >
         {/* Inject the compiled tenant CSS via dangerouslySetInnerHTML, NOT a
@@ -328,21 +299,19 @@ const CanvasModeDesktop: React.FC<CanvasModeProps> = ({ manifest, tenantCss, vie
         {theme && (
           <style data-rt-theme-overrides dangerouslySetInnerHTML={{ __html: toCssVars(theme) }} />
         )}
-        {/* Fixed-width design surface, zoom-fitted into the pane. mx-auto keeps
-            the surface centred when zoom × CANVAS_DESIGN_WIDTH < pane width. */}
-        <div style={{ width: CANVAS_DESIGN_WIDTH, zoom }} className="mx-auto">
-          {/* onClickCapture: a single dynamic guard so NO <a> inside the canvas
-              ever navigates — Lexical link nodes, InlineCtaButton, or any link a
-              tenant block emits. Capture phase runs before the link's default
-              action; the click still bubbles so editing affordances fire. */}
-          <div
-            className="rt-canvas"
-            data-rt-view={view}
-            data-rt-mode={theme?.mode === "dark" ? "dark" : "light"}
-            onClickCapture={(e) => {
-              if ((e.target as HTMLElement | null)?.closest("a[href]")) e.preventDefault()
-            }}
-          >
+        {/* onClickCapture: a single dynamic guard so NO <a> inside the canvas
+            ever navigates — Lexical link nodes, InlineCtaButton, or any link a
+            tenant block emits. Capture phase runs before the link's default
+            action; the click still bubbles so editing affordances fire. */}
+        <div
+          className="rt-canvas w-full"
+          data-rt-view={view}
+          data-rt-mode={theme?.mode === "dark" ? "dark" : "light"}
+          onClickCapture={(e) => {
+            if ((e.target as HTMLElement | null)?.closest("a[href]")) e.preventDefault()
+          }}
+        >
+          <div className="site-frame-root">
             {headerChrome}
             {/* Leading gap — insert at position 0. Only shown in canvas view
                 (sidebar/mobile view is select-only: no block insertion from canvas). */}
@@ -360,7 +329,6 @@ const CanvasModeDesktop: React.FC<CanvasModeProps> = ({ manifest, tenantCss, vie
               id={dndId}
               sensors={sensors}
               collisionDetection={closestCenter}
-              modifiers={[zoomCompensateModifier]}
               onDragEnd={onDragEnd}
             >
               <SortableContext items={sortableIds} strategy={verticalListSortingStrategy}>
