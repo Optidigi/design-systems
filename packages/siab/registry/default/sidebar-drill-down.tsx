@@ -199,7 +199,9 @@ export const SidebarDrillDown: React.FC<SidebarDrillDownProps> = ({
       </header>
     )
     const emptyState = (
-      <p className="text-xs text-muted-foreground px-2 py-4 text-center">No blocks yet. Add one to start.</p>
+      <p className="text-xs text-muted-foreground px-2 py-4 text-center">
+        {t("noBlocksYet")} {t("addFirstBlockHint")}
+      </p>
     )
     const blockRows = (
       <DndContext

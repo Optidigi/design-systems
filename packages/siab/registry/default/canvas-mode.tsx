@@ -39,6 +39,7 @@ import type { MobileSectionEditSlotContext } from "@/components/ui/mobile-sectio
 import type { MobileInspectorBarSlotContext } from "@/components/ui/mobile-inspector-bar"
 import type { MobilePageSettingsSlotContext } from "@/components/ui/mobile-page-settings"
 import type { MobileSeoSettingsSlotContext } from "@/components/ui/mobile-seo-settings"
+import { useTranslations } from "next-intl"
 
 /** The fixed "desktop" width the canvas surface is laid out at before being
  *  zoom-fitted into the (narrower) editor pane — see useFitZoom. */
@@ -81,6 +82,10 @@ export interface CanvasModeProps {
   /** Called when the mobile overview's Delete-page row is tapped. Owner is
    *  PageForm — opens the existing TypedConfirmDialog. */
   onDeletePage: () => void
+  /** Optional host-rendered site chrome preview. When supplied, desktop canvas
+   *  renders it inside the tenant canvas above/below the editable block stack. */
+  headerChrome?: React.ReactNode
+  footerChrome?: React.ReactNode
   renderMobileList?: (context: MobileSectionListSlotContext) => React.ReactNode
   renderMobileSectionEdit?: (context: MobileSectionEditSlotContext) => React.ReactNode
   renderMobileInspector?: (context: MobileInspectorBarSlotContext) => React.ReactNode
@@ -163,7 +168,7 @@ const SortableBlockItem: React.FC<SortableBlockItemProps> = ({
  * Reads/writes the form state via react-hook-form (RHF) — the form is
  * provided by PageForm's existing FormProvider.
  */
-export const CanvasMode: React.FC<CanvasModeProps> = ({ manifest, tenantCss, view, dangerZone, seoCard, theme, reorderBlocks, deleteBlock, duplicateBlock, pageTitle, onDeletePage, renderMobileList, renderMobileSectionEdit, renderMobileInspector, renderMobilePageSettings, renderMobileSeoSettings }) => {
+export const CanvasMode: React.FC<CanvasModeProps> = ({ manifest, tenantCss, view, dangerZone, seoCard, theme, reorderBlocks, deleteBlock, duplicateBlock, pageTitle, onDeletePage, headerChrome, footerChrome, renderMobileList, renderMobileSectionEdit, renderMobileInspector, renderMobilePageSettings, renderMobileSeoSettings }) => {
   const isMobile = useIsMobile()
 
   if (isMobile) {
@@ -189,12 +194,13 @@ export const CanvasMode: React.FC<CanvasModeProps> = ({ manifest, tenantCss, vie
     )
   }
 
-  return <CanvasModeDesktop manifest={manifest} tenantCss={tenantCss} view={view} dangerZone={dangerZone} theme={theme} reorderBlocks={reorderBlocks} deleteBlock={deleteBlock} duplicateBlock={duplicateBlock} pageTitle={pageTitle} onDeletePage={onDeletePage} />
+  return <CanvasModeDesktop manifest={manifest} tenantCss={tenantCss} view={view} dangerZone={dangerZone} theme={theme} reorderBlocks={reorderBlocks} deleteBlock={deleteBlock} duplicateBlock={duplicateBlock} pageTitle={pageTitle} onDeletePage={onDeletePage} headerChrome={headerChrome} footerChrome={footerChrome} />
 }
 
 /** Desktop layout — extracted so it only mounts when not mobile.
  *  Renders ONLY the canvas scroll pane; the sidebar is owned by PageForm. */
-const CanvasModeDesktop: React.FC<CanvasModeProps> = ({ manifest, tenantCss, view, theme, pageTitle: _pageTitle, onDeletePage: _onDeletePage }) => {
+const CanvasModeDesktop: React.FC<CanvasModeProps> = ({ manifest, tenantCss, view, theme, pageTitle: _pageTitle, onDeletePage: _onDeletePage, headerChrome, footerChrome }) => {
+  const t = useTranslations("editor")
   const {
     blocks,
     activeIndex,
@@ -337,6 +343,7 @@ const CanvasModeDesktop: React.FC<CanvasModeProps> = ({ manifest, tenantCss, vie
               if ((e.target as HTMLElement | null)?.closest("a[href]")) e.preventDefault()
             }}
           >
+            {headerChrome}
             {/* Leading gap — insert at position 0. Only shown in canvas view
                 (sidebar/mobile view is select-only: no block insertion from canvas). */}
             {!isReadOnlyView(view) && (
@@ -346,7 +353,7 @@ const CanvasModeDesktop: React.FC<CanvasModeProps> = ({ manifest, tenantCss, vie
             )}
             {blocks.length === 0 && (
               <div className="flex h-32 items-center justify-center text-muted-foreground text-sm">
-                <p>No blocks yet. {!isReadOnlyView(view) ? "Click the + above to add one." : "Switch to canvas view to add blocks."}</p>
+                <p>{t("noBlocksYet")} {!isReadOnlyView(view) ? t("addFirstBlockHint") : t("switchToCanvasToAddBlocks")}</p>
               </div>
             )}
             <DndContext
@@ -380,6 +387,7 @@ const CanvasModeDesktop: React.FC<CanvasModeProps> = ({ manifest, tenantCss, vie
                 ))}
               </SortableContext>
             </DndContext>
+            {footerChrome}
           </div>
         </div>
       </div>
