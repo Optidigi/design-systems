@@ -42,20 +42,26 @@ const Toaster = ({
         ...toastOptions,
         classNames: {
           toast:
-            "min-h-8 !w-auto max-w-[min(24rem,calc(100vw-2rem))] !rounded-md !px-3 !py-1.5 text-sm font-medium shadow-md backdrop-blur-xl backdrop-saturate-150 ring-1 ring-inset ring-white/25",
+            "min-h-8 max-w-[min(24rem,calc(100vw-2rem))] !rounded-md !px-3 !py-1.5 text-sm font-medium shadow-md backdrop-blur-xl backdrop-saturate-150 ring-1 ring-inset ring-white/25",
           icon: "text-current",
-          content: "min-w-0 flex-1",
-          title: "min-w-0 text-sm font-medium leading-tight",
+          content: "min-w-0 flex-1 overflow-hidden",
+          title: "min-w-0 truncate whitespace-nowrap text-sm font-medium leading-tight",
           description: "text-xs leading-tight",
           ...toastOptions?.classNames,
         },
       }}
       style={
         {
-          "--width": "auto",
+          "--width": "max-content",
           "--normal-bg": "var(--popover)",
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
+          "--success-bg": "color-mix(in oklch, var(--success) 75%, transparent)",
+          "--success-border": "color-mix(in oklch, var(--success) 70%, white 25%)",
+          "--success-text": "var(--success-foreground)",
+          "--error-bg": "color-mix(in oklch, var(--destructive) 75%, transparent)",
+          "--error-border": "color-mix(in oklch, var(--destructive) 70%, white 25%)",
+          "--error-text": "var(--destructive-foreground)",
           "--border-radius": "calc(var(--radius) - 2px)",
           ...style,
         } as React.CSSProperties
