@@ -18,12 +18,12 @@ export const statusBadgeToneClassNames: Record<StatusBadgeTone, string> = {
 }
 
 export const statusBadgeSonnerClassName =
-  "min-h-8 max-w-[min(24rem,calc(100vw-2rem))] !rounded-md !px-3 !py-1.5 text-sm font-medium shadow-md backdrop-blur-xl backdrop-saturate-150 ring-1 ring-inset ring-white/25"
+  `${statusBadgeBaseClassName} min-h-8 max-w-[min(24rem,calc(100vw-2rem))] !rounded-md !px-3 !py-0 text-sm font-medium`
 
 export const statusBadgeSonnerContentClassName = "min-w-0 flex-1 overflow-hidden"
 
 export const statusBadgeSonnerTitleClassName =
-  "min-w-0 truncate whitespace-nowrap text-sm font-medium leading-tight"
+  "min-w-0 truncate whitespace-nowrap text-sm font-medium leading-none"
 
 export const statusBadgeSonnerStyleVars = {
   "--width": "max-content",
