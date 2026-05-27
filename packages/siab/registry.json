@@ -1082,6 +1082,10 @@
       "type": "registry:ui",
       "title": "SIAB Save UI",
       "description": "Save lifecycle UI — desktop floating status pill (SaveStatusBar) with success/saving/error states + mobile save FAB (MobileSavePill) wrapping the shared MobileFloatingPill primitive. Owns the SaveStatus type co-located with SaveStatusBar.",
+      "dependencies": [
+        "lucide-react",
+        "sonner"
+      ],
       "registryDependencies": [
         "@siab/status-badge",
         "@siab/button",

@@ -1,6 +1,7 @@
 "use client"
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react"
-import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react"
+import { useEffect, useRef, type CSSProperties, type ReactNode } from "react"
+import { Loader2, AlertCircle } from "lucide-react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useSidebar } from "@/components/ui/sidebar"
@@ -20,10 +21,10 @@ export type SaveStatus = "idle" | "dirty" | "saving" | "saved" | "error"
  *   idle              -> hidden
  *   dirty             -> hidden (PublishControls Save button carries this)
  *   saving            -> spinner pill, "Saving..."
- *   saved             -> success pill, "Saved" — fades out after 2.5s
+ *   saved             -> success toast, "Saved"
  *   error             -> destructive pill, "Save blocked: N issues"
- *                        (clickable → jumps to first invalid field) or
- *                        "Save failed" + Retry for non-field server errors
+ *                        (clickable → jumps to first invalid field) or a
+ *                        destructive toast, "Save failed" + Retry
  *
  * Visual treatment uses one compact status pill shape for saving / saved /
  * failed states. Saved/error keep the stronger success/destructive contrast
@@ -50,29 +51,34 @@ export function SaveStatusBar({
 }: Props) {
   const t = useTranslations("common")
   const { state, isMobile } = useSidebar()
-  // Saved is visible for 3.25s, then transitions out via opacity + slide
-  // down before unmounting. A bit slower than the previous 2.5s so the
-  // success state is comfortably readable without dominating the canvas.
-  const [showSaved, setShowSaved] = useState(false)
-  const [savedFading, setSavedFading] = useState(false)
+  const lastToastStatusRef = useRef<SaveStatus | null>(null)
+
   useEffect(() => {
     if (status === "saved") {
-      setShowSaved(true)
-      setSavedFading(false)
-      const fade = setTimeout(() => setSavedFading(true), 3_250)
-      const hide = setTimeout(() => setShowSaved(false), 3_750)
-      return () => {
-        clearTimeout(fade)
-        clearTimeout(hide)
+      if (lastToastStatusRef.current !== "saved") {
+        toast.success(t("saved"), { id: "save-status" })
+      }
+    } else if (status === "error" && errorCount === 0) {
+      if (lastToastStatusRef.current !== "error") {
+        toast.error(t("saveFailed"), {
+          id: "save-status",
+          action: onRetry
+            ? {
+                label: t("retry"),
+                onClick: onRetry,
+              }
+            : undefined,
+        })
       }
     }
-    setShowSaved(false)
-    setSavedFading(false)
-  }, [status])
+    lastToastStatusRef.current = status
+  }, [errorCount, onRetry, status, t])
 
   // Hidden states: idle and dirty render nothing — PublishControls'
-  // Save button carries the dirty signal on desktop.
-  if (status === "idle" || status === "dirty" || (status === "saved" && !showSaved)) {
+  // Save button carries the dirty signal on desktop. Saved and non-validation
+  // failure outcomes are emitted through Sonner so every success/error action
+  // uses the same notification element.
+  if (status === "idle" || status === "dirty" || status === "saved" || (status === "error" && errorCount === 0)) {
     return null
   }
 
@@ -103,14 +109,6 @@ export function SaveStatusBar({
         <span>{label}</span>
       </>
     )
-  } else if (status === "saved") {
-    label = t("saved")
-    body = (
-      <>
-        <CheckCircle2 className="h-4 w-4 text-success-foreground" aria-hidden />
-        <span>{label}</span>
-      </>
-    )
   } else if (status === "error") {
     if (errorCount > 0) {
       label = t("saveBlocked", { count: errorCount })
@@ -136,17 +134,7 @@ export function SaveStatusBar({
   // One shared lifecycle badge. Sonner success/error toasts consume the same
   // registry primitive so save/delete/failure feedback cannot visually drift.
   const variant: StatusBadgeTone =
-    status === "saved" ? "success" : status === "error" ? "destructive" : "neutral"
-
-  // Saved exit: fade + slide-down. The pill stays mounted during the
-  // ~500ms transition; both opacity and translate animate together.
-  const fadeClass =
-    status === "saved"
-      ? cn(
-          "transition-all duration-500 ease-out",
-          savedFading && "opacity-0 translate-y-2",
-        )
-      : ""
+    status === "error" ? "destructive" : "neutral"
 
   const inner = isClickableJump ? (
     <button
@@ -155,7 +143,7 @@ export function SaveStatusBar({
       aria-live="polite"
       aria-label={label}
       onClick={onJumpToError}
-      className={getStatusBadgeClassName(variant, cn("cursor-pointer hover:opacity-90", fadeClass))}
+      className={getStatusBadgeClassName(variant, "cursor-pointer hover:opacity-90")}
     >
       {body}
     </button>
@@ -165,7 +153,6 @@ export function SaveStatusBar({
       role="status"
       aria-live="polite"
       aria-label={label}
-      className={fadeClass}
     >
       {body}
     </StatusBadge>
@@ -174,7 +161,7 @@ export function SaveStatusBar({
   return (
     <div className={positionClasses} style={positionStyle}>
       {retryAction ? (
-        <div className={cn("inline-flex items-center gap-2", fadeClass)}>
+        <div className="inline-flex items-center gap-2">
           {inner}
           <Button
             type="button"
