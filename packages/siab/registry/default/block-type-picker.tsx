@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/confirm-dialog"
 import { Plus, ChevronDown, ChevronRight, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 
@@ -259,7 +258,6 @@ function PresetRow({
         confirmLabel={t("deletePreset")}
         onConfirm={async () => {
           await onDelete(preset)  // throws on failure; ConfirmDialog handles error
-          toast.success(t("deletedPreset", { name: preset.name }))
           onDeleted()
         }}
       />
