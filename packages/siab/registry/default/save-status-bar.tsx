@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react"
 import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -20,11 +20,9 @@ export type SaveStatus = "idle" | "dirty" | "saving" | "saved" | "error"
  *                        (clickable → jumps to first invalid field) or
  *                        "Save failed" + Retry for non-field server errors
  *
- * Visual treatment mirrors the ModeBar / ThemeBar buttons exactly: an
- * outer `FLOATING_PILL_CLASS` capsule (popover surface) wrapping an inner
- * `bg-muted/30` segmented group whose single child looks like a SegmentedPill
- * ghost button (`h-7 rounded-sm px-2 text-sm font-medium`). Only the icon
- * tint signals state — green for saved, destructive for error.
+ * Visual treatment uses one compact status pill shape for saving / saved /
+ * failed states. Saved/error keep the stronger success/destructive contrast
+ * while staying smaller than the old wide default badge.
  *
  * Phone is suppressed entirely (`hidden md:flex`); the MobileSavePill
  * owns small-viewport save UI.
@@ -82,12 +80,12 @@ export function SaveStatusBar({
       ? "var(--sidebar-width)"
       : "var(--sidebar-width-icon)"
   const positionClasses = "hidden md:flex fixed z-40 -translate-x-1/2"
-  const positionStyle: React.CSSProperties = {
+  const positionStyle: CSSProperties = {
     bottom: "calc(env(safe-area-inset-bottom, 0px) + 4.75rem)",
     left: `calc(50% + ${sidebarOffset} / 2)`,
   }
 
-  let body: React.ReactNode = null
+  let body: ReactNode = null
   let label = ""
   let isClickableJump = false
   let retryAction: (() => void) | null = null
@@ -130,30 +128,25 @@ export function SaveStatusBar({
     }
   }
 
-  // Saved and error share one translucent "glass" pill treatment: strong
-  // backdrop blur + boosted saturation so the canvas content behind softly
-  // diffuses through, with a thin white inset ring as the "glass edge"
-  // highlight. Only the colour role flips — success vs destructive — and the
-  // `*-foreground` (white) text keeps the label crisp at the lower bg
-  // opacity. Neutral states (saving) keep the plain card pill: they're
-  // transient and don't need the glass weight.
+  // One compact lifecycle badge. Saved/error keep the darker, high-contrast
+  // colour roles that read best in dark mode; saving stays neutral.
   const variant: "success" | "destructive" | "neutral" =
     status === "saved" ? "success" : status === "error" ? "destructive" : "neutral"
   const glassPill =
-    "h-9 px-4 rounded-md shadow-lg backdrop-blur-xl backdrop-saturate-150 ring-1 ring-inset ring-white/30"
+    "h-8 px-3 rounded-md shadow-md backdrop-blur-xl backdrop-saturate-150 ring-1 ring-inset ring-white/25"
   const variantClasses = {
     success: cn(
       glassPill,
-      "shadow-success/25 bg-success/55 supports-[backdrop-filter]:bg-success/40 text-success-foreground",
+      "shadow-success/20 bg-success/75 supports-[backdrop-filter]:bg-success/65 text-success-foreground",
     ),
     destructive: cn(
       glassPill,
-      "shadow-destructive/25 bg-destructive/55 supports-[backdrop-filter]:bg-destructive/40 text-destructive-foreground",
+      "shadow-destructive/20 bg-destructive/75 supports-[backdrop-filter]:bg-destructive/65 text-destructive-foreground",
     ),
-    neutral: "h-9 px-3 rounded-md border border-border shadow-md bg-card text-card-foreground",
+    neutral: "h-8 px-3 rounded-md border border-border shadow-md bg-card text-card-foreground",
   }
   const innerButtonClasses = cn(
-    "inline-flex items-center gap-2 font-medium",
+    "inline-flex items-center gap-1.5 text-sm font-medium",
     variantClasses[variant],
   )
 
@@ -200,7 +193,7 @@ export function SaveStatusBar({
             variant="default"
             onClick={retryAction}
             aria-label={t("retry")}
-            className="h-9"
+            className="h-8"
           >
             {t("retry")}
           </Button>

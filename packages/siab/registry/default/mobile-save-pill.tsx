@@ -34,10 +34,12 @@ const ICON: Record<SaveStatus, React.ReactNode> = {
 export const MobileSavePill: React.FC<MobileSavePillProps> = ({ status, dirtyCount, errorCount = 0, onSave }) => {
   const t = useTranslations("common")
   const isError = status === "error"
-  const badgeCount = isError ? errorCount : (dirtyCount ?? 0)
+  const hasValidationErrors = isError && errorCount > 0
+  const badgeCount = hasValidationErrors ? errorCount : isError ? 0 : (dirtyCount ?? 0)
   const ariaLabel =
     status === "saving" ? t("saving") :
-    status === "error" ? t("saveBlocked", { count: errorCount }) :
+    status === "error" && hasValidationErrors ? t("saveBlocked", { count: errorCount }) :
+    status === "error" ? t("saveFailed") :
     status === "dirty" ? t("save") :
     t("saved")
 
