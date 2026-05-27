@@ -3,7 +3,6 @@ import { useEffect, useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Check, Copy } from "lucide-react"
-import { toast } from "sonner"
 
 export type OnboardingStep = {
   id: string
@@ -16,9 +15,10 @@ export type OnboardingChecklistProps = {
   storageKey: string
   steps: OnboardingStep[]
   seed?: Record<string, boolean>
+  onCopied?: () => void
 }
 
-export function OnboardingChecklist({ storageKey, steps, seed = {} }: OnboardingChecklistProps) {
+export function OnboardingChecklist({ storageKey, steps, seed = {}, onCopied }: OnboardingChecklistProps) {
   // Initial state must match SSR — localStorage is unavailable until mount.
   // The useEffect below merges in the persisted state immediately after.
   const [done, setDone] = useState<Record<string, boolean>>(seed)
@@ -70,7 +70,7 @@ export function OnboardingChecklist({ storageKey, steps, seed = {} }: Onboarding
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => { navigator.clipboard.writeText(s.copy!); toast.success("Copied") }}
+                onClick={() => { navigator.clipboard.writeText(s.copy!); onCopied?.() }}
               >
                 <Copy className="mr-1 h-3 w-3" /> Copy
               </Button>

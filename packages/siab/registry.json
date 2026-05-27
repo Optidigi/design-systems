@@ -758,7 +758,7 @@
       "name": "status-badge",
       "type": "registry:ui",
       "title": "SIAB Status Badge",
-      "description": "Shared compact status badge primitive and style helpers for save lifecycle and Sonner action feedback.",
+      "description": "Shared compact status badge primitive for save lifecycle and status feedback.",
       "registryDependencies": [
         "@siab/utils"
       ],
@@ -942,7 +942,7 @@
       "type": "registry:component",
       "title": "Onboarding Checklist",
       "description": "Multi-step onboarding card list with per-step checkboxes, persisted to localStorage by configurable key. Each step gets title + ReactNode description + optional copy-to-clipboard button. Caller passes the steps array and storageKey — generic enough for any onboarding flow (DNS/proxy setup, tenant provisioning, post-install walkthroughs). Seed entries are non-overridable (true by virtue of upstream state, e.g. a tenant record already existing).",
-      "dependencies": ["lucide-react", "sonner"],
+      "dependencies": ["lucide-react"],
       "registryDependencies": ["@siab/card", "@siab/button"],
       "files": [
         {
@@ -1083,8 +1083,7 @@
       "title": "SIAB Save UI",
       "description": "Save lifecycle UI — desktop floating status pill (SaveStatusBar) with success/saving/error states + mobile save FAB (MobileSavePill) wrapping the shared MobileFloatingPill primitive. Owns the SaveStatus type co-located with SaveStatusBar.",
       "dependencies": [
-        "lucide-react",
-        "sonner"
+        "lucide-react"
       ],
       "registryDependencies": [
         "@siab/status-badge",
@@ -1318,8 +1317,8 @@
       "name": "block-type-picker",
       "type": "registry:ui",
       "title": "SIAB Block Type Picker",
-      "description": "Block-type picker dialog with expandable tiles for inserting from a saved block preset. Pure UI primitive: receives blockTypes + presets + onAdd/onReloadPresets/onDeletePreset/sanitizePresetData as props. No backend coupling — caller supplies data + side-effect callbacks. Sonner toast for delete-success notification stays inside (shadcn UI-only). Type definitions BlockTypeDef and BlockPresetDef exported for caller adapters.",
-      "dependencies": ["lucide-react", "sonner"],
+      "description": "Block-type picker dialog with expandable tiles for inserting from a saved block preset. Pure UI primitive: receives blockTypes + presets + onAdd/onReloadPresets/onDeletePreset/sanitizePresetData as props. No backend coupling — caller supplies data + side-effect callbacks. Type definitions BlockTypeDef and BlockPresetDef exported for caller adapters.",
+      "dependencies": ["lucide-react"],
       "registryDependencies": ["@siab/dialog", "@siab/button", "@siab/confirm-dialog"],
       "files": [
         { "path": "registry/default/block-type-picker.tsx", "type": "registry:ui" }
