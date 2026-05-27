@@ -744,9 +744,27 @@
         "sonner",
         "next-themes"
       ],
+      "registryDependencies": [
+        "@siab/status-badge"
+      ],
       "files": [
         {
           "path": "registry/default/sonner.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "status-badge",
+      "type": "registry:ui",
+      "title": "SIAB Status Badge",
+      "description": "Shared compact status badge primitive and style helpers for save lifecycle and Sonner action feedback.",
+      "registryDependencies": [
+        "@siab/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/default/status-badge.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1065,6 +1083,7 @@
       "title": "SIAB Save UI",
       "description": "Save lifecycle UI — desktop floating status pill (SaveStatusBar) with success/saving/error states + mobile save FAB (MobileSavePill) wrapping the shared MobileFloatingPill primitive. Owns the SaveStatus type co-located with SaveStatusBar.",
       "registryDependencies": [
+        "@siab/status-badge",
         "@siab/button",
         "@siab/sidebar",
         "@siab/mobile-floating-pill"

@@ -5,6 +5,11 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useSidebar } from "@/components/ui/sidebar"
 import { useTranslations } from "next-intl"
+import {
+  StatusBadge,
+  getStatusBadgeClassName,
+  type StatusBadgeTone,
+} from "@/components/ui/status-badge"
 
 export type SaveStatus = "idle" | "dirty" | "saving" | "saved" | "error"
 
@@ -128,27 +133,10 @@ export function SaveStatusBar({
     }
   }
 
-  // One compact lifecycle badge. Saved/error keep the darker, high-contrast
-  // colour roles that read best in dark mode; saving stays neutral.
-  const variant: "success" | "destructive" | "neutral" =
+  // One shared lifecycle badge. Sonner success/error toasts consume the same
+  // registry primitive so save/delete/failure feedback cannot visually drift.
+  const variant: StatusBadgeTone =
     status === "saved" ? "success" : status === "error" ? "destructive" : "neutral"
-  const glassPill =
-    "h-8 px-3 rounded-md shadow-md backdrop-blur-xl backdrop-saturate-150 ring-1 ring-inset ring-white/25"
-  const variantClasses = {
-    success: cn(
-      glassPill,
-      "shadow-success/20 bg-success/75 supports-[backdrop-filter]:bg-success/65 text-success-foreground",
-    ),
-    destructive: cn(
-      glassPill,
-      "shadow-destructive/20 bg-destructive/75 supports-[backdrop-filter]:bg-destructive/65 text-destructive-foreground",
-    ),
-    neutral: "h-8 px-3 rounded-md border border-border shadow-md bg-card text-card-foreground",
-  }
-  const innerButtonClasses = cn(
-    "inline-flex items-center gap-1.5 text-sm font-medium",
-    variantClasses[variant],
-  )
 
   // Saved exit: fade + slide-down. The pill stays mounted during the
   // ~500ms transition; both opacity and translate animate together.
@@ -167,19 +155,20 @@ export function SaveStatusBar({
       aria-live="polite"
       aria-label={label}
       onClick={onJumpToError}
-      className={cn(innerButtonClasses, "cursor-pointer hover:opacity-90", fadeClass)}
+      className={getStatusBadgeClassName(variant, cn("cursor-pointer hover:opacity-90", fadeClass))}
     >
       {body}
     </button>
   ) : (
-    <div
+    <StatusBadge
+      tone={variant}
       role="status"
       aria-live="polite"
       aria-label={label}
-      className={cn(innerButtonClasses, fadeClass)}
+      className={fadeClass}
     >
       {body}
-    </div>
+    </StatusBadge>
   )
 
   return (
