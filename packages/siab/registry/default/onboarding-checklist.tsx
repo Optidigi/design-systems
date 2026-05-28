@@ -18,6 +18,24 @@ export type OnboardingChecklistProps = {
   onCopied?: () => void
 }
 
+async function copyText(text: string) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text)
+    return
+  }
+
+  const textarea = document.createElement("textarea")
+  textarea.value = text
+  textarea.setAttribute("readonly", "")
+  textarea.style.position = "fixed"
+  textarea.style.left = "-9999px"
+  textarea.style.top = "0"
+  document.body.appendChild(textarea)
+  textarea.select()
+  document.execCommand("copy")
+  textarea.remove()
+}
+
 export function OnboardingChecklist({ storageKey, steps, seed = {}, onCopied }: OnboardingChecklistProps) {
   // Initial state must match SSR — localStorage is unavailable until mount.
   // The useEffect below merges in the persisted state immediately after.
@@ -70,7 +88,10 @@ export function OnboardingChecklist({ storageKey, steps, seed = {}, onCopied }: 
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => { navigator.clipboard.writeText(s.copy!); onCopied?.() }}
+                onClick={async () => {
+                  await copyText(s.copy!)
+                  onCopied?.()
+                }}
               >
                 <Copy className="mr-1 h-3 w-3" /> Copy
               </Button>
